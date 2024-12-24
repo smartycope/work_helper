@@ -9,7 +9,7 @@ from collections import OrderedDict
 from clipboard import copy
 import textwrap
 
-SIDEBAR_WIDTH = 40
+SIDEBAR_WIDTH = 30
 DEBUG = True
 
 
@@ -57,7 +57,6 @@ class Phase(Enum):
     ROUTINE_CHECKS = 1
     DEBUGGING = 2
     FINISH = 3
-
 
 class Steps:
     confirm_id = 'Confirm IDs'
@@ -121,10 +120,13 @@ class Sidebar(VerticalGroup):
     def watch_serial(self, *args):
         if self.serial:
             self.model.update(f'{{:^{SIDEBAR_WIDTH}}}'.format(self.case.get_quick_model() + '\n'))
-            self.sleep_mode.update(textwrap.fill(sleep_mode.get(self.serial[0], 'Unknown'), 40) + '\n')
-            self.factory_reset.update(textwrap.fill(factory_reset.get(self.serial[0], 'Unknown'), 40) + '\n')
-            self.dct.update(f'{{:^{SIDEBAR_WIDTH}}}'.format(textwrap.fill(self.case.get_DCT(), 40)) + '\n')
-            self.notes.update(textwrap.fill(self.case.get_notes(), 40))
+            self.sleep_mode.update(textwrap.fill(sleep_mode.get(self.serial[0], 'Unknown'), SIDEBAR_WIDTH) + '\n')
+            self.factory_reset.update(textwrap.fill(factory_reset.get(self.serial[0], 'Unknown'), SIDEBAR_WIDTH) + '\n')
+            self.dct.update(f'{{:^{SIDEBAR_WIDTH}}}'.format(textwrap.fill(self.case.get_DCT(), SIDEBAR_WIDTH)) + '\n')
+            notes = textwrap.fill(self.case.get_notes(), SIDEBAR_WIDTH)
+            if notes:
+                self.notes_sep.update(f'{" Notes ":-^{SIDEBAR_WIDTH}}')
+                self.notes.update(notes)
 
     def compose(self):
         yield Label(f'{self.case.ref:^{SIDEBAR_WIDTH}}\n')
@@ -140,10 +142,18 @@ class Sidebar(VerticalGroup):
         yield Label(f'{" DCT ":-^{SIDEBAR_WIDTH}}')
         self.dct = Label('')
         yield self.dct
-        yield Label(f'{" Notes ":-^{SIDEBAR_WIDTH}}')
+        self.notes_sep = Label('')
+        yield self.notes_sep
         self.notes = Label('')
         yield self.notes
-        yield Button('Copy Notes', id='copy-button')
+        button = Button('Copy Notes', id='copy-button')
+        button.can_focus = False
+        yield button
+
+        yield Label('TODO context:')
+        ta = TextArea(id='lower-sidebar')
+        ta.can_focus = False
+        yield ta
 
     def on_button_pressed(self, event: Button.Pressed):
         copy(self.case.text_area.text)
@@ -178,6 +188,7 @@ class Case(VerticalGroup):
         yield self.text_area
         yield self.input
         yield self.sidebar
+
         self.input.focus()
 
     def watch_step(self, to):
@@ -196,6 +207,7 @@ class Case(VerticalGroup):
         resp = self.input.value
         self.input.value = ''
 
+        # TODO: I think back isn't working
         if resp.lower() == 'back' and self.step != Steps.confirm_id:
             self.step = self.prev_step
             return
@@ -243,9 +255,10 @@ class Case(VerticalGroup):
                 self.step = Steps.customer_states
 
             case Steps.customer_states:
-                self.customer_states = resp
-                self.text_area.text += 'Customer States: ' + resp + '\n\nRoutine Checks:\n'
-                self.step = Steps.check_liquid_damage
+                if resp:
+                    self.customer_states = resp
+                    self.text_area.text += 'Customer States: ' + resp + '\n\nRoutine Checks:\n'
+                    self.step = Steps.check_liquid_damage
 
             case Steps.check_liquid_damage:
                 if resp.lower() == 'na':
@@ -420,7 +433,7 @@ class Case(VerticalGroup):
             return 'Green card'
         elif self.serial.startswith('m6'):
             return 'Small debug card, use Trident driver'
-        elif self.serial.startswith('j9'):
+        elif self.serial.startswith(('j9', 'c9')):
             return 'Blue card'
         elif self.serial.startswith('e'):
             return 'Green card with micro USB plugged into right side'
@@ -446,6 +459,10 @@ if DEBUG:
     ex1.customer_states = 'charging issues'
     ex2.customer_states = 'it sucks'
     ex3.customer_states = 'no movement'
+    ex1.color = 1
+    ex2.color = 2
+    ex3.color = 3
+
 
     with open('~/Documents/deleteme_log.txt', 'w') as f:
         f.write('')
@@ -535,6 +552,7 @@ class HelperApp(App):
             width: 100%;
             dock: bottom;
         }
+
     '''.replace('{', '{{').replace('}', '}}').replace('[', '{').replace(']', '}').format(SIDEBAR_WIDTH=SIDEBAR_WIDTH)
 
     def __init__(self):
