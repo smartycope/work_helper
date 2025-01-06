@@ -480,3 +480,37 @@ We have upgraded your battery to a ____ mAh battery with higher capacity, you ma
 
 #*** MISC ***
 #We have upgraded your battery to a ____ mAh battery with higher capacity, you may notice a visible difference from your original battery, should you open the battery compartment.
+
+TODO 5
+Todo textbox needs to be able to focus to be used
+Make the todo textbox be at least 3 tall
+Fix the new spotify playlist
+test dct exceptions
+Always keeping a single newline at the end of the text isn't working - test this
+test adding text manually
+remove the todo box margins, if possible
+
+NEXT: make UI for mobility tests:
+I think I want the mobility test to be formatted like this:
+
+* 2nd Mobility test - floor, new Aurora, empty bin
+** Pass: undock, clean | Fail: refill, pad deploy | Result: Fail
+** Notes ntoes notes
+
+options: undock, dock, "navigate" (instead of clean), pick up rice, other, refill, auto-evac, manual evac, pad deploy, number of water lines, is streaky
+
+
+Number the mobility tests automatically
+consider having a preview of what the mobility test entry will look like
+
+Make swap have a bunch of separators (i.e. *************** Swap ***************)
+
+Consider a "clear TODO" button (or at least make it select everything on focus)
+URGENT: C9 says Blue card, it's actually green
+Low priority: Add some color to the notes area to make things easily distinguishable (but make sure not to copy it!)
+
+add a in notes that if it's a C9, and I can't get DCT to work, to pull the battery out, and hold the clean button down for 10 seconds, then reboot
+
+At the end, do a bunch of regex on the notes and confirm that I'm not forgetting anything -- including adding in the customer notes that a factory reset was performed
+
+for sleep mode on C9, remove the "and press again to confirm"
