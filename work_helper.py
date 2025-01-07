@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import random
 import re
 import textwrap
@@ -10,12 +11,23 @@ from textual.containers import *
 from textual.document._document import Selection
 from textual.reactive import reactive
 from textual.widgets import *
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-d', '--debug', action='store_true')
+args = parser.parse_args()
 
 SIDEBAR_WIDTH = 30
 COPY_SERIAL_BUTTON_WIDTH = 8
-DEBUG = False
+COLORS = OrderedDict((
+    ("#377a11", "Green"),
+    ("#ef9e16", "Orange"),
+    ("#d1dd0b", "Yellow"),
+    ("#ea9daf", "Pink"),
+    ("#799fad", "Blue"),
+))
 
-if DEBUG:
+if args.debug:
     with open('~/Documents/deleteme_log.txt', 'w') as f:
         f.write('')
 
@@ -88,7 +100,7 @@ class Steps:
     ask_user_base_contacts = 'Are the charging contacts on the user base good [yes]'
     ask_charge_customer_dock = "What's the charging wattage on the customer's dock"
     ask_charge_test_dock = "What's the charging wattage on a test base"
-    ask_bin_rust = "Is there rust on the screw in the bin [no]"
+    ask_bin_rust = "Is there rust on the screw in the tank [no]"
 
     liquid_check_corrosion = 'Is there corrosion on the board or connections (specify or empty for no)'
     liquid_check_dock = 'Is there liquid residue in the user dock [no]'
@@ -175,6 +187,19 @@ class Sidebar(VerticalGroup):
                 self.notes.update(notes)
 
     def compose(self):
+        self.color_switcher = Select(
+            [(f'[{color}]{name}[/]', color) for color, name in COLORS.items()],
+            id="color-selector",
+            allow_blank=False,
+            value=list(COLORS.keys())[self.case.color],
+        )
+        # self.color_switcher.styles.margin = 0
+        # self.color_switcher.styles.padding = 0
+        # self.color_switcher.styles.height = 1
+        # self.color_switcher.styles.background = list(COLORS.keys())[self.case.color]
+        self.color_switcher.can_focus = False
+        yield self.color_switcher
+
         yield Label(f'{self.case.ref:^{SIDEBAR_WIDTH}}\n', id=f'ref-label-{self.case.color}')
         with HorizontalGroup():
             # yield Label(f'{"Phase":^{SIDEBAR_WIDTH}}\n')
@@ -206,7 +231,6 @@ class Sidebar(VerticalGroup):
         with VerticalGroup(id='lower-sidebar'):
             yield Label('TODO:')
             ta = TextArea(id='todo-textarea')
-            ta.can_focus = False
             yield ta
             yield Label('')
 
@@ -234,7 +258,6 @@ class Case(VerticalGroup):
     phase = reactive(Phase.CONFIRM)
 
     def __init__(self, id, color):
-        # super().__init__(id='case_'+id.replace(' ', '_'))
         super().__init__(id='case_'+str(color))
         self.ref = id
         self.serial = None
@@ -252,6 +275,22 @@ class Case(VerticalGroup):
         self.input = Input(placeholder=self.step, id='input_' + self.ref)
         self.input.cursor_blink = False
         self.sidebar = Sidebar(self)
+        # other_colors = COLORS.copy()
+        # other_colors.pop(list(other_colors.keys())[color])
+
+    def change_color(self, to_color):
+        old_color = self.color
+        if old_color != to_color:
+            self.color = to_color
+            hex = list(COLORS.keys())[to_color]
+            # self.id = 'case_'+str(to_color)
+            # self.sidebar = Sidebar(self)
+            # self.sidebar.serial = self.serial
+            self.sidebar.styles.background = hex
+            self.parent.parent.parent.get_tab(self.parent.id).styles.background = hex
+            # self.refresh()
+            # self.update()
+
 
     def compose(self):
         yield self.text_area
@@ -276,17 +315,21 @@ class Case(VerticalGroup):
         self.text_area.text += f'{bullet} {step}\n'
 
     def on_select_changed(self, event: Select.Changed) -> None:
-        self.phase = Phase(event.value)
-        match self.phase:
-            case Phase.CONFIRM:
-                self.step = Steps.confirm_id if not self.serial else Steps.check_repeat
-            case Phase.ROUTINE_CHECKS:
-                self.ensure_serial(Steps.check_liquid_damage)
-            case Phase.DEBUGGING:
-                self.ensure_serial(Steps.add_step)
-            # TODO
-            case Phase.FINISH:
-                self.ensure_serial(Steps.todo)
+        match event.select.id:
+            case "color-selector":
+                self.change_color(list(COLORS.keys()).index(event.value))
+            case "phase-select":
+                self.phase = Phase(event.value)
+                match self.phase:
+                    case Phase.CONFIRM:
+                        self.step = Steps.confirm_id if not self.serial else Steps.check_repeat
+                    case Phase.ROUTINE_CHECKS:
+                        self.ensure_serial(Steps.check_liquid_damage)
+                    case Phase.DEBUGGING:
+                        self.ensure_serial(Steps.add_step)
+                    # TODO
+                    case Phase.FINISH:
+                        self.ensure_serial(Steps.todo)
 
     def ensure_serial(self, next_step):
         """ If we don't have a serial number, ask for one manually, then go back to what we were
@@ -416,9 +459,9 @@ class Case(VerticalGroup):
 
                 case Steps.ask_bin_rust:
                     if resp:
-                        self.add_step('Liquid bob screw has rust on it', bullet='!')
+                        self.add_step('Tank float screw has rust on it', bullet='!')
                     else:
-                        self.add_step('Liquid bob screw has no signs of rust')
+                        self.add_step('Tank float screw has no signs of rust')
 
                     next_step = 'cleaning/lid pins'
 
@@ -582,11 +625,11 @@ class Case(VerticalGroup):
             return 'Serial'
         elif self.serial.startswith(('r', 's')):
             return 'USB'
-        elif self.serial.startswith(('j8', 'q7', 'i6', 'i7', 'i8')):
+        elif self.serial.startswith(('j8', 'q7', 'i6', 'i7', 'i8', 'c9')):
             return 'Green card'
         elif self.serial.startswith('m6'):
             return 'Small debug card, use Trident driver'
-        elif self.serial.startswith(('j9', 'c9')):
+        elif self.serial.startswith(('j9')):
             return 'Blue card'
         elif self.serial.startswith('e'):
             return 'Green card with micro USB plugged into right side'
@@ -629,7 +672,7 @@ class Case(VerticalGroup):
         return ''
 
 
-if DEBUG:
+if args.debug:
     ex1, ex2, ex3 = Case('12345IR', 1), Case('11111IR', 2), Case('54321IR', 3)
     ex1.serial = 'S9999'
     ex2.serial = 'C9123'
@@ -654,34 +697,24 @@ class HelperApp(App):
         # Binding('ctrl+shift+tab', 'prev_tab', 'Previous Tab', show=True, priority=True),
     ]
     CSS = '''
-        #reference_popup {
-            layer: above;
-            content-align: center middle;
-            align: center middle;
-            width: 100%;
-            # position: absolute;
-            # top: 50%;
-            # left: 50%;
-            # transform: translate(-50%, -50%);
-        }
         TabbedContent #--content-tab-pane-0 {
-            background: #377a11;
+            background: [color_0];
             color: black;
         }
         TabbedContent #--content-tab-pane-1 {
-            background: #ef9e16;
+            background: [color_1];
             color: black;
         }
         TabbedContent #--content-tab-pane-2 {
-            background: #d1dd0b;
+            background: [color_2];
             color: black;
         }
         TabbedContent #--content-tab-pane-3 {
-            background: #ea9daf;
+            background: [color_3];
             color: black;
         }
         TabbedContent #--content-tab-pane-4 {
-            background: #799fad;
+            background: [color_4];
             color: black;
         }
 
@@ -689,36 +722,43 @@ class HelperApp(App):
             dock: right;
             height: 100%;
             width: [SIDEBAR_WIDTH];
-            background: #377a11;
+            background: [color_0];
             color: black;
         }
         #sidebar-1 {
             dock: right;
             height: 100%;
             width: [SIDEBAR_WIDTH];
-            background: #ef9e16;
+            background: [color_1];
             color: black;
         }
         #sidebar-2 {
             dock: right;
             height: 100%;
             width: [SIDEBAR_WIDTH];
-            background: #d1dd0b;
+            background: [color_2];
             color: black;
         }
         #sidebar-3 {
             dock: right;
             height: 100%;
             width: [SIDEBAR_WIDTH];
-            background: #ea9daf;
+            background: [color_3];
             color: black;
         }
         #sidebar-4 {
             dock: right;
             height: 100%;
             width: [SIDEBAR_WIDTH];
-            background: #799fad;
+            background: [color_4];
             color: black;
+        }
+
+        #reference_popup {
+            layer: above;
+            content-align: center middle;
+            align: center middle;
+            width: 100%;
         }
 
         #copy-button{
@@ -732,11 +772,23 @@ class HelperApp(App):
             dock: bottom;
         }
 
+        #todo-textarea{
+            min-height: 5;
+        }
+
         #copy-serial-button{
             width: [COPY_SERIAL_BUTTON_WIDTH];
             min-width: [COPY_SERIAL_BUTTON_WIDTH];
         }
-    '''.replace('{', '{{').replace('}', '}}').replace('[', '{').replace(']', '}').format(SIDEBAR_WIDTH=SIDEBAR_WIDTH, COPY_SERIAL_BUTTON_WIDTH=COPY_SERIAL_BUTTON_WIDTH)
+    '''.replace('{', '{{').replace('}', '}}').replace('[', '{').replace(']', '}').format(
+            SIDEBAR_WIDTH=SIDEBAR_WIDTH,
+            COPY_SERIAL_BUTTON_WIDTH=COPY_SERIAL_BUTTON_WIDTH,
+            color_0=list(COLORS.keys())[0],
+            color_1=list(COLORS.keys())[1],
+            color_2=list(COLORS.keys())[2],
+            color_3=list(COLORS.keys())[3],
+            color_4=list(COLORS.keys())[4],
+        )
 
     def __init__(self, debug=False):
         super().__init__()
@@ -827,12 +879,12 @@ class HelperApp(App):
         self.active_case.text_area.text = self.active_case.text_area.text.replace('\n\n', '\n')
 
 if __name__ == "__main__":
-    app = HelperApp(debug=DEBUG)
+    app = HelperApp(debug=args.debug)
     try:
         app.run()
     finally:
         app.action_save()
 
-    if DEBUG:
+    if args.debug:
         with open('~/Documents/deleteme_log.txt') as f:
             _print(f.read())

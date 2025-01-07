@@ -35,13 +35,8 @@ button to copy robot serial
 
 
 
-a "cancel out of the prewritten script" option
 ctrl + backspace doesn't seem to work
-dct breaks on "C9C9"
-definitely make the sidebar smaller
-add ctrl+s to save
-remind to check tank bin screw on combo models
-ability to change colors on cases
+    ability to change colors on cases
 The whole sidebar color is a little glaring
 autocapitalizing
 on focus (window focus, at least), the input shouldn't select all of it's text
@@ -481,9 +476,6 @@ We have upgraded your battery to a ____ mAh battery with higher capacity, you ma
 #*** MISC ***
 #We have upgraded your battery to a ____ mAh battery with higher capacity, you may notice a visible difference from your original battery, should you open the battery compartment.
 
-TODO 5
-Todo textbox needs to be able to focus to be used
-Make the todo textbox be at least 3 tall
 Fix the new spotify playlist
 test dct exceptions
 Always keeping a single newline at the end of the text isn't working - test this
@@ -506,7 +498,7 @@ consider having a preview of what the mobility test entry will look like
 Make swap have a bunch of separators (i.e. *************** Swap ***************)
 
 Consider a "clear TODO" button (or at least make it select everything on focus)
-URGENT: C9 says Blue card, it's actually green
+check what DCT card j9 uses
 Low priority: Add some color to the notes area to make things easily distinguishable (but make sure not to copy it!)
 
 add a in notes that if it's a C9, and I can't get DCT to work, to pull the battery out, and hold the clean button down for 10 seconds, then reboot
@@ -514,3 +506,5 @@ add a in notes that if it's a C9, and I can't get DCT to work, to pull the batte
 At the end, do a bunch of regex on the notes and confirm that I'm not forgetting anything -- including adding in the customer notes that a factory reset was performed
 
 for sleep mode on C9, remove the "and press again to confirm"
+
+Tests for changing color
