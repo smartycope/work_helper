@@ -1,0 +1,40 @@
+# TabbedContent {
+    # background: [color_0];
+    # color: black;
+# }
+
+.sidebar{
+    dock: right;
+    height: 100%;
+    width: 25%;
+    min-width: 30;
+    # background: ;
+    color: black;
+}
+
+#reference_popup {
+    layer: above;
+    content-align: center middle;
+    align: center middle;
+    width: 100%;
+}
+
+#copy-button{
+    height: 3;
+    width: 100%;
+    dock: bottom;
+}
+
+#lower-sidebar{
+    height: 25%;
+    dock: bottom;
+}
+
+#todo-textarea{
+    min-height: 4;
+}
+
+#copy-serial-button{
+    width: 25%;
+    min-width: 30;
+}

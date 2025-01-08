@@ -1,9 +1,16 @@
 # run with
+# cd /home/zeke/hello/work_helper/
 # python -m pytest . --asyncio-mode=auto
-# Remember to turn DEBUG to False in work_helper
-from work_helper import HelperApp
-import work_helper as wh
-from work_helper import Steps
+
+from HelperApp import HelperApp
+# import HelperApp as
+from Phase import Phase
+from Sidebar import Sidebar
+from globals import COLORS, COPY_SERIAL_BUTTON_WIDTH, SIDEBAR_WIDTH
+from Case import Case
+from info import docks, factory_reset, sleep_mode
+from CustomTextArea import CustomTextArea
+from texts import Steps
 from clipboard import paste
 from textual.color import Color
 
@@ -27,7 +34,7 @@ async def test_create_new_case():
     app = HelperApp()
     async with app.run_test(size=SIZE) as pilot:
         await create_case(pilot)
-        assert app.query_one("#sidebar-"+str(app.active_case.color)).styles.background in colors
+        assert app.query_one("#sidebar-"+str(app.active_case.ref)).styles.background in colors
 
 async def test_sidebar_loads():
     app = HelperApp()
@@ -36,15 +43,15 @@ async def test_sidebar_loads():
         await pilot.press(*'j9j9', 'enter')
 
         # Just make sure the first line is good at least. Close enough.
-        # print(dir(app.query_one(f'#model-label-{app.active_case.color}')))
-        assert 'J9' in app.query_one(f'#model-label-{app.active_case.color}').renderable
-        assert wh.sleep_mode['j'][:wh.SIDEBAR_WIDTH - 5] in app.query_one(f'#sleep-mode-label-{app.active_case.color}').renderable
-        assert wh.factory_reset['j'][:wh.SIDEBAR_WIDTH - 5] in app.query_one(f'#factory-reset-label-{app.active_case.color}').renderable
-        assert app.active_case.get_DCT()[:wh.SIDEBAR_WIDTH - 5] in app.query_one(f'#dct-label-{app.active_case.color}').renderable
-        assert app.active_case.get_DCT_exceptions()[:wh.SIDEBAR_WIDTH - 5] in app.query_one(f'#dct-exp-label-{app.active_case.color}').renderable
-        assert app.active_case.get_notes()[:wh.SIDEBAR_WIDTH - 5] in app.query_one(f'#notes-label-{app.active_case.color}').renderable
-        assert 'J9' in app.query_one(f'#serial-label-{app.active_case.color}').renderable
-        assert ref in app.query_one(f'#ref-label-{app.active_case.color}').renderable
+        # print(dir(app.query_one(f'#model-label-{app.active_case.ref}')))
+        assert 'J9' in app.query_one(f'#model-label-{app.active_case.ref}').renderable
+        assert sleep_mode['j'][:SIDEBAR_WIDTH - 5] in app.query_one(f'#sleep-mode-label-{app.active_case.ref}').renderable
+        assert factory_reset['j'][:SIDEBAR_WIDTH - 5] in app.query_one(f'#factory-reset-label-{app.active_case.ref}').renderable
+        assert app.active_case.get_DCT()[:SIDEBAR_WIDTH - 5] in app.query_one(f'#dct-label-{app.active_case.ref}').renderable
+        assert app.active_case.get_DCT_exceptions()[:SIDEBAR_WIDTH - 5] in app.query_one(f'#dct-exp-label-{app.active_case.ref}').renderable
+        assert app.active_case.get_notes()[:SIDEBAR_WIDTH - 5] in app.query_one(f'#notes-label-{app.active_case.ref}').renderable
+        assert 'J9' in app.query_one(f'#serial-label-{app.active_case.ref}').renderable
+        assert ref in app.query_one(f'#ref-label-{app.active_case.ref}').renderable
 
 # A list of lists of each current step, the text to type into the input box, and the notes it should correspond with (in order)
 # The first element is the name of the test, and if it starts with "TODO", it gets skipped
@@ -87,8 +94,8 @@ cumulative_routes = [
         (Steps.ask_dock, '', 'Parts in: Robot\n'),
         (Steps.ask_damage, '', 'Claimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\n'),
         (Steps.customer_states, 'bad damage', 'Customer States: Bad damage\n\nRoutine Checks:\n'),
-        (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_sunken_contacts, '', '* Contacts don\'t feel sunken\n'),
+        (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_blower_play, '', "* No play in blower motor\n"),
         (Steps.ask_rollers, '', ""),
         (Steps.ask_cleaned, '', "* Cleaned robot\n"),
@@ -109,8 +116,8 @@ cumulative_routes = [
         (Steps.ask_dock, 'Zhuhai', 'Parts in: Robot, Zhuhai, cord\n'),
         (Steps.ask_damage, '', 'Claimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\n'),
         (Steps.customer_states, 'bad damage', 'Customer States: Bad damage\n\nRoutine Checks:\n'),
-        (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_sunken_contacts, '', '* Contacts don\'t feel sunken\n'),
+        (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_blower_play, '', "* No play in blower motor\n"),
         (Steps.ask_rollers, '', ""),
         (Steps.ask_cleaned, '', "* Cleaned robot\n"),
@@ -133,12 +140,12 @@ cumulative_routes = [
         (Steps.pick_up_case, '', ''),
         (Steps.ask_dock, '', 'Parts in: Robot\n'),
         (Steps.ask_damage, '', 'Claimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\n'),
-        (Steps.customer_states, 'bad damage', 'Customer States: Bad damage\n\nRoutine Checks:\n'),
         (Steps.check_liquid_damage, 'y', '! Found signs of liquid residue\n'),
+        (Steps.customer_states, 'bad damage', 'Customer States: Bad damage\n\nRoutine Checks:\n'),
         (Steps.liquid_check_corrosion, 'board', '! Found signs of liquid corrosion on the board\n'),
-        (Steps.liquid_check_bin, 'y', '** Liquid residue found in customer bin: probably sucked up liquid\n'),
+        (Steps.liquid_check_bin, 'y', '*** Liquid residue found in customer bin: probably sucked up liquid\n'),
         # TODO: this path needs to be changed (add Process: to it)
-        (Steps.liquid_take_pictures, '', '** Liquid residue found in customer bin: probably sucked up liquid\n'),
+        (Steps.liquid_take_pictures, '', '*** Liquid residue found in customer bin: probably sucked up liquid\n'),
     ],
     ["Liquid path, without dock, without corrosion",
         (Steps.confirm_id, 'j9j9', '{ref}\n'),
@@ -148,11 +155,11 @@ cumulative_routes = [
         (Steps.ask_dock, '', 'Parts in: Robot\n'),
         (Steps.ask_damage, '', 'Claimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\n'),
         (Steps.customer_states, 'bad damage', 'Customer States: Bad damage\n\nRoutine Checks:\n'),
-        (Steps.check_liquid_damage, 'y', '! Found signs of liquid residue\n'),
-        (Steps.liquid_check_corrosion, '', '** No signs of liquid damage on the main board or connections\n'),
-        (Steps.liquid_check_bin, '', '** No liquid residue found in customer bin\n'),
-        (Steps.liquid_take_pictures, '', ''),
         (Steps.ask_sunken_contacts, '', '* Contacts don\'t feel sunken\n'),
+        (Steps.check_liquid_damage, 'y', '! Found signs of liquid residue\n'),
+        (Steps.liquid_check_corrosion, '', '*** No signs of liquid damage on the main board or connections\n'),
+        (Steps.liquid_check_bin, '', '*** No liquid residue found in customer bin\n'),
+        (Steps.liquid_take_pictures, '', ''),
     ],
     ["Sunken contacts, actually good",
         (Steps.confirm_id, 'j9j9', '{ref}\n'),
@@ -162,12 +169,12 @@ cumulative_routes = [
         (Steps.ask_dock, '', 'Parts in: Robot\n'),
         (Steps.ask_damage, '', 'Claimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\n'),
         (Steps.customer_states, 'bad damage', 'Customer States: Bad damage\n\nRoutine Checks:\n'),
-        (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_sunken_contacts, 'y', ''),
         (Steps.sunken_ask_side, 'r', ''),
         # Should only accept floats
         (Steps.sunken_ask_measurement, 'j', ''),
         (Steps.sunken_ask_measurement, '3.8', '* Measured right contact: 3.8mm +/- .1\n'),
+        (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_blower_play, '', "* No play in blower motor\n"),
     ],
     ["TODO: Sunken contacts, bad",
@@ -178,13 +185,13 @@ cumulative_routes = [
         (Steps.ask_dock, '', 'Parts in: Robot\n'),
         (Steps.ask_damage, '', 'Claimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\n'),
         (Steps.customer_states, 'bad damage', 'Customer States: Bad damage\n\nRoutine Checks:\n'),
-        (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_sunken_contacts, 'y', ''),
         (Steps.sunken_ask_side, 'L', ''),
         # Should only accept floats
         (Steps.sunken_ask_measurement, '', ''),
         # TODO: swap robot is unfinished
         (Steps.sunken_ask_measurement, '3.79', ''),
+        (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_blower_play, '', "* No play in blower motor\n"),
     ],
     ["Blower works",
@@ -195,8 +202,8 @@ cumulative_routes = [
         (Steps.ask_dock, '', 'Parts in: Robot\n'),
         (Steps.ask_damage, '', 'Claimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\n'),
         (Steps.customer_states, 'bad damage', 'Customer States: Bad damage\n\nRoutine Checks:\n'),
-        (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_sunken_contacts, '', '* Contacts don\'t feel sunken\n'),
+        (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_blower_play, 'y', "! Found play in the blower motor\n"),
         (Steps.ask_rollers, '', ""),
     ],
@@ -208,8 +215,8 @@ cumulative_routes = [
         (Steps.ask_dock, '', 'Parts in: Robot\n'),
         (Steps.ask_damage, '', 'Claimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\n'),
         (Steps.customer_states, 'bad damage', 'Customer States: Bad damage\n\nRoutine Checks:\n'),
-        (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_sunken_contacts, '', '* Contacts don\'t feel sunken\n'),
+        (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_blower_play, '', "* No play in blower motor\n"),
         (Steps.ask_rollers, 'n', "! Extractors are bad\n"),
         (Steps.ask_cleaned, '', "* Cleaned robot\n"),
@@ -222,8 +229,8 @@ cumulative_routes = [
         (Steps.ask_dock, '', 'Parts in: Robot\n'),
         (Steps.ask_damage, '', 'Claimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\n'),
         (Steps.customer_states, 'bad damage', 'Customer States: Bad damage\n\nRoutine Checks:\n'),
-        (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_sunken_contacts, '', '* Contacts don\'t feel sunken\n'),
+        (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_blower_play, '', "* No play in blower motor\n"),
         (Steps.ask_rollers, '', ""),
         (Steps.ask_cleaned, 'na', ""),
@@ -237,8 +244,8 @@ cumulative_routes = [
         (Steps.ask_dock, '', 'Parts in: Robot\n'),
         (Steps.ask_damage, '', 'Claimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\n'),
         (Steps.customer_states, 'bad damage', 'Customer States: Bad damage\n\nRoutine Checks:\n'),
-        (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_sunken_contacts, '', '* Contacts don\'t feel sunken\n'),
+        (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_blower_play, '', "* No play in blower motor\n"),
         (Steps.ask_rollers, '', ""),
         (Steps.ask_cleaned, 'there was stuff in the thing', "* Cleaned robot - there was stuff in the thing\n"),
@@ -252,12 +259,12 @@ cumulative_routes = [
         (Steps.ask_dock, '', 'Parts in: Robot\n'),
         (Steps.ask_damage, '', 'Claimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\n'),
         (Steps.customer_states, 'bad damage', 'Customer States: Bad damage\n\nRoutine Checks:\n'),
-        (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_sunken_contacts, '', '* Contacts don\'t feel sunken\n'),
+        (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_blower_play, '', "* No play in blower motor\n"),
         (Steps.ask_rollers, '', ""),
         (Steps.ask_cleaned, '', "* Cleaned robot\n"),
-        (Steps.ask_charge_test_dock, '2.8', "* Robot charges on test base @ ~32W\n"),
+        (Steps.ask_charge_test_dock, '32', "* Robot charges on test base @ ~32W\n"),
         (Steps.add_step, '', ""),
         (Steps.add_step, 'did stuff', "\nProcess:\n* Did stuff\n"),
     ],
@@ -275,9 +282,10 @@ async def test_cumulative_routes():
             print('Testing:', test)
             for prompt, step, supposed_new_notes in route:
                 running_notes += supposed_new_notes.format(ref=ref)
-                assert app.active_case.step == app.active_case.input.placeholder == prompt, test
+                label = f'{test} - {prompt}: {step}'
+                assert app.active_case.step == app.active_case.input.placeholder == prompt, label
                 await pilot.press(*step, 'enter')
-                assert app.active_case.text_area.text == running_notes, test
+                assert app.active_case.text_area.text == running_notes, label
 
 
 async def test_copy_ref_step():
