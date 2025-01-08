@@ -86,12 +86,12 @@ def execute_step(self, resp):
         match self.step:
             case Steps.ask_sunken_contacts:
                 if resp.lower() == 'na':
-                    self.step = Steps.check_liquid_damage
+                    self.step = Steps.check_liquid_damage if not self.is_mopper else Steps.ask_blower_play
                 elif resp:
                     self.step = Steps.sunken_ask_side
                 else:
                     self.add_step('Contacts don\'t feel sunken')
-                    self.step = Steps.check_liquid_damage
+                    self.step = Steps.check_liquid_damage if not self.is_mopper else Steps.ask_blower_play
 
             case Steps.check_liquid_damage:
                 if resp.lower() == 'na':
@@ -109,11 +109,6 @@ def execute_step(self, resp):
                         self.add_step('Found play in the blower motor', bullet='!')
                     else:
                         self.add_step('No play in blower motor')
-                self.step = Steps.ask_rollers
-
-            case Steps.ask_rollers:
-                if resp and resp.lower() != 'na':
-                    self.add_step('Extractors are bad', bullet='!')
 
                 if self.serial.lower().startswith('c'):
                     self.step = Steps.ask_bin_rust
@@ -121,10 +116,16 @@ def execute_step(self, resp):
                     next_step = 'cleaning/lid pins'
 
             case Steps.ask_bin_rust:
-                if resp:
-                    self.add_step('Tank float screw has rust on it', bullet='!')
-                else:
+                if not resp:
                     self.add_step('Tank float screw has no signs of rust')
+                else:
+                    match resp.strip():
+                        case '1':
+                            self.add_step('Tank float screw has a spot of rust on it', bullet='!')
+                        case '2':
+                            self.add_step('Tank float screw is entirely rusted', bullet='!')
+                        case _:
+                            return
 
                 next_step = 'cleaning/lid pins'
 
@@ -137,6 +138,12 @@ def execute_step(self, resp):
             case Steps.ask_cleaned:
                 if resp.lower() != 'na':
                     self.add_step('Cleaned robot' + ((' - ' + resp) if resp else ''))
+
+                self.step = Steps.ask_rollers
+
+            case Steps.ask_rollers:
+                if resp and resp.lower() != 'na':
+                    self.add_step('Extractors are bad', bullet='!')
 
                 if self.dock:
                     self.step = Steps.ask_user_base_contacts

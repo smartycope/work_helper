@@ -1,4 +1,4 @@
-
+import json
 import random
 from pathlib import Path
 
@@ -8,6 +8,7 @@ from textual.widgets import *
 from Phase import Phase
 from Case import Case
 from globals import COLORS
+from clipboard import copy, paste
 
 
 class HelperApp(App):
@@ -16,6 +17,8 @@ class HelperApp(App):
         ("ctrl+f", "close_case", "Close Case"),
         ("s,ctrl+s", "save", "Save"),
         ("__", "remove_double_lines", "Remove Double Lines"),
+        ('_c', 'copy_all_cases', 'Copy Cases'),
+        ('_v', 'add_cases_from_clipboard', 'Paste Cases'),
         # Binding('ctrl+tab', 'next_tab', 'Next Tab', show=True, priority=True),
         # Binding('ctrl+shift+tab', 'prev_tab', 'Previous Tab', show=True, priority=True),
     ]
@@ -97,6 +100,12 @@ class HelperApp(App):
             self.cases.remove(self.active_case)
             self.tabs.remove_tab(active_tab.id)
 
+    def action_copy_all_cases(self):
+        copy(self.serialize())
+
+    def action_add_cases_from_clipboard(self):
+        self.deserialize(paste())
+
     # def next_tab(self):
     #     # print('next tab called')
     #     # print(f'active case:', self.active_case.ref)
@@ -110,6 +119,21 @@ class HelperApp(App):
     #     idx = self.cases.index(self.active_case)
     #     prev = self.cases[idx-1]
     #     self.tabs.active = f'pane-{prev.color}'
+
+    def serialize(self):
+        return json.dumps([case.serialize() for case in self.cases])
+
+    def deserialize(self, string, clear=False):
+        """ If clear == True, it clears all the current cases before adding the new ones """
+        # try:
+        self.cases = [Case.deserialize(case) for case in json.loads(string)]
+        # except: return
+
+        if clear:
+            self.clear_panes()
+
+        for case in self.cases:
+            self.tabs.add_pane(TabPane(case.ref, case))
 
     def action_save(self):
         for case in self.cases:

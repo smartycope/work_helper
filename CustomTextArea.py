@@ -14,6 +14,8 @@ class CustomTextArea(TextArea):
         Binding("right,alt+;", "cursor_right", "Cursor right", show=False),
         Binding("ctrl+left,ctrl+alt+j", "cursor_word_left", "Cursor word left", show=False),
         Binding("ctrl+right,ctrl+alt+;", "cursor_word_right", "Cursor word right", show=False),
+        Binding("ctrl+home,ctrl+alt+h,shift+home","cursor_document_start","Cursor beginning",show=False),
+        Binding("ctrl+end,ctrl+alt+',shift+end", "cursor_document_end", "Cursor end", show=False),
         Binding("home,alt+h","cursor_line_start","Cursor line start",show=False),
         Binding("end,alt+'", "cursor_line_end", "Cursor line end", show=False),
         Binding("pageup", "cursor_page_up", "Cursor page up", show=False),
@@ -38,8 +40,8 @@ class CustomTextArea(TextArea):
         Binding("ctrl+y,ctrl+shift+z", "redo", "Redo", show=False),
         Binding('ctrl+a', 'select_all', 'Select All', show=False),
         Binding('esc', 'blur', 'Unfocus', show=False),
-        Binding("ctrl+backspace", "delete_word_left", "Delete left to start of word", show=False),
-        Binding("delete,shift+backspace", "delete_right", "Delete character right", show=False),
+        Binding("shift+backspace,ctrl+backspace", "delete_word_left", "Delete left to start of word", show=False),
+        Binding("delete", "delete_right", "Delete character right", show=False),
         Binding("ctrl+delete,ctrl+shift+backspace", "delete_word_right", "Delete right to start of word", show=False),
     ]
 
@@ -47,7 +49,14 @@ class CustomTextArea(TextArea):
         super().__init__(ref + '\n', id='textarea_' + ref)
         self.cursor_blink = False
 
+    def cursor_document_start(self):
+        self.move_cursor((0, 0), select=False)
+
+    def cursor_document_end(self):
+        self.move_cursor(self.document.end, select=False)
+
     def on_text_area_changed(self, event):
+        return
         # Always keep a single newline at the end of notes
         # Only run if there's multiple newlines at the end of the text (otherwise, infinte recursion)
         if re.match(r'(?:(?:.|\n))+(?:\s){2}\Z', self.text):

@@ -17,6 +17,7 @@ class Sidebar(VerticalGroup):
         super().__init__(classes='sidebar', id='sidebar-' + case.ref)
         self.case = case
         self.styles.background = self.case.color
+        self.todo = TextArea(id='todo-textarea')
 
     def watch_serial(self, *args):
         if self.serial:
@@ -76,8 +77,7 @@ class Sidebar(VerticalGroup):
 
         with VerticalGroup(id='lower-sidebar'):
             yield Label('TODO:')
-            ta = TextArea(id='todo-textarea')
-            yield ta
+            yield self.todo
             yield Label('')
 
             self.serial_label = Label(' '*(SIDEBAR_WIDTH-COPY_SERIAL_BUTTON_WIDTH), id=f'serial-label-{self.case.ref}')

@@ -85,7 +85,7 @@ class Case(VerticalGroup):
                         self.ensure_serial(Steps.add_step)
                     # TODO
                     case Phase.FINISH:
-                        self.ensure_serial(Steps.todo)
+                        self.ensure_serial(Steps.ask_mobility)
 
     def ensure_serial(self, next_step):
         """ If we don't have a serial number, ask for one manually, then go back to what we were
@@ -96,7 +96,24 @@ class Case(VerticalGroup):
         else:
             self.step = next_step
 
-    # The main algorithm is here
+    def serialize(self):
+        return {
+            'notes': self.text_area.text,
+            'color': self.color,
+            'ref': self.ref,
+            'serial': self.serial,
+            'todo': self.sidebar.todo.text
+        }
+
+    @staticmethod
+    def deserialize(data):
+        case = Case(data.get('ref', ''), data.get('color', ''))
+        case.text_area.text = data.get('notes', '')
+        case.serial = data.get('serial', '')
+        case.sidebar.todo.text = data.get('todo', '')
+        return case
+
+
     def on_input_submitted(self, event):
         if event.input.id == f'input_{self.ref}':
             self._execute_step(event.value)
@@ -161,3 +178,7 @@ class Case(VerticalGroup):
         if self.serial.startswith('j'):
             return 'If the last digit of the SPL SKU is 7, they have a Lapis bin at home! If the middle number is 1, it came with just a home base. In that case, don\'t test on a dock! Just a base.'
         return ''
+
+    @property
+    def is_mopper(self):
+        return self.serial.startswith(('m', 'c'))

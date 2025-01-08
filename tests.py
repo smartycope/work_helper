@@ -97,8 +97,8 @@ cumulative_routes = [
         (Steps.ask_sunken_contacts, '', '* Contacts don\'t feel sunken\n'),
         (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_blower_play, '', "* No play in blower motor\n"),
-        (Steps.ask_rollers, '', ""),
         (Steps.ask_cleaned, '', "* Cleaned robot\n"),
+        (Steps.ask_rollers, '', ""),
         (Steps.ask_charge_test_dock, '32', "* Robot charges on test base @ ~32W\n"),
         (Steps.add_step, '', ""),
         (Steps.add_step, 'did stuff', "\nProcess:\n* Did stuff\n"),
@@ -119,8 +119,8 @@ cumulative_routes = [
         (Steps.ask_sunken_contacts, '', '* Contacts don\'t feel sunken\n'),
         (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_blower_play, '', "* No play in blower motor\n"),
-        (Steps.ask_rollers, '', ""),
         (Steps.ask_cleaned, '', "* Cleaned robot\n"),
+        (Steps.ask_rollers, '', ""),
         (Steps.ask_user_base_contacts, '', "* Charging contacts on the customer's Zhuhai look good\n"),
         (Steps.ask_charge_customer_dock, '32', "* Robot charges on customer Zhuhai @ ~32W\n"),
         (Steps.add_step, 'did stuff', "\nProcess:\n* Did stuff\n"),
@@ -205,6 +205,7 @@ cumulative_routes = [
         (Steps.ask_sunken_contacts, '', '* Contacts don\'t feel sunken\n'),
         (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_blower_play, 'y', "! Found play in the blower motor\n"),
+        (Steps.ask_cleaned, '', "* Cleaned robot\n"),
         (Steps.ask_rollers, '', ""),
     ],
     ["Rollers works",
@@ -218,8 +219,8 @@ cumulative_routes = [
         (Steps.ask_sunken_contacts, '', '* Contacts don\'t feel sunken\n'),
         (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_blower_play, '', "* No play in blower motor\n"),
-        (Steps.ask_rollers, 'n', "! Extractors are bad\n"),
         (Steps.ask_cleaned, '', "* Cleaned robot\n"),
+        (Steps.ask_rollers, 'n', "! Extractors are bad\n"),
     ],
     ["Cleaning na",
         (Steps.confirm_id, 'j9j9', '{ref}\n'),
@@ -232,8 +233,8 @@ cumulative_routes = [
         (Steps.ask_sunken_contacts, '', '* Contacts don\'t feel sunken\n'),
         (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_blower_play, '', "* No play in blower motor\n"),
-        (Steps.ask_rollers, '', ""),
         (Steps.ask_cleaned, 'na', ""),
+        (Steps.ask_rollers, '', ""),
         (Steps.ask_charge_test_dock, '32', "* Robot charges on test base @ ~32W\n"),
     ],
     ["Cleaning adds notes",
@@ -247,8 +248,8 @@ cumulative_routes = [
         (Steps.ask_sunken_contacts, '', '* Contacts don\'t feel sunken\n'),
         (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_blower_play, '', "* No play in blower motor\n"),
-        (Steps.ask_rollers, '', ""),
         (Steps.ask_cleaned, 'there was stuff in the thing', "* Cleaned robot - there was stuff in the thing\n"),
+        (Steps.ask_rollers, '', ""),
         (Steps.ask_charge_test_dock, '32', "* Robot charges on test base @ ~32W\n"),
     ],
     ["doesn't charge",
@@ -262,8 +263,8 @@ cumulative_routes = [
         (Steps.ask_sunken_contacts, '', '* Contacts don\'t feel sunken\n'),
         (Steps.check_liquid_damage, '', '* No signs of liquid damage\n'),
         (Steps.ask_blower_play, '', "* No play in blower motor\n"),
-        (Steps.ask_rollers, '', ""),
         (Steps.ask_cleaned, '', "* Cleaned robot\n"),
+        (Steps.ask_rollers, '', ""),
         (Steps.ask_charge_test_dock, '32', "* Robot charges on test base @ ~32W\n"),
         (Steps.add_step, '', ""),
         (Steps.add_step, 'did stuff', "\nProcess:\n* Did stuff\n"),
@@ -283,9 +284,9 @@ async def test_cumulative_routes():
             for prompt, step, supposed_new_notes in route:
                 running_notes += supposed_new_notes.format(ref=ref)
                 label = f'{test} - {prompt}: {step}'
-                assert app.active_case.step == app.active_case.input.placeholder == prompt, label
+                assert app.active_case.step == app.active_case.input.placeholder == prompt, label + ' (input box prompt test)'
                 await pilot.press(*step, 'enter')
-                assert app.active_case.text_area.text == running_notes, label
+                assert app.active_case.text_area.text == running_notes, label + ' (case text test)'
 
 
 async def test_copy_ref_step():

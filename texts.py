@@ -19,7 +19,7 @@ class Steps:
     ask_user_base_contacts = 'Are the charging contacts on the user base good [yes]'
     ask_charge_customer_dock = "What's the charging wattage on the customer's dock"
     ask_charge_test_dock = "What's the charging wattage on a test base"
-    ask_bin_rust = "Is there rust on the screw in the tank [no]"
+    ask_bin_rust = "Amount of rust on the tank screw [empty: none, 1: a spot, 2: entirely]"
 
     liquid_check_corrosion = 'Is there corrosion on the board or connections (specify or empty for no)'
     liquid_check_dock = 'Is there liquid residue in the user dock [no]'
@@ -30,3 +30,22 @@ class Steps:
     sunken_ask_measurement = 'Contact measurement'
 
     add_step = 'Add Step'
+
+    # TODO:
+    ask_mobility = 'Mobility test [done]'
+    ask_DCT = 'DCT [done]'
+    ask_BBK = 'BBK [done]'
+    ask_BBK = 'Battery test [done]'
+    ask_emptied_tank = 'Have you emptied the tank [done]'
+    ask_emptied_dock = 'Have you emptied the dock [done]'
+    ask_dock_has_bag = 'Does the dock have a bag [done]'
+    ask_put_bin_back = 'Have you put the bin back [done]'
+    ask_final_cleaned = 'Cleaned the robot [done]'
+    ask_base_cleaned = 'Cleaned the base [done]'
+    ask_shipping_mode = 'Placed into shipping mode [done]'
+    ask_complete_case_CSS = 'Finish the case on CSS [done]'
+    # double check
+    # all done (then closes case)
+    # close out all parts and get out of case
+    # swap serial number for new bot is entered
+    # sidebrush is on

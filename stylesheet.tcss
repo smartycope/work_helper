@@ -31,7 +31,7 @@
 }
 
 #todo-textarea{
-    min-height: 4;
+    min-height: 6;
 }
 
 #copy-serial-button{
