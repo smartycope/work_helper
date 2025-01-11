@@ -21,7 +21,8 @@ class Sidebar(VerticalGroup):
 
     def watch_serial(self, *args):
         if self.serial:
-            self.model.update(f'{{:^{SIDEBAR_WIDTH}}}'.format(self.case.get_quick_model() + '\n'))
+            self.ref_model.update(f'{self.case.ref+" • "+self.case.get_quick_model():^{SIDEBAR_WIDTH}}\n')
+            # self.model.update(f'{{:^{SIDEBAR_WIDTH}}}'.format(self.case.get_quick_model() + '\n'))
             self.sleep_mode.update(textwrap.fill(sleep_mode.get(self.serial[0], 'Unknown'), SIDEBAR_WIDTH) + '\n')
             self.factory_reset.update(textwrap.fill(factory_reset.get(self.serial[0], 'Unknown'), SIDEBAR_WIDTH) + '\n')
             self.dct.update(f'{{:^{SIDEBAR_WIDTH}}}'.format(textwrap.fill(self.case.get_DCT(), SIDEBAR_WIDTH)) + '\n')
@@ -47,7 +48,8 @@ class Sidebar(VerticalGroup):
         self.color_switcher.can_focus = False
         yield self.color_switcher
 
-        yield Label(f'{self.case.ref:^{SIDEBAR_WIDTH}}\n', id=f'ref-label-{self.case.ref}')
+        self.ref_model = Label(f'{self.case.ref:^{SIDEBAR_WIDTH}}\n', id=f'ref-label-{self.case.ref}')
+        yield self.ref_model
         with HorizontalGroup():
             # yield Label(f'{"Phase":^{SIDEBAR_WIDTH}}\n')
             yield Label("\nPhase: ")
@@ -55,9 +57,9 @@ class Sidebar(VerticalGroup):
             s.can_focus = False
             yield s
         yield Label('\n')
-        yield Label(f'{" Model ":-^{SIDEBAR_WIDTH}}')
-        self.model = Label('', id=f'model-label-{self.case.ref}')
-        yield self.model
+        # yield Label(f'{" Model ":-^{SIDEBAR_WIDTH}}')
+        # self.model = Label('', id=f'model-label-{self.case.ref}')
+        # yield self.model
         yield Label(f'{" Sleep Mode ":-^{SIDEBAR_WIDTH}}')
         self.sleep_mode = Label('', id=f'sleep-mode-label-{self.case.ref}')
         yield self.sleep_mode

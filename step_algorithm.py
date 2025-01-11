@@ -79,7 +79,7 @@ def execute_step(self, resp):
                 if resp:
                     self.customer_states = resp[0].upper() + resp[1:]
                     self.text_area.text += 'Customer States: ' + self.customer_states + '\n\nRoutine Checks:\n'
-                    self.step = Steps.ask_sunken_contacts
+                    # self.step = Steps.ask_sunken_contacts
                     self.phase = Phase.ROUTINE_CHECKS
 
     elif self.phase == Phase.ROUTINE_CHECKS:
@@ -110,7 +110,7 @@ def execute_step(self, resp):
                     else:
                         self.add_step('No play in blower motor')
 
-                if self.serial.lower().startswith('c'):
+                if self.is_combo:
                     self.step = Steps.ask_bin_rust
                 else:
                     next_step = 'cleaning/lid pins'
@@ -216,11 +216,11 @@ def execute_step(self, resp):
             # TODO connect to finish phase
             case Steps.liquid_take_pictures:
                 if self._liquid_swap:
-                    self.add_step('Diagnosis: Liquid damage', bullet='-')
+                    self.add_step('Diagnosis: Liquid damage')
                     self.add_step('Swap robot')
                     # self.phase = Phase.FINISH
                     self.step = Steps.add_step
-                    self.phase = Phase.DEBUGGING
+                    self.phase = Phase.SWAP
                 else:
                     # If there's liquid residue, but not on the main board, proceed
                     self.step = Steps.ask_sunken_contacts
@@ -253,11 +253,67 @@ def execute_step(self, resp):
             case Steps.add_step:
                 if resp:
                     if 'Process:' not in self.text_area.text:
-                        self.text_area.text += '\nProcess:\n'
+                        self.text_area.text = self.text_area.text.strip() + '\n\nProcess:\n'
                     self.add_step(resp[0].upper() + resp[1:])
 
-    # TODO
     elif self.phase == Phase.FINISH:
+        match self.step:
+            case Steps.ask_final_cleaned:
+                self.step = Steps.ask_base_cleaned if self.dock else Steps.ask_emptied_bin
+
+            case Steps.ask_base_cleaned:
+                self.step = Steps.ask_dock_has_bag if self.is_dock else Steps.ask_emptied_bin
+
+            case Steps.ask_dock_has_bag:
+                self.step = Steps.ask_emptied_dock if dock.lower() in ('aurora', 'boulder') else Steps.ask_emptied_bin
+
+            case Steps.ask_emptied_dock:
+                self.step = Steps.ask_emptied_bin
+
+            case Steps.ask_emptied_bin:
+                self.step = Steps.ask_emptied_tank if self.is_mopper else Steps.ask_sidebrush
+
+            case Steps.ask_emptied_tank:
+                self.step = Steps.ask_has_pad
+
+            case Steps.ask_has_pad:
+                self.step = Steps.ask_sidebrush
+
+            case Steps.ask_sidebrush:
+                self.step = Steps.ask_tight_screws
+
+            case Steps.ask_tight_screws:
+                self.step = Steps.ask_debug_cover
+
+            case Steps.ask_debug_cover:
+                self.step = Steps.ask_double_check
+
+            case Steps.ask_double_check:
+                self.step = Steps.ask_shipping_mode
+
+            case Steps.ask_shipping_mode:
+                self.step = Steps.ask_close_parts
+
+            case Steps.ask_close_parts:
+                self.step = Steps.ask_tags_off
+
+            case Steps.ask_tags_off:
+                self.step = Steps.ask_put_bin_back
+
+            case Steps.ask_put_bin_back:
+                self.step = Steps.ask_complete_case_CSS
+
+            case Steps.ask_complete_case_CSS:
+                self.step = Steps.ask_put_bot_on_shelf
+
+            case Steps.ask_put_bot_on_shelf:
+                self.step = Steps.finish_case
+
+            case Steps.finish_case:
+                pass
+                # self.parent().parent().parent().action_close_case()
+
+    elif self.phase == Phase.SWAP:
         match self.step:
             case _:
                 pass
@@ -265,7 +321,7 @@ def execute_step(self, resp):
     # To simplify repeated next step logic
     match next_step:
         case 'battery_test/charging':
-            if 'charg' in self.customer_states.lower() and self.dock:
+            if ('charg' in self.customer_states.lower() or 'batt' in self.customer_states.lower()) and self.dock:
                 self.step = Steps.battery_test
             else:
                 self.step = Steps.ask_charge_customer_dock if self.dock else Steps.ask_charge_test_dock

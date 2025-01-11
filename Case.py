@@ -14,6 +14,13 @@ class Case(VerticalGroup):
     step = reactive(Steps.confirm_id)
     phase = reactive(Phase.CONFIRM)
 
+    # The step that gets switched to when switched to that phase (the first step of each phase)
+    first_steps ={
+        Phase.ROUTINE_CHECKS: Steps.ask_sunken_contacts,
+        Phase.DEBUGGING: Steps.add_step,
+        Phase.FINISH: Steps.ask_final_cleaned,
+    }
+
     def __init__(self, id, color):
         # If the id has spaces, this will raise an error that gets caught by when we instantiate it
         super().__init__(id=f'case-{id}')
@@ -78,14 +85,10 @@ class Case(VerticalGroup):
                 self.phase = Phase(event.value)
                 match self.phase:
                     case Phase.CONFIRM:
+                        # At first, we want to confirm ids, not just get the model number
                         self.step = Steps.confirm_id if not self.serial else Steps.check_repeat
-                    case Phase.ROUTINE_CHECKS:
-                        self.ensure_serial(Steps.ask_sunken_contacts)
-                    case Phase.DEBUGGING:
-                        self.ensure_serial(Steps.add_step)
-                    # TODO
-                    case Phase.FINISH:
-                        self.ensure_serial(Steps.ask_mobility)
+                    case _:
+                        self.ensure_serial(self.first_steps[self.phase])
 
     def ensure_serial(self, next_step):
         """ If we don't have a serial number, ask for one manually, then go back to what we were
@@ -112,7 +115,6 @@ class Case(VerticalGroup):
         case.serial = data.get('serial', '')
         case.sidebar.todo.text = data.get('todo', '')
         return case
-
 
     def on_input_submitted(self, event):
         if event.input.id == f'input_{self.ref}':
@@ -182,3 +184,11 @@ class Case(VerticalGroup):
     @property
     def is_mopper(self):
         return self.serial.startswith(('m', 'c'))
+
+    @property
+    def is_dock(self):
+        return self.dock.lower() not in ('Bombay', 'San Marino', 'Torino')
+
+    @property
+    def is_combo(self):
+        return self.serial.lower().startswith('c')

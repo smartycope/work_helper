@@ -387,4 +387,46 @@ tests for combos vs non-combos
 
 tests for seralizing/deserializing
 
-save serialzed state to a file in action_save()
+save serialzed state to a file in action_save()`212qw
+
+serialization should include the current phase
+
+make swapping a phase
+
+unuse any parts before sending swap email!
+
+add a warning or something if characters exceed 4000
+
+when adding process, it should strip the text first
+
+if FW >= v24.29.5 on C9 (and C7?), DCT exception: can't run at all
+
+add a double check phase, after finish, that regexes everything. Include:
+factory reset
+swap
+dct
+
+if "charg" OR "batt" are in the customer states, then check the battery (but allow na)
+
+See if bot charges on customer dock BEFORE battery test (if both applicable)
+
+
+i4 factory reset is wrong: hold down home, spot AND clean
+
+i series: if having weird trouble with DCT, try factory reset
+
+add a step in confirm phase to put labels on everything, I keep forgetting, and have it immediately before confirm IDs
+
+"Sunken contacts" -> "do the contacts feel sunken"
+
+which side (sunken) add "both"
+
+bad contact should go to swap phase, instead of finish phase
+
+make diagnosis back to - instead of *
+
+immediately after customer states, go to a new step: "update case failure code on CSS"
+
+disable blinking on TODO box
+
+If there's a bad contact, still check the battery if I need to

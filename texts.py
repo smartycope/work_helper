@@ -32,20 +32,27 @@ class Steps:
     add_step = 'Add Step'
 
     # TODO:
-    ask_mobility = 'Mobility test [done]'
-    ask_DCT = 'DCT [done]'
-    ask_BBK = 'BBK [done]'
-    ask_BBK = 'Battery test [done]'
-    ask_emptied_tank = 'Have you emptied the tank [done]'
-    ask_emptied_dock = 'Have you emptied the dock [done]'
-    ask_dock_has_bag = 'Does the dock have a bag [done]'
-    ask_put_bin_back = 'Have you put the bin back [done]'
+    # ask_mobility = 'Mobility test [done]'
+    # ask_DCT = 'DCT [done]'
+    # ask_BBK = 'BBK [done]'
+    # ask_BBK = 'Battery test [done]'
     ask_final_cleaned = 'Cleaned the robot [done]'
     ask_base_cleaned = 'Cleaned the base [done]'
+    ask_dock_has_bag = 'Does the dock have a bag [done]'
+    ask_emptied_dock = 'Dock tank is emptied [done]'
+    ask_emptied_bin = 'Bin is cleaned out [done]'
+    ask_emptied_tank = 'Tank is emptied [done]'
+    # ask_swap_serial = 'The swap serial number for new bot is entered [done]'
+    ask_sidebrush = 'The bot has a sidebrush on [done]'
+    ask_has_pad = "There's a pad on the bot [done]"
+    ask_tight_screws = "All screws are screwed in all the way [done]"
+    ask_debug_cover = 'The debug cover is in place [done]'
+    ask_double_check = "Have the case double checkd [good]"
     ask_shipping_mode = 'Placed into shipping mode [done]'
+    ask_close_parts = 'Close out all parts and get out of case [done]'
+    ask_tags_off = "All the tags are off, including the bin and dock [done]"
+    ask_put_bin_back = 'Put the bin back [done]'
     ask_complete_case_CSS = 'Finish the case on CSS [done]'
-    # double check
-    # all done (then closes case)
-    # close out all parts and get out of case
-    # swap serial number for new bot is entered
-    # sidebrush is on
+    ask_put_bot_on_shelf = 'Put the robot on the shelf [done]'
+    # finish_case = 'All done! [close case]'
+    finish_case = 'All done! Good to close case now'
