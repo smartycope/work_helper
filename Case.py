@@ -1,4 +1,3 @@
-
 from textual.containers import *
 from textual.reactive import reactive
 from textual.widgets import *
@@ -6,19 +5,25 @@ from Phase import Phase
 from texts import Steps
 from CustomTextArea import CustomTextArea
 from Sidebar import Sidebar
+from MobilityMenu import MobilityMenu
 
 
 class Case(VerticalGroup):
     from step_algorithm import execute_step as _execute_step
 
+    BINDINGS = (
+        ('ctrl+m', 'open_mobility_menu', 'Mobility'),
+    )
+
     step = reactive(Steps.confirm_id)
     phase = reactive(Phase.CONFIRM)
 
     # The step that gets switched to when switched to that phase (the first step of each phase)
-    first_steps ={
+    first_steps = {
         Phase.ROUTINE_CHECKS: Steps.ask_sunken_contacts,
         Phase.DEBUGGING: Steps.add_step,
         Phase.FINISH: Steps.ask_final_cleaned,
+        Phase.SWAP: Steps.swap_email,
     }
 
     def __init__(self, id, color):
@@ -42,6 +47,8 @@ class Case(VerticalGroup):
         self.input.cursor_blink = False
         self.sidebar = Sidebar(self)
 
+        self.mobility_menu = MobilityMenu(self)
+
         # This gets run on mount of the color selector
         # self.set_color(color)
 
@@ -55,6 +62,7 @@ class Case(VerticalGroup):
 
     def compose(self):
         yield self.text_area
+        yield self.mobility_menu
         yield self.input
         yield self.sidebar
 
@@ -86,9 +94,13 @@ class Case(VerticalGroup):
                 match self.phase:
                     case Phase.CONFIRM:
                         # At first, we want to confirm ids, not just get the model number
-                        self.step = Steps.confirm_id if not self.serial else Steps.check_repeat
+                        self.step = Steps.ask_labels if not self.serial else Steps.check_repeat
                     case _:
                         self.ensure_serial(self.first_steps[self.phase])
+
+    def action_open_mobility_menu(self):
+        # Only allow the mobility menu to be opened if we have information about the bot
+        self.mobility_menu.visible = bool(self.serial)
 
     def ensure_serial(self, next_step):
         """ If we don't have a serial number, ask for one manually, then go back to what we were
@@ -191,4 +203,7 @@ class Case(VerticalGroup):
 
     @property
     def is_combo(self):
-        return self.serial.lower().startswith('c')
+        if self.serial:
+            return self.serial.lower().startswith('c')
+        else:
+            return None

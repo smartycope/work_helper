@@ -38,3 +38,47 @@
     width: 25%;
     min-width: 30;
 }
+
+.mobility-menu{
+    layout: grid;
+    grid-size: 4;
+    width: 75%;
+
+    # grid-columns: auto 1fr 1fr;
+    # grid-rows: 25% 75%;
+#     # dock: center;
+    margin: 4;
+    grid-gutter: 0 1;
+    height: 100%;
+    padding: 2;
+    # background: #515151
+    layer: above;
+#     content-align: center middle;
+#     align: center middle;
+#     background: darkblue;
+}
+
+.double{
+    column-span: 2;
+}
+
+.triple{
+    column-span: 3;
+}
+
+.quadruple{
+    column-span: 4;
+}
+
+#num-lines{
+    max-width: 10;
+}
+
+.extend{
+    row-span: 2;
+}
+
+#mobility-title{
+    column-span: 4;
+    content-align: center middle;
+}

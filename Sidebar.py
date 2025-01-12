@@ -18,6 +18,7 @@ class Sidebar(VerticalGroup):
         self.case = case
         self.styles.background = self.case.color
         self.todo = TextArea(id='todo-textarea')
+        self.todo.cursor_blink = False
 
     def watch_serial(self, *args):
         if self.serial:

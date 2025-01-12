@@ -25,6 +25,9 @@ def execute_step(self, resp):
     if self.phase == Phase.CONFIRM:
         match self.step:
             # Main path
+            case Steps.ask_labels:
+                self.step = Steps.confirm_id
+
             case Steps.confirm_id:
                 # If we (somehow) already have the serial number, we don't need to confirm it
                 if self.serial:
@@ -79,8 +82,10 @@ def execute_step(self, resp):
                 if resp:
                     self.customer_states = resp[0].upper() + resp[1:]
                     self.text_area.text += 'Customer States: ' + self.customer_states + '\n\nRoutine Checks:\n'
-                    # self.step = Steps.ask_sunken_contacts
-                    self.phase = Phase.ROUTINE_CHECKS
+                    self.step = Steps.update_css_failure
+
+            case Steps.update_css_failure:
+                self.phase = Phase.ROUTINE_CHECKS
 
     elif self.phase == Phase.ROUTINE_CHECKS:
         match self.step:
@@ -315,6 +320,21 @@ def execute_step(self, resp):
 
     elif self.phase == Phase.SWAP:
         match self.step:
+            case Steps.swap_email:
+                self.step = Steps.swap_unuse_parts
+
+            case Steps.swap_unuse_parts:
+                self.step = Steps.swap_order
+
+            case Steps.swap_order:
+                self.step = Steps.swap_move_bin
+
+            case Steps.swap_move_bin:
+                self.step = Steps.swap_note_serial
+
+            case Steps.swap_note_serial:
+                self.phase = Phase.DEBUGGING
+
             case _:
                 pass
 

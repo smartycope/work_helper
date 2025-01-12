@@ -31,7 +31,7 @@ class CustomTextArea(TextArea):
         Binding("ctrl+l", "select_line", "Select line", show=False),
         Binding("backspace", "delete_left", "Delete character left", show=False),
         Binding("ctrl+x", "cut", "Cut", show=False),
-        Binding("ctrl+c", "copy", "Copy", show=True),
+        Binding("ctrl+c", "copy", "Copy", show=False),
         Binding("ctrl+v", "paste", "Paste", show=False),
         # Binding("ctrl+u", "delete_to_start_of_line", "Delete to line start", show=False),
         # Binding("ctrl+k", "delete_to_end_of_line_or_delete_line", "Delete to line end", show=False),

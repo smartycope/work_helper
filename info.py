@@ -23,7 +23,7 @@ sleep_mode = {
     'r': 'Add the plastic piece',
 }
 
-spot_and_clean = 'Hold down spot and clean together until the clean lights start to spin'
+spot_and_clean = 'Hold down all 3 buttons until the clean lights start to spin'
 remove_bin = 'Remove dust bin, then hold clean for 7 seconds until it beeps. Press clean again to confirm'
 factory_reset = {
     's': spot_and_clean,
