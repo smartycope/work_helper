@@ -1,4 +1,3 @@
-
 from clipboard import copy
 from textual.containers import *
 from textual.widgets import *
@@ -246,7 +245,7 @@ def execute_step(self, resp):
                 self.add_step(f'Measured {self._sunken_side} contact: {resp}mm +/- .1')
 
                 if measurement < 3.8:
-                    self.add_step(f'Diagnosis: Sunken {self._sunken_side} contact', bullet='-')
+                    self.add_step(f'Diagnosis: Sunken {self._sunken_side} contact')
                     self.add_step('Swap robot' + (f' and customer {self.dock}' if self.dock else ''))
                     self.step = Steps.add_step
                     self.phase = Phase.FINISH
@@ -270,7 +269,7 @@ def execute_step(self, resp):
                 self.step = Steps.ask_dock_has_bag if self.is_dock else Steps.ask_emptied_bin
 
             case Steps.ask_dock_has_bag:
-                self.step = Steps.ask_emptied_dock if dock.lower() in ('aurora', 'boulder') else Steps.ask_emptied_bin
+                self.step = Steps.ask_emptied_dock if self.dock.lower() in ('aurora', 'boulder') else Steps.ask_emptied_bin
 
             case Steps.ask_emptied_dock:
                 self.step = Steps.ask_emptied_bin
@@ -291,6 +290,13 @@ def execute_step(self, resp):
                 self.step = Steps.ask_debug_cover
 
             case Steps.ask_debug_cover:
+                self.step = Steps.generate_external_notes_1
+
+            case Steps.generate_external_notes_1:
+                self.external_notes_menu.visible = True
+                self.step = Steps.generate_external_notes_2
+
+            case Steps.generate_external_notes_2:
                 self.step = Steps.ask_double_check
 
             case Steps.ask_double_check:
@@ -320,16 +326,18 @@ def execute_step(self, resp):
 
     elif self.phase == Phase.SWAP:
         match self.step:
-            case Steps.swap_email:
-                self.step = Steps.swap_unuse_parts
-
             case Steps.swap_unuse_parts:
+                self.step = Steps.swap_email
+
+            case Steps.swap_email:
                 self.step = Steps.swap_order
 
             case Steps.swap_order:
                 self.step = Steps.swap_move_bin
 
             case Steps.swap_move_bin:
+                if resp:
+                    self.add_step('Moved bin to new robot')
                 self.step = Steps.swap_note_serial
 
             case Steps.swap_note_serial:

@@ -1,3 +1,5 @@
+from globals import COLORS
+import random
 from textual.containers import *
 from textual.reactive import reactive
 from textual.widgets import *
@@ -6,6 +8,7 @@ from texts import Steps
 from CustomTextArea import CustomTextArea
 from Sidebar import Sidebar
 from MobilityMenu import MobilityMenu
+from ExternalNotesMenu import ExternalNotesMenu
 
 
 class Case(VerticalGroup):
@@ -13,6 +16,7 @@ class Case(VerticalGroup):
 
     BINDINGS = (
         ('ctrl+m', 'open_mobility_menu', 'Mobility'),
+        ('ctrl+e', 'open_external_notes_menu', 'External notes'),
     )
 
     step = reactive(Steps.confirm_id)
@@ -23,7 +27,7 @@ class Case(VerticalGroup):
         Phase.ROUTINE_CHECKS: Steps.ask_sunken_contacts,
         Phase.DEBUGGING: Steps.add_step,
         Phase.FINISH: Steps.ask_final_cleaned,
-        Phase.SWAP: Steps.swap_email,
+        Phase.SWAP: Steps.swap_unuse_parts,
     }
 
     def __init__(self, id, color):
@@ -48,6 +52,7 @@ class Case(VerticalGroup):
         self.sidebar = Sidebar(self)
 
         self.mobility_menu = MobilityMenu(self)
+        self.external_notes_menu = ExternalNotesMenu(self)
 
         # This gets run on mount of the color selector
         # self.set_color(color)
@@ -78,7 +83,9 @@ class Case(VerticalGroup):
 
     def watch_phase(self, to):
         # No idea why I need to cast it to Phase here
-        self.query_one('#phase-select').value = Phase(to).value
+        # self.query_one('#phase-select').value = Phase(to).value
+        # self.sidebar.phase_selector.value = Phase(to).value
+        self.sidebar.phase_selector.value = Phase(to).value
 
     def add_step(self, step, bullet='*'):
         # For consistency
@@ -102,6 +109,10 @@ class Case(VerticalGroup):
         # Only allow the mobility menu to be opened if we have information about the bot
         self.mobility_menu.visible = bool(self.serial)
 
+    def action_open_external_notes_menu(self):
+        # self.external_notes_menu.visible = bool(self.serial)
+        self.external_notes_menu.visible = True
+
     def ensure_serial(self, next_step):
         """ If we don't have a serial number, ask for one manually, then go back to what we were
             doing. If we do have a serial number, just continue"""
@@ -117,15 +128,19 @@ class Case(VerticalGroup):
             'color': self.color,
             'ref': self.ref,
             'serial': self.serial,
-            'todo': self.sidebar.todo.text
+            'phase': self.phase.value,
+            'step': self.step,
+            'todo': self.sidebar.todo.text,
         }
 
     @staticmethod
     def deserialize(data):
-        case = Case(data.get('ref', ''), data.get('color', ''))
-        case.text_area.text = data.get('notes', '')
+        case = Case(data['ref'], data.get('color', random.choice(list(COLORS.keys()))))
+        case.text_area.text = data.get('notes', data['ref'] + '\n')
         case.serial = data.get('serial', '')
         case.sidebar.todo.text = data.get('todo', '')
+        case.phase = Phase(data.get('phase', Phase.DEBUGGING))
+        case.step = data.get('step', Steps.add_step)
         return case
 
     def on_input_submitted(self, event):

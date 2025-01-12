@@ -45,7 +45,7 @@ class Steps:
     swap_email = "Send swap email [confirmed]"
     swap_unuse_parts = "Unuse all parts [done]"
     swap_order = "Order swap [issued]"
-    swap_move_bin = "Move bin over, if necessary [done]"
+    swap_move_bin = "Move bin over, if necessary [not moved]"
     swap_note_serial = "Put the new (and old) serial number into CSS [done]"
 
     # FINISH
@@ -67,5 +67,7 @@ class Steps:
     ask_put_bin_back = "Put the bin back [done]"
     ask_complete_case_CSS = "Finish the case on CSS [done]"
     ask_put_bot_on_shelf = "Put the robot on the shelf [done]"
+    generate_external_notes_1 = "Create external notes [open menu]"
+    generate_external_notes_2 = "Copy external notes [done]"
     # finish_case = 'All done! [close case]'
     finish_case = "All done! Good to close case now"

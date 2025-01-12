@@ -149,7 +149,7 @@ class MobilityMenu(VerticalGroup):
         yield self.undock
 
         yield Label('Num Lines:')
-        self.num_lines = MaskedInput(template="9", id='num-lines', value='3', disabled=self.case.is_combo is False)
+        self.num_lines = MaskedInput(template="9", id='num-lines', disabled=self.case.is_combo is False)
         yield self.num_lines
 
         yield Label('Refill:')

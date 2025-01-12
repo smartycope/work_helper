@@ -233,37 +233,6 @@ remind to empty bin before shipping on combo modles
 # combine both steps into one section called "Process", and just stick a diagnosis in there somewhere
 
 
-# customer notes
-#*** Replaced Robot ***
-#Replaced robot with equivalent model.
-
-
-#*** Recommendations ***
-#Recommend regular cleaning and maintenance.
-
-#Recommend regular cleaning of dock charging contacts.
-
-#Recommend regular cleaning of the bin filter.
-
-
-#*** Parts ***
-#Recommend using only OEM replacement bags.
-
-
-#*** Shipping ***
-#Please place robot on dock to wake from shipping mode.
-
-#Remove yellow slip underneath robot once received to activate.
-
-#Factory reset performed, recommend re-provisioning robot on app.
-
-#J7's, if a swap (due to the client's dock might have outdated firmware):
-#Please provision robot to application.
-
-
-#*** MISC ***
-#We have upgraded your battery to a ____ mAh battery with higher capacity, you may notice a visible difference from your original battery, should you open the battery compartment.
-
 test dct exceptions
 Always keeping a single newline at the end of the text isn't working - test this
 test adding text manually
@@ -348,18 +317,7 @@ test adding 5 cases all at once
 
 add a way to change the serial number
 
-make the sidebar be 30% instead of 25%
-
-change close case to ctrl+W
-
 whenever i get to swap logic, check to see if the in stock SPL (refilter for all bots) is in stock, or if there's an upgrade available
-
-add a is_mopper property to Case
-
-I think maybe newline adder is getting too ambitious?
-
-Automatically scroll to the end of the text_area after adding a step
-
 
 I can auto remove lines if there's 3 newlines in a row
 
@@ -391,10 +349,6 @@ save serialzed state to a file in action_save()`212qw
 
 serialization should include the current phase
 
-make swapping a phase
-
-unuse any parts before sending swap email!
-
 add a warning or something if characters exceed 4000
 
 if FW >= v24.29.5 on C9 (and C7?), DCT exception: can't run at all
@@ -412,8 +366,6 @@ which side (sunken) add "both"
 
 bad contact should go to swap phase, instead of finish phase
 
-make diagnosis back to - instead of *
-
 immediately after customer states, go to a new step: "update case failure code on CSS"
 
 If there's a bad contact, still check the battery if I need to
@@ -421,3 +373,8 @@ If there's a bad contact, still check the battery if I need to
 disable tests based on serial number
 
 close case from input box
+
+BUG: when pasting cases, setting the phase from Case.deserialize doesn't work right
+
+BUG: in finish phase, if we've just copied the case in, it might have dock, but the case doesn't recognize it. Add regexing the case to see if we need to celan the dock and things
+- Actually, add regexing the case to manual serial number enter

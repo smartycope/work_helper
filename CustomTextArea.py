@@ -2,7 +2,8 @@ import re
 
 from textual.containers import *
 from textual.widgets import *
-
+from textual import on
+from textual.events import Focus
 
 class CustomTextArea(TextArea):
     # Modified from https://textual.textualize.io/widgets/text_area/#textual.widgets._text_area.TextArea.BINDINGS
@@ -53,6 +54,10 @@ class CustomTextArea(TextArea):
         self.move_cursor((0, 0), select=False)
 
     def cursor_document_end(self):
+        self.move_cursor(self.document.end, select=False)
+
+    @on(Focus)
+    def on_focus(self):
         self.move_cursor(self.document.end, select=False)
 
     def on_text_area_changed(self, event):

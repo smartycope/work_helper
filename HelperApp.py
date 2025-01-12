@@ -14,8 +14,9 @@ from clipboard import copy, paste
 class HelperApp(App):
     BINDINGS = [
         ("n,ctrl+n", "new_case", "New Case"),
-        ("ctrl+f", "close_case", "Close Case"),
+        ("ctrl+w", "close_case", "Close Case"),
         ("s,ctrl+s", "save", "Save"),
+        ('ctrl+e', 'open_external_notes_menu', 'External notes'),
         ("__", "remove_double_lines", "Remove Double Lines"),
         ('_c', 'copy_all_cases', 'Copy Cases'),
         ('_v', 'add_cases_from_clipboard', 'Paste Cases'),
@@ -58,6 +59,9 @@ class HelperApp(App):
             yield self.tabs
         yield self.popup
         yield Footer()
+
+    def action_open_external_notes_menu(self):
+        self.active_case.action_open_external_notes_menu()
 
     def on_input_submitted(self):
         # This should be the only way cases get deployed
@@ -127,7 +131,11 @@ class HelperApp(App):
         """ If clear == True, it clears all the current cases before adding the new ones """
         # try:
         self.cases = [Case.deserialize(case) for case in json.loads(string)]
-        # except: return
+        # except Exception as err:
+        #     if self._debug:
+        #         raise err
+        #     else:
+        #         return
 
         if clear:
             self.clear_panes()

@@ -8,6 +8,15 @@ from info import sleep_mode, factory_reset
 from Phase import Phase
 from globals import COLORS, SIDEBAR_WIDTH, COPY_SERIAL_BUTTON_WIDTH
 
+class TodoTextArea(TextArea):
+    BINDINGS = (
+        Binding('ctrl+a', 'select_all', 'Select All', show=False),
+    )
+
+    def __init__(self, *a, **kw):
+        super().__init__(*a, id='todo-textarea', **kw)
+        self.cursor_blink = False
+
 
 class Sidebar(VerticalGroup):
     serial = reactive('')
@@ -17,8 +26,9 @@ class Sidebar(VerticalGroup):
         super().__init__(classes='sidebar', id='sidebar-' + case.ref)
         self.case = case
         self.styles.background = self.case.color
-        self.todo = TextArea(id='todo-textarea')
-        self.todo.cursor_blink = False
+        self.todo = TodoTextArea()
+        self.phase_selector = Select([(i.name, i.value) for i in Phase], id='phase-select', allow_blank=False)
+        self.phase_selector.can_focus = False
 
     def watch_serial(self, *args):
         if self.serial:
@@ -54,9 +64,7 @@ class Sidebar(VerticalGroup):
         with HorizontalGroup():
             # yield Label(f'{"Phase":^{SIDEBAR_WIDTH}}\n')
             yield Label("\nPhase: ")
-            s = Select([(i.name, i.value) for i in Phase], id='phase-select', allow_blank=False)
-            s.can_focus = False
-            yield s
+            yield self.phase_selector
         yield Label('\n')
         # yield Label(f'{" Model ":-^{SIDEBAR_WIDTH}}')
         # self.model = Label('', id=f'model-label-{self.case.ref}')
