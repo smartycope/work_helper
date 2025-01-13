@@ -119,12 +119,26 @@ class TriSwitch(Switch):
 
 
 class MobilityMenu(VerticalGroup):
+    switches = (
+            'undock',
+            'base',
+            'navigate',
+            'rice',
+            'refill',
+            'auto_evac',
+            'manual_evac',
+            'deploy_pad',
+            # 'streaky',
+            # 'other_value',
+        )
+
     def __init__(self, case):
         super().__init__(classes='mobility-menu', id=f'mobility-menu-{case.ref}')
         self.visible = False
         self.case = case
 
     # def watch_visible(self):
+        # for
 
 
     def compose(self):
@@ -211,23 +225,19 @@ class MobilityMenu(VerticalGroup):
                 self.case.text_area.text = self.case.text_area.text.strip() + '\n\n' + self.stringify() + '\n\n'
 
     def stringify(self):
-        switches = (
-            'undock',
-            'base',
-            'navigate',
-            'rice',
-            'refill',
-            'auto_evac',
-            'manual_evac',
-            'deploy_pad',
-            # 'streaky',
-            # 'other_value',
-        )
-        has_pass = any(getattr(self, i).value for i in switches)
-        has_fail = any(getattr(self, i).value is False for i in switches)
+        has_pass = any(getattr(self, i).value for i in self.switches)
+        has_fail = any(getattr(self, i).value is False for i in self.switches)
+
+        lines_pass = None
+        if self.num_lines.value:
+            try:
+                lines = int(self.num_lines.value)
+                lines_pass = lines >= 2
+            except:
+                lines_pass = None
 
         # ...we didn't test anything?
-        if not has_pass and not has_fail:
+        if not has_pass and not has_fail and lines_pass is None:
             return
 
         l1 = "* Mobility test - {where}, {base}".format(
@@ -238,22 +248,33 @@ class MobilityMenu(VerticalGroup):
             l1 += ', ' + self.params.value
 
         l2 = "** "
-        if has_pass:
+        if has_pass or lines_pass is True:
             l2 += 'Pass: ' + ', '.join(
                 i.replace('_', ' ')
-                for i in switches
+                for i in self.switches
                 if getattr(self, i).value # and i != 'other_value'
             )
-        if has_fail:
+
+        if lines_pass:
             if has_pass:
+                l2 += ', '
+            l2 += '2 lines'
+
+        if has_fail or lines_pass is False:
+            if has_pass or lines_pass is True:
                 l2 += ' | '
             l2 += 'Fail: ' + ', '.join(
                 i.replace('_', ' ')
-                for i in switches
+                for i in self.switches
                 if getattr(self, i).value is False # and i != 'other_value'
             )
 
-        l3 = '** Result: ' + ("Fail" if has_fail else 'Pass')
+        if lines_pass is False:
+            if has_fail:
+                l2 += ', '
+            l2 += '2 lines'
+
+        l3 = '** Result: ' + ("Fail" if has_fail or lines_pass is False else 'Pass')
         if self.notes.value:
             l3 += ' - ' + self.notes.value
 

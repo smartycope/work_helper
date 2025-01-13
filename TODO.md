@@ -265,12 +265,9 @@ for sleep mode on C9, remove the "and press again to confirm"
 
 Tests for changing color
 
-on focus, the text area should always move the cursor to the very end
 add a "can close" variable to case
 
 remove the margins on the serial copy button
-
-URGENT: add a method to move cases to updated version ("copy all" and "paste all" buttons, I'm thinking) -- also, make it save when the cases do
 
 URGENT: add periodic saving
 
@@ -280,28 +277,15 @@ Add to notes that J9s, as well as C9s, can need hard reset to get DCT to work
 
 test not same ids
 
-URGENT: Move the model next to the case ref, and make the DCT card a single line
+URGENT:  make the DCT card a single line
 
 LOW PRIORITY: a find shortcut
-
-hide copy binding in text_area footer
-
-make sidebar 25% of the overall width, with a min width
 
 in the play in blower motor task, say in notes that it spins freely
 
 say explicitly that the extractors look good
 
-I need to be able to close cases partway through due to lack of parts
-
 LOW PRIORITY: Bold the 3 middle characters of the ref id?
-
-capitalize copied serial num
-
-Try adding shift+ctrl be delete word left
-
-make the ** -> ***
-
 
 make the add_step() method strip the text and then readd whitespace to ensure it's always correct
 
@@ -321,15 +305,13 @@ whenever i get to swap logic, check to see if the in stock SPL (refilter for all
 
 I can auto remove lines if there's 3 newlines in a row
 
-add some sort of input parsing for tank screw rust to indicate if there's a spot of rust, no rust, or lots of rust
-
 Low Priority: maaaybe try to auto generate and send the swap email
 
 Make note that if I can't get BBK to work, I can ask Michelle to look it up on RDP (as a double check final step)
 
 in mobility mission menu and is_mopping, as if tank is full
 
-reset mobility count after a swap
+# reset mobility count after a swap
 
 for contact measurements, add an option to take a number of them, then average and std them together
 
@@ -344,8 +326,6 @@ only c9's can refill
 tests for combos vs non-combos
 
 tests for seralizing/deserializing
-
-save serialzed state to a file in action_save()`212qw
 
 serialization should include the current phase
 

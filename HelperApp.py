@@ -13,13 +13,18 @@ from clipboard import copy, paste
 
 class HelperApp(App):
     BINDINGS = [
-        ("n,ctrl+n", "new_case", "New Case"),
-        ("ctrl+w", "close_case", "Close Case"),
-        ("s,ctrl+s", "save", "Save"),
-        ('ctrl+e', 'open_external_notes_menu', 'External notes'),
-        ("__", "remove_double_lines", "Remove Double Lines"),
+        Binding("ctrl+n", "new_case", "New Case", show=False),
+        Binding("ctrl+w", "close_case", "Close Case", show=False),
+        Binding("ctrl+s", "save", "Save", show=False),
+        # ('ctrl+e', 'open_external_notes_menu', 'Ext Notes'),
+        ("__", "remove_double_lines", "rm double lines"),
         ('_c', 'copy_all_cases', 'Copy Cases'),
         ('_v', 'add_cases_from_clipboard', 'Paste Cases'),
+        Binding('ctrl+1,ctrl+shift+1', 'goto_tab(1)', 'Tab 1', show=False, priority=True),
+        Binding('ctrl+2,ctrl+shift+2', 'goto_tab(2)', 'Tab 2', show=False, priority=True),
+        Binding('ctrl+3,ctrl+shift+3', 'goto_tab(3)', 'Tab 3', show=False, priority=True),
+        Binding('ctrl+4,ctrl+shift+4', 'goto_tab(4)', 'Tab 4', show=False, priority=True),
+        Binding('ctrl+5,ctrl+shift+5', 'goto_tab(5)', 'Tab 5', show=False, priority=True),
         # Binding('ctrl+tab', 'next_tab', 'Next Tab', show=True, priority=True),
         # Binding('ctrl+shift+tab', 'prev_tab', 'Previous Tab', show=True, priority=True),
     ]
@@ -40,6 +45,7 @@ class HelperApp(App):
         self._debug = debug
         self.cases = []
         self.dir = Path.home() / 'Documents' / 'Case_Notes'
+        self.save_state_path = Path.home() / 'Documents' / 'helper_state.json'
         self.dir.mkdir(parents=True, exist_ok=True)
 
         self.tabs = TabbedContent(id='tabs')
@@ -111,18 +117,18 @@ class HelperApp(App):
         self.deserialize(paste())
 
     # def next_tab(self):
-    #     # print('next tab called')
-    #     # print(f'active case:', self.active_case.ref)
-    #     idx = self.cases.index(self.active_case)
-    #     next = self.cases[(idx+1)%len(self.cases)]
-    #     print(f'next case:', next.ref)
-    #     self.tabs.active = f'pane-{next.color}'
+        # # print('next tab called')
+        # # print(f'active case:', self.active_case.ref)
+        # idx = self.cases.index(self.active_case)
+        # next = self.cases[(idx+1)%len(self.cases)]
+        # print(f'next case:', next.ref)
+        # self.tabs.active = f'pane-{next.color}'
 
     # def prev_tab(self):
-    #     # print('prev tab called')
-    #     idx = self.cases.index(self.active_case)
-    #     prev = self.cases[idx-1]
-    #     self.tabs.active = f'pane-{prev.color}'
+        # # print('prev tab called')
+        # idx = self.cases.index(self.active_case)
+        # prev = self.cases[idx-1]
+        # self.tabs.active = f'pane-{prev.color}'
 
     def serialize(self):
         return json.dumps([case.serialize() for case in self.cases])
@@ -143,11 +149,18 @@ class HelperApp(App):
         for case in self.cases:
             self.tabs.add_pane(TabPane(case.ref, case))
 
+    def action_goto_tab(self, index):
+        self.tabs.active = f'tab-{index}'
+
     def action_save(self):
         for case in self.cases:
             with open(self.dir / (case.ref + '.txt'), 'w') as f:
                 print('Saved cases to ', self.dir)
                 f.write(case.text_area.text)
+
+        # Save the current state, as a backup
+        with open(self.save_state_path, 'w') as f:
+            f.write(self.serialize())
 
     def action_remove_double_lines(self):
         self.active_case.text_area.text = self.active_case.text_area.text.replace('\n\n', '\n')

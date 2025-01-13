@@ -3,6 +3,12 @@
     # color: black;
 # }
 
+Screen {
+    # align: center middle;
+    layers: below above above2;
+}
+
+
 .sidebar{
     dock: right;
     height: 100%;
@@ -22,17 +28,20 @@
 #copy-button{
     height: 3;
     width: 100%;
-    dock: bottom;
+    # dock: bottom;
 }
 
 #lower-sidebar{
-    height: 40%;
+    # max-height: 40%;
+    # min-height: 5;
+    height: 13;
     dock: bottom;
 }
 
 #todo-textarea{
-    min-height: 5;
-    max-height: 7;
+    # min-height: 5;
+    # max-height: 7;
+    height: 6;
 }
 
 #copy-serial-button{
@@ -64,9 +73,13 @@
 .external-menu{
     margin: 4;
     height: 100%;
-    width: 75%;
+    width: 70%;
     padding: 2;
-    layer: above;
+    layer: above2;
+}
+
+#external-preview{
+    background: #383838;
 }
 
 .double{

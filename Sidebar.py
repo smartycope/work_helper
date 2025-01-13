@@ -89,7 +89,7 @@ class Sidebar(VerticalGroup):
         with VerticalGroup(id='lower-sidebar'):
             yield Label('TODO:')
             yield self.todo
-            yield Label('')
+            # yield Label('')
 
             self.serial_label = Label(' '*(SIDEBAR_WIDTH-COPY_SERIAL_BUTTON_WIDTH), id=f'serial-label-{self.case.ref}')
             self.id_button = Button(f'Copy', id='copy-serial-button')
@@ -98,7 +98,7 @@ class Sidebar(VerticalGroup):
                 yield self.serial_label
                 yield self.id_button
 
-            yield Label('')
+            # yield Label('')
             button = Button('Copy Notes', id='copy-button')
             button.can_focus = False
             yield button
@@ -108,4 +108,4 @@ class Sidebar(VerticalGroup):
             case 'copy-button':
                 copy(self.case.text_area.text.strip())
             case 'copy-serial-button':
-                copy(self.serial)
+                copy(self.serial.upper())

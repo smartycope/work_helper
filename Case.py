@@ -15,11 +15,12 @@ class Case(VerticalGroup):
     from step_algorithm import execute_step as _execute_step
 
     BINDINGS = (
-        ('ctrl+m', 'open_mobility_menu', 'Mobility'),
-        ('ctrl+e', 'open_external_notes_menu', 'External notes'),
+        Binding('ctrl+m', 'open_mobility_menu', 'Mobility', priority=True),
+        Binding('ctrl+e', 'open_external_notes_menu', 'Ext notes', priority=True),
+        ('_s', 'change_serial', 'Set Serial'),
     )
 
-    step = reactive(Steps.confirm_id)
+    step = reactive(Steps.ask_labels)
     phase = reactive(Phase.CONFIRM)
 
     # The step that gets switched to when switched to that phase (the first step of each phase)
@@ -67,7 +68,9 @@ class Case(VerticalGroup):
 
     def compose(self):
         yield self.text_area
+        # with HorizontalGroup():
         yield self.mobility_menu
+        yield self.external_notes_menu
         yield self.input
         yield self.sidebar
 
@@ -110,13 +113,16 @@ class Case(VerticalGroup):
         self.mobility_menu.visible = bool(self.serial)
 
     def action_open_external_notes_menu(self):
-        # self.external_notes_menu.visible = bool(self.serial)
-        self.external_notes_menu.visible = True
+        self.external_notes_menu.visible = bool(self.serial)
+        # self.external_notes_menu.visible = True
 
-    def ensure_serial(self, next_step):
+    def action_change_serial(self):
+        self.ensure_serial(self.step, force=True)
+
+    def ensure_serial(self, next_step, *, force=False):
         """ If we don't have a serial number, ask for one manually, then go back to what we were
             doing. If we do have a serial number, just continue"""
-        if not self.serial:
+        if not self.serial or force:
             self.step = Steps.manual_get_serial
             self._step_after_manual_serial = next_step
         else:
