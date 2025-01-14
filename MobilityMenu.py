@@ -140,11 +140,13 @@ class MobilityMenu(VerticalGroup):
         self.visible = False
         self.case = case
 
-    # def watch_visible(self):
-        # for
+    def update_on_close(self):
+        """ Run whenever the menu gets closed """
+        self.notes.value = ''
 
     def compose(self):
         yield Label('[bold]Mobility Test[/]', id='mobility-title')
+        # yield Label('Customer States: ' + self.case.customer_states, id='cx-states')
 
         yield Label('Where:')
         self.where = Select.from_values(('top bench', 'floor', 'bottom bench'), allow_blank=False, value='top bench')
@@ -229,6 +231,7 @@ class MobilityMenu(VerticalGroup):
             case 'done':
                 self.visible = False
                 self.case.text_area.text = self.case.text_area.text.strip() + '\n\n' + self.stringify() + '\n\n'
+        self.update_on_close()
 
     def stringify(self):
         has_pass = any(getattr(self, i).value for i in self.switches)

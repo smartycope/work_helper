@@ -391,3 +391,57 @@ M6 edits:
 if m6, bot does not have a sidebrush
 don't ask about a blower motor on an M6 - or extractors
 if M6, remind in finish phase to remove pad
+
+ERROR: json parsing is broken
+
+mobility menu auto insert user dock is broken
+
+remove ! from if user base dock contacts response bullet entirely
+
+LOW PRIORITY: if no dock indicated on dock (in mobility menu), then auto-unselect dock and undock sliders
+
+mobility menu: if process is on the last line, then don't add the extra new line before
+
+in add_step(): if the previous line has "** Result: " in it, add an extra line -- maybe
+
+if a non-modular i series, it's the red card from the top - also, only BBK works, not BiT
+
+if provisioned on app, remind in finish phase to factory reset again -- not sure how to tell
+
+auto selecting external notes aren't working (watch_visible probably isn't being called, try @on(Mount))
+
+if factory reset and factory reset and mop bin, combine the 2 automatically (in external notes)
+
+on have the case double checked step (in finish phase), autocopy the header (in the step previous)
+
+move update notes step to be before double checking step (in finish phase) (and also fill in the repair action box)
+
+add a comment in texts.py that they all need to be unique
+
+make the serial and ref labels into a new class that is a "CopyText" or something like that: a button that when clicked gets copied
+
+on double check, add "double checked by michelle" to the notes (and then recopy the notes into CSS)
+
+make ctrl+w system=True
+
+have a step in swap that asks for the new serial, so it can update the sidebar with it. BUT keep the old serial. Also in that step, auto copy it.
+
+Actually, confirm serial numbers immediately *before* put labels on everything, instead of after
+
+add a TODO box in mobility menu
+
+step s9 check lid pins, add to notes if good OR bad "Lid pins don't appear sunken"
+
+make "are extractors good" step ask for response -> "how to the extractors look [good]"
+
+add to notes, if C9 (specifically): remove battery to replace CHM
+
+in mobility menu, show what the customer states is, for reference
+
+in mobility menu, organize by how often i use it, not by sequence
+
+have the open menu bindings toggle instead of just open
+
+in sidebar rename "sleep mode" to "shipping mode"
+
+LOW PRIORITY: move step s9 check lid pins to be before cleaning

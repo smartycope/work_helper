@@ -92,7 +92,8 @@ class Case(VerticalGroup):
         # When switching to DEBUGGING phase from anywhere, ensure that Process: exists
         if new_phase == Phase.DEBUGGING:
             self.ensure_process()
-            self.mobility_menu.visible = True
+            # I tried this and determined I didn't like it
+            # self.mobility_menu.visible = True
         self.sidebar.phase_selector.value = new_phase.value
 
     def add_step(self, step, bullet='*'):

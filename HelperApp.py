@@ -140,9 +140,10 @@ class HelperApp(App):
 
     def deserialize(self, string, clear=False):
         """ If clear == True, it clears all the current cases before adding the new ones """
-        # try:
-        self.cases = [Case.deserialize(case) for case in json.loads(string)]
-        # except Exception as err:
+        try:
+            self.cases = [Case.deserialize(case) for case in json.loads(string)]
+        except Exception as err:
+            return
         #     if self._debug:
         #         raise err
         #     else:

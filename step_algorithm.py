@@ -315,6 +315,10 @@ def execute_step(self, resp):
 
             case Steps.generate_external_notes_2:
                 self.external_notes_menu.visible = False
+                copy(self.text_area.text.strip())
+                self.step = Steps.ask_copy_notes_1
+
+            case Steps.ask_copy_notes_1:
                 self.step = Steps.ask_double_check
 
             case Steps.ask_double_check:
@@ -331,7 +335,7 @@ def execute_step(self, resp):
 
             case Steps.ask_put_bin_back:
                 copy(self.text_area.text.strip())
-                self.step = Steps.ask_notes_copied_over
+                self.step = Steps.ask_copy_notes_2
 
             case Steps.ask_notes_copied_over:
                 copy(self.ref)

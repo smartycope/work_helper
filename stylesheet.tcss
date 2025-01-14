@@ -107,3 +107,7 @@ Screen {
     column-span: 4;
     content-align: center middle;
 }
+
+#cx-states{
+
+}
