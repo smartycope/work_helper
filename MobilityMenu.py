@@ -2,6 +2,8 @@ from textual.containers import *
 from textual.reactive import reactive
 from textual.widgets import *
 
+from CustomInput import CustomInput
+
 class TriSwitch(Switch):
     DEFAULT_CSS = """
     TriSwitch {
@@ -121,13 +123,14 @@ class TriSwitch(Switch):
 class MobilityMenu(VerticalGroup):
     switches = (
             'undock',
-            'base',
+            'dock',
             'navigate',
             'rice',
             'refill',
             'auto_evac',
             'manual_evac',
             'deploy_pad',
+            'spray',
             # 'streaky',
             # 'other_value',
         )
@@ -140,7 +143,6 @@ class MobilityMenu(VerticalGroup):
     # def watch_visible(self):
         # for
 
-
     def compose(self):
         yield Label('[bold]Mobility Test[/]', id='mobility-title')
 
@@ -149,11 +151,11 @@ class MobilityMenu(VerticalGroup):
         yield self.where
 
         yield Label('Dock:')
-        self.base = Input(('customer ' + self.case.dock) if self.case.dock else 'test ')
+        self.base = CustomInput(('customer ' + self.case.dock) if self.case.dock else 'test ', placeholder='no dock')
         yield self.base
 
         yield Label('Parameters:')
-        self.params = Input(classes='triple', placeholder='Additional parameters')
+        self.params = CustomInput(classes='triple', placeholder='Additional parameters')
         yield self.params
 
         yield Rule(line_style='heavy', classes='quadruple')
@@ -194,23 +196,27 @@ class MobilityMenu(VerticalGroup):
         self.rice = TriSwitch(value=None)
         yield self.rice
 
+        yield Label('Spray:')
+        self.spray = TriSwitch(value=None)
+        yield self.spray
+
         # yield Label('Streaky:')
         # self.streaky = TriSwitch(value=None)
         # yield self.streaky
 
-        # self.other = Input(placeholder='Other:')
+        # self.other = CustomInput(placeholder='Other:')
         # yield self.other
         # self.other_value = TriSwitch(value=None)
         # yield self.other_value
 
-        yield Static(classes='double')
+        # yield Static(classes='double')
         yield Static(classes='quadruple')
 
         # yield Label('Notes')
-        self.notes = Input(placeholder='Notes', classes='quadruple')
+        self.notes = CustomInput(placeholder='Notes', classes='quadruple')
         yield self.notes
 
-        yield Static(classes='quadruple')
+        # yield Static(classes='quadruple')
         yield Static(classes='double')
 
         yield Button('Cancel', id='cancel', classes='')
@@ -242,7 +248,7 @@ class MobilityMenu(VerticalGroup):
 
         l1 = "* Mobility test - {where}, {base}".format(
             where=self.where.value,
-            base=self.base.value,
+            base=self.base.value or 'no dock',
         )
         if self.params.value:
             l1 += ', ' + self.params.value

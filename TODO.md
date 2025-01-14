@@ -309,23 +309,19 @@ Low Priority: maaaybe try to auto generate and send the swap email
 
 Make note that if I can't get BBK to work, I can ask Michelle to look it up on RDP (as a double check final step)
 
-in mobility mission menu and is_mopping, as if tank is full
-
-# reset mobility count after a swap
+in mobility mission menu and is_mopping, ask if tank is full
 
 for contact measurements, add an option to take a number of them, then average and std them together
 
 back broke
 
-in confirm checks, remind to enter the failure code to CSS and maybe show what "customer states" is for reference
-
 in checking the user dock charging contacts, add the ability to include notes
 
 only c9's can refill
 
-tests for combos vs non-combos
+TEST: tests for combos vs non-combos
 
-tests for seralizing/deserializing
+TEST: tests for seralizing/deserializing
 
 serialization should include the current phase
 
@@ -358,3 +354,40 @@ BUG: when pasting cases, setting the phase from Case.deserialize doesn't work ri
 
 BUG: in finish phase, if we've just copied the case in, it might have dock, but the case doesn't recognize it. Add regexing the case to see if we need to celan the dock and things
 - Actually, add regexing the case to manual serial number enter
+
+when doing a mobility test, always check if it has an evac port or not (and if it should)
+
+If a bot needs a battery test, ask about it immediately before cleaning
+
+copy serial button gets pushed off page if window too small
+
+Adding proper versioning is a good idea
+
+if replaced bot and dock, combine them in external notes
+
+set capitalization for each word in the Dock: box in the mobility menu
+
+add ctrl+A to *all* input boxes
+
+if battery tests are needed, also measure contacts, even if they don't feel sunken, but allow na
+
+in checking the SPL SKU confirm phase step, parse the serial and give it (i.e. "Is the SPL SKU 577?")
+
+Low Priority: in the mobility menu, have the outline reflect whether the ultimate result is a pass or fail (with red/green)
+
+add a binary slider in mobility menu to manually control the overall result, but which gets self-updated
+
+LOW PRIORITY: in step "close out parts and get out of case" italicize or highlight "and get out of case"
+
+NOT NECISSARY (I think): in the step "unuse parts" -> "unuse parts and close out of the case" (and highlight/italicize it)
+
+if "lapis" mentioned in the notes, OR if there's a 7 in the serial number place, remind to reprovision lapis bin in the app in the external notes
+
+DCT broke on serial: "J557020Y240819N100975"
+
+LOW PRIORITY: combine step "clean dock" and "clean base" -- this will actually take a rewrite to enable dynamic steps
+
+M6 edits:
+if m6, bot does not have a sidebrush
+don't ask about a blower motor on an M6 - or extractors
+if M6, remind in finish phase to remove pad

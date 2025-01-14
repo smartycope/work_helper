@@ -10,6 +10,8 @@ from Case import Case
 from globals import COLORS
 from clipboard import copy, paste
 
+DEBUG_STATE = '''[{"notes": "19000IR\\n", "color": "#377a11", "ref": "19000IR", "serial": null, "phase": 0, "step": "Put labels on everything", "todo": ""}, {"notes": "19001IR\\n", "color": "#ef9e16", "ref": "19001IR", "serial": null, "phase": 0, "step": "Put labels on everything", "todo": ""}, {"notes": "19002IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: Waaaaaa\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n! Robot does not charge on test base @ ~0W\\n\\nProcess:\\n* Step\\n* Step\\n* Step\\n* Done\\n", "color": "#d1dd0b", "ref": "19002IR", "serial": "i3", "phase": 3, "step": "All screws are screwed in all the way [done]", "todo": ""}, {"notes": "19003IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: I want money back\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n* Robot charges on test base @ ~9W (battery is full)\\n\\nProcess:\\n* Tehe\\n* Swap\\n", "color": "#ea9daf", "ref": "19003IR", "serial": "j7", "phase": 4, "step": "Send swap email [confirmed]", "todo": ""}, {"notes": "19004IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: It broke\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No play in blower motor\\n* Tank float screw has no signs of rust\\n* Cleaned robot\\n* Robot charges on test base @ ~21W\\n\\nProcess:\\n* Step1\\n* Step2\\n", "color": "#799fad", "ref": "19004IR", "serial": "c9", "phase": 2, "step": "Add Step", "todo": ""}]'''
+
 
 class HelperApp(App):
     BINDINGS = [
@@ -17,9 +19,9 @@ class HelperApp(App):
         Binding("ctrl+w", "close_case", "Close Case", show=False),
         Binding("ctrl+s", "save", "Save", show=False),
         # ('ctrl+e', 'open_external_notes_menu', 'Ext Notes'),
-        ("__", "remove_double_lines", "rm double lines"),
-        ('_c', 'copy_all_cases', 'Copy Cases'),
-        ('_v', 'add_cases_from_clipboard', 'Paste Cases'),
+        Binding("__", "remove_double_lines", "rm double lines", key_display=''),
+        Binding('_c', 'copy_all_cases', 'Copy Cases', key_display=''),
+        Binding('_v', 'add_cases_from_clipboard', 'Paste Cases', key_display=''),
         Binding('ctrl+1,ctrl+shift+1', 'goto_tab(1)', 'Tab 1', show=False, priority=True),
         Binding('ctrl+2,ctrl+shift+2', 'goto_tab(2)', 'Tab 2', show=False, priority=True),
         Binding('ctrl+3,ctrl+shift+3', 'goto_tab(3)', 'Tab 3', show=False, priority=True),
@@ -52,17 +54,20 @@ class HelperApp(App):
         self.popup = Input(placeholder='Case ID', id='reference_popup')
         self.popup.visible = False
 
+
+    def on_mount(self):
+        if self._debug:
+            self.deserialize(DEBUG_STATE)
+
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
-        if self._debug:
-            with self.tabs:
-                for cnt, clr in enumerate(COLORS):
-                    ref = f'1900{cnt}IR'
-                    case = Case(ref, clr)
-                    self.cases.append(case)
-                    yield TabPane(ref, case)
-        else:
-            yield self.tabs
+            # with self.tabs:
+            #     for cnt, clr in enumerate(COLORS):
+            #         ref = f'1900{cnt}IR'
+            #         case = Case(ref, clr)
+            #         self.cases.append(case)
+            #         yield TabPane(ref, case)
+        yield self.tabs
         yield self.popup
         yield Footer()
 

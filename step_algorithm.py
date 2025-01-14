@@ -15,6 +15,10 @@ def execute_step(self, resp):
         return
 
     if self.step == Steps.manual_get_serial:
+        # If we accidentally pressed the change serial binding
+        if resp.lower() == 'na':
+            self.step = self._step_after_manual_serial
+
         if resp:
             self.serial = resp.lower()
             self.sidebar.serial = self.serial.lower()
@@ -90,12 +94,20 @@ def execute_step(self, resp):
         match self.step:
             case Steps.ask_sunken_contacts:
                 if resp.lower() == 'na':
-                    self.step = Steps.check_liquid_damage if not self.is_mopper else Steps.ask_blower_play
+                    next_step = 'liquid damage'
                 elif resp:
                     self.step = Steps.sunken_ask_side
                 else:
                     self.add_step('Contacts don\'t feel sunken')
-                    self.step = Steps.check_liquid_damage if not self.is_mopper else Steps.ask_blower_play
+                    next_step = 'liquid damage'
+
+            case Steps.ask_modular:
+                if resp:
+                    self.add_step('Robot is non-modular')
+                    self.step = Steps.ask_cleaned
+                else:
+                    # We don't need to confirm that it's not a mopper here; there are no i-series moppers
+                    self.step = Steps.check_liquid_damage
 
             case Steps.check_liquid_damage:
                 if resp.lower() == 'na':
@@ -156,7 +168,7 @@ def execute_step(self, resp):
 
             case Steps.ask_user_base_contacts:
                 if resp.lower() != 'na':
-                    self.add_step(f"Charging contacts on the customer's {self.dock} look {'bad' if resp else 'good'}", bullet='!' if resp else '*')
+                    self.add_step(f"Charging contacts on the customer's {self.dock} look {resp or 'good'}", bullet='!' if resp else '*')
 
                 next_step = 'battery_test/charging'
 
@@ -174,7 +186,6 @@ def execute_step(self, resp):
                     except ValueError:
                         if resp:
                             self.add_step(resp)
-                            self.step = Steps.add_step
                             self.phase = Phase.DEBUGGING
                         return
 
@@ -187,7 +198,6 @@ def execute_step(self, resp):
                     else:
                         self.add_step(f"Robot charges on {dock} @ ~{watts}W")
 
-                self.step = Steps.add_step
                 self.phase = Phase.DEBUGGING
 
             # Liquid damage path
@@ -245,51 +255,58 @@ def execute_step(self, resp):
                 self.add_step(f'Measured {self._sunken_side} contact: {resp}mm +/- .1')
 
                 if measurement < 3.8:
-                    self.add_step(f'Diagnosis: Sunken {self._sunken_side} contact')
+                    self.ensure_process()
+                    self.add_step(f'Sunken {self._sunken_side} contact')
                     self.add_step('Swap robot' + (f' and customer {self.dock}' if self.dock else ''))
-                    self.step = Steps.add_step
-                    self.phase = Phase.FINISH
+                    self.phase = Phase.SWAP
 
-                self.step = Steps.check_liquid_damage
+                next_step = 'liquid damage'
 
     elif self.phase == Phase.DEBUGGING:
         match self.step:
             case Steps.add_step:
                 if resp:
-                    if 'Process:' not in self.text_area.text:
-                        self.text_area.text = self.text_area.text.strip() + '\n\nProcess:\n'
                     self.add_step(resp[0].upper() + resp[1:])
+                else:
+                    self.ensure_process()
 
     elif self.phase == Phase.FINISH:
         match self.step:
             case Steps.ask_final_cleaned:
-                self.step = Steps.ask_base_cleaned if self.dock else Steps.ask_emptied_bin
+                if self.dock:
+                    self.step = Steps.ask_base_cleaned
+                else:
+                    next_step = 'empty bin'
 
             case Steps.ask_base_cleaned:
-                self.step = Steps.ask_dock_has_bag if self.is_dock else Steps.ask_emptied_bin
+                if self.is_dock:
+                    self.step = Steps.ask_dock_has_bag
+                else:
+                    next_step = 'empty bin'
 
             case Steps.ask_dock_has_bag:
-                self.step = Steps.ask_emptied_dock if self.dock.lower() in ('aurora', 'boulder') else Steps.ask_emptied_bin
+                if self.dock.lower() in ('aurora', 'boulder'):
+                    self.step = Steps.ask_emptied_dock
+                else:
+                    next_step = "empty bin"
 
             case Steps.ask_emptied_dock:
+                # It's okay to not ask if it can vacuum here, cause an M6 isn't gonna have an Aurora or Boulder dock with it
                 self.step = Steps.ask_emptied_bin
 
             case Steps.ask_emptied_bin:
-                self.step = Steps.ask_emptied_tank if self.is_mopper else Steps.ask_sidebrush
+                next_step = "empty tank"
 
             case Steps.ask_emptied_tank:
                 self.step = Steps.ask_has_pad
 
             case Steps.ask_has_pad:
-                self.step = Steps.ask_sidebrush
-
-            case Steps.ask_sidebrush:
-                self.step = Steps.ask_tight_screws
-
-            case Steps.ask_tight_screws:
                 self.step = Steps.ask_debug_cover
 
             case Steps.ask_debug_cover:
+                self.step = Steps.ask_sidebrush_screws
+
+            case Steps.ask_sidebrush_screws:
                 self.step = Steps.generate_external_notes_1
 
             case Steps.generate_external_notes_1:
@@ -297,6 +314,7 @@ def execute_step(self, resp):
                 self.step = Steps.generate_external_notes_2
 
             case Steps.generate_external_notes_2:
+                self.external_notes_menu.visible = False
                 self.step = Steps.ask_double_check
 
             case Steps.ask_double_check:
@@ -312,6 +330,11 @@ def execute_step(self, resp):
                 self.step = Steps.ask_put_bin_back
 
             case Steps.ask_put_bin_back:
+                copy(self.text_area.text.strip())
+                self.step = Steps.ask_notes_copied_over
+
+            case Steps.ask_notes_copied_over:
+                copy(self.ref)
                 self.step = Steps.ask_complete_case_CSS
 
             case Steps.ask_complete_case_CSS:
@@ -327,10 +350,27 @@ def execute_step(self, resp):
     elif self.phase == Phase.SWAP:
         match self.step:
             case Steps.swap_unuse_parts:
+                copy(self.text_area.text.strip())
+                self.step = Steps.swap_update_css
+
+            case Steps.swap_update_css:
+                copy(self.ref + ' - ')
                 self.step = Steps.swap_email
 
             case Steps.swap_email:
-                self.step = Steps.swap_order
+                if self.serial.startswith('s9'):
+                    self.step = Steps.swap_order_S9
+                elif self.serial.startswith('m6'):
+                    self.step = Steps.swap_order_M6
+                else:
+                    copy(self.serial.upper())
+                    self.step = Steps.swap_order
+
+            case Steps.swap_order_S9:
+                self.step = Steps.swap_put_in_box
+
+            case Steps.swap_order_M6:
+                self.step = Steps.swap_put_in_box
 
             case Steps.swap_order:
                 self.step = Steps.swap_move_bin
@@ -338,6 +378,9 @@ def execute_step(self, resp):
             case Steps.swap_move_bin:
                 if resp:
                     self.add_step('Moved bin to new robot')
+                self.step = Steps.swap_put_in_box
+
+            case Steps.swap_put_in_box:
                 self.step = Steps.swap_note_serial
 
             case Steps.swap_note_serial:
@@ -362,5 +405,18 @@ def execute_step(self, resp):
                 self.step = Steps.ask_s9_lid_pins
             else:
                 self.step = Steps.ask_cleaned
+        case 'liquid damage':
+            if self.serial.startswith('i'):
+                self.step = Steps.ask_modular
+            else:
+                self.step = Steps.check_liquid_damage if not self.can_mop else Steps.ask_blower_play
+        case 'empty bin':
+            if self.can_vacuum:
+                self.step = Steps.ask_emptied_bin
+            else:
+                # This is copied from 'empty tank' below
+                self.step = Steps.ask_emptied_tank if self.can_mop else Steps.ask_debug_cover
+        case 'empty tank':
+            self.step = Steps.ask_emptied_tank if self.can_mop else Steps.ask_debug_cover
 
     self.text_area.scroll_to(None, 1000, animate=False)

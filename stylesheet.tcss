@@ -59,12 +59,13 @@ Screen {
     # grid-columns: auto 1fr 1fr;
     # grid-rows: 25% 75%;
 #     # dock: center;
-    margin: 4;
+    margin: 2 0 4 4;
     grid-gutter: 0 1;
     height: 100%;
     padding: 2;
     # background: #515151
     layer: above;
+    grid-rows: 3;
 #     content-align: center middle;
 #     align: center middle;
 #     background: darkblue;

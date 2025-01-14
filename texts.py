@@ -11,9 +11,10 @@ class Steps:
     ask_dock = "Additional dock"
     ask_damage = "Additional damage"
     customer_states = "Customer States"
-    update_css_failure = "Update the CSS failure box"
+    update_css_failure = "Update the CSS failure box [done]"
 
     # ROUTINE_CHECKS
+    ask_modular = "Is the bot modular [yes]"
     check_liquid_damage = "Signs of liquid damage [no]"
     ask_sunken_contacts = "Do the contacts feel sunken [no]"
     ask_blower_play = "Play in blower motor, or doesn't spin freely [no]"
@@ -21,7 +22,7 @@ class Steps:
     ask_s9_lid_pins = "Are the lid pins sunken [no]"
     ask_cleaned = 'Robot cleaned ("na" if not, notes or empty if so)'
     battery_test = "Battery test (don't forget the traveller) [current, health]"
-    ask_user_base_contacts = "Are the charging contacts on the user base good [yes]"
+    ask_user_base_contacts = "How to the charging contacts on the user base look [good]"
     ask_charge_customer_dock = "What's the charging wattage on the customer's dock"
     ask_charge_test_dock = "What's the charging wattage on a test base"
     ask_bin_rust = (
@@ -42,10 +43,14 @@ class Steps:
     add_step = "Add Step"
 
     # SWAP
-    swap_email = "Send swap email [confirmed]"
     swap_unuse_parts = "Unuse all parts [done]"
-    swap_order = "Order swap [issued]"
-    swap_move_bin = "Move bin over, if necessary [not moved]"
+    swap_update_css = "Update CSS repair action and copy notes over (notes copied) [done]"
+    swap_email = "Send swap email (subject copied) [confirmed]"
+    swap_order = "Order swap (original serial copied) [done]"
+    swap_order_S9 = "Order main board (not a whole bot!) [done]"
+    swap_order_M6 = "Order the correctly colored swap [done]"
+    swap_move_bin = "Move bin and battery over, if necessary [no bin needed]"
+    swap_put_in_box = "Put the old bot in the box [done]"
     swap_note_serial = "Put the new (and old) serial number into CSS [done]"
 
     # FINISH
@@ -56,17 +61,18 @@ class Steps:
     ask_emptied_bin = "Bin is cleaned out [done]"
     ask_emptied_tank = "Tank is emptied [done]"
     # ask_swap_serial = 'The swap serial number for new bot is entered [done]'
-    ask_sidebrush = "The bot has a sidebrush on [done]"
+    ask_sidebrush_screws = "The bot has a sidebrush on and screws are tight [done]"
     ask_has_pad = "There's a pad on the bot [done]"
-    ask_tight_screws = "All screws are screwed in all the way [done]"
+    # ask_tight_screws = "All screws are screwed in all the way [done]"
     ask_debug_cover = "The debug cover is in place [done]"
     ask_double_check = "Have the case double checked [good]"
     ask_shipping_mode = "Placed into shipping mode [done]"
     ask_close_parts = "Close out all parts and get out of case [done]"
     ask_tags_off = "All the tags are off, including the bin and dock [done]"
     ask_put_bin_back = "Put the bin back [done]"
-    ask_complete_case_CSS = "Finish the case on CSS [done]"
-    ask_put_bot_on_shelf = "Put the robot on the shelf [done]"
+    ask_notes_copied_over = "Copy notes over to CSS (notes copied) [done]"
+    ask_complete_case_CSS = "Finish the case on CSS (case ID copied) [done]"
+    ask_put_bot_on_shelf = "Put the robot and traveler on the shelf [done]"
     generate_external_notes_1 = "Create external notes [open menu]"
     generate_external_notes_2 = "Copy external notes [done]"
     # finish_case = 'All done! [close case]'

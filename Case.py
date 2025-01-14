@@ -15,8 +15,8 @@ class Case(VerticalGroup):
     from step_algorithm import execute_step as _execute_step
 
     BINDINGS = (
-        Binding('ctrl+m', 'open_mobility_menu', 'Mobility', priority=True),
-        Binding('ctrl+e', 'open_external_notes_menu', 'Ext notes', priority=True),
+        Binding('ctrl+m', 'open_mobility_menu', 'Mobility', priority=True, system=True),
+        Binding('ctrl+e', 'open_external_notes_menu', 'Ext notes', priority=True, system=True),
         ('_s', 'change_serial', 'Set Serial'),
     )
 
@@ -88,7 +88,12 @@ class Case(VerticalGroup):
         # No idea why I need to cast it to Phase here
         # self.query_one('#phase-select').value = Phase(to).value
         # self.sidebar.phase_selector.value = Phase(to).value
-        self.sidebar.phase_selector.value = Phase(to).value
+        new_phase = Phase(to)
+        # When switching to DEBUGGING phase from anywhere, ensure that Process: exists
+        if new_phase == Phase.DEBUGGING:
+            self.ensure_process()
+            self.mobility_menu.visible = True
+        self.sidebar.phase_selector.value = new_phase.value
 
     def add_step(self, step, bullet='*'):
         # For consistency
@@ -148,6 +153,10 @@ class Case(VerticalGroup):
         case.phase = Phase(data.get('phase', Phase.DEBUGGING))
         case.step = data.get('step', Steps.add_step)
         return case
+
+    def ensure_process(self):
+        if 'Process:' not in self.text_area.text:
+            self.text_area.text = self.text_area.text.strip() + '\n\nProcess:\n'
 
     def on_input_submitted(self, event):
         if event.input.id == f'input_{self.ref}':
@@ -215,12 +224,16 @@ class Case(VerticalGroup):
         return ''
 
     @property
-    def is_mopper(self):
+    def can_mop(self):
         return self.serial.startswith(('m', 'c'))
 
     @property
+    def can_vacuum(self):
+        return not self.serial.startswith('m')
+
+    @property
     def is_dock(self):
-        return self.dock.lower() not in ('Bombay', 'San Marino', 'Torino')
+        return self.dock.lower() not in ('bombay', 'san marino', 'torino')
 
     @property
     def is_combo(self):
