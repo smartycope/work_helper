@@ -15,7 +15,7 @@ class ExternalNotesMenu(VerticalGroup):
         ("Recommend cleaning dock charging contacts", "Recommend regular cleaning of dock charging contacts"),
         ("Recommend cleaning filter", "Recommend regular cleaning of the bin filter"),
         ("Use correct bags", "Recommend using only OEM replacement bags"),
-        ("Rusty bin", "Recommend only using OEM cleaning products, as some products can rust components"),
+        ("Rusty bin screw", "Recommend only using OEM cleaning products, as some products can rust components"),
         ("Liquid spill", "Robot is not rated for liquid cleanup"),
         ("Broken mop pad", "Recommend hand washing mop pads"),
         ("Factory reset and Lapis bin", "Recommend re-provisioning the mop bin to the robot"),
@@ -27,11 +27,26 @@ class ExternalNotesMenu(VerticalGroup):
         ("J7 and a swap", "Please provision robot to application"),
     ))
 
+    # TODO: This doesn't work
+    BINDINGS = [
+        ('esc', 'close')
+    ]
+
     def __init__(self, case):
         super().__init__(classes='external-menu', id=f'external-menu-{case.ref}')
         self.visible = False
         self.case = case
         self.text = Label('', id='external-preview')
+
+    def select(self, name):
+        self.selection.select(list(self.notes.keys()).index(name))
+
+    def toggle(self):
+        self.visible = not self.visible
+        self.set_default_selections()
+
+    def action_close(self):
+        self.visible = False
 
     def set_default_selections(self):
         notes = self.case.text_area.text.lower()
@@ -48,12 +63,22 @@ class ExternalNotesMenu(VerticalGroup):
 
         if 'factory reset' in notes:
             self.select("Factory reset")
+            if self.case.has_lapis:
+                self.select("Factory reset and Lapis bin")
 
-    def watch_visible(self):
-        self.set_default_selections()
+        if 'swap' in notes:
+            self.select("Replaced robot")
+            if self.case.serial.startswith('j7'):
+                self.select("J7 and a swap")
+
+        if self.case._bin_screw_has_rust:
+            self.select("Rusty bin screw")
+
+        if self.case._liquid_found:
+            self.select("Liquid spill")
 
     def compose(self):
-        self.selection = SelectionList(*list(zip(self.notes.keys(), range(len(self.notes)))))
+        self.selection = SelectionList(*zip(self.notes.keys(), range(len(self.notes))))
         yield self.selection
         yield Static()
         yield self.text
@@ -61,6 +86,7 @@ class ExternalNotesMenu(VerticalGroup):
         with HorizontalGroup():
             yield Button('Close', id='close-external-notes')
             yield Button('Copy', id='copy-external-notes')
+        self.set_default_selections()
 
     def get_notes(self):
         return '. '.join(list(self.notes.values())[i] for i in sorted(self.selection.selected)) + '.'
@@ -68,7 +94,7 @@ class ExternalNotesMenu(VerticalGroup):
     @on(Mount)
     @on(SelectionList.SelectedChanged)
     def update_selected_view(self) -> None:
-        self.text.update(textwrap.fill(self.get_notes(), 50))
+        self.text.update(textwrap.fill(self.get_notes(), 60))
 
     @on(Button.Pressed, '#copy-external-notes')
     def copy(self):

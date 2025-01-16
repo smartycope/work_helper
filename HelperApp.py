@@ -15,18 +15,20 @@ DEBUG_STATE = '''[{"notes": "19000IR\\n", "color": "#377a11", "ref": "19000IR", 
 
 class HelperApp(App):
     BINDINGS = [
-        Binding("ctrl+n", "new_case", "New Case", show=False),
-        Binding("ctrl+w", "close_case", "Close Case", show=False),
-        Binding("ctrl+s", "save", "Save", show=False),
+        Binding('ctrl+m', 'open_mobility_menu', 'Mobility', priority=True, system=True),
+        Binding('ctrl+e', 'open_external_notes_menu', 'Ext notes', priority=True, system=True),
+        Binding("ctrl+n", "new_case", "New Case", show=False, system=True, priority=True),
+        Binding("ctrl+w", "close_case", "Close Case", show=False, system=True, priority=True),
+        Binding("ctrl+s", "save", "Save", show=False, system=True, priority=True),
         # ('ctrl+e', 'open_external_notes_menu', 'Ext Notes'),
         Binding("__", "remove_double_lines", "rm double lines", key_display=''),
         Binding('_c', 'copy_all_cases', 'Copy Cases', key_display=''),
         Binding('_v', 'add_cases_from_clipboard', 'Paste Cases', key_display=''),
-        Binding('ctrl+1,ctrl+shift+1', 'goto_tab(1)', 'Tab 1', show=False, priority=True),
-        Binding('ctrl+2,ctrl+shift+2', 'goto_tab(2)', 'Tab 2', show=False, priority=True),
-        Binding('ctrl+3,ctrl+shift+3', 'goto_tab(3)', 'Tab 3', show=False, priority=True),
-        Binding('ctrl+4,ctrl+shift+4', 'goto_tab(4)', 'Tab 4', show=False, priority=True),
-        Binding('ctrl+5,ctrl+shift+5', 'goto_tab(5)', 'Tab 5', show=False, priority=True),
+        Binding('ctrl+1,ctrl+shift+1', 'goto_tab(1)', 'Tab 1', show=False, system=True, priority=True),
+        Binding('ctrl+2,ctrl+shift+2', 'goto_tab(2)', 'Tab 2', show=False, system=True, priority=True),
+        Binding('ctrl+3,ctrl+shift+3', 'goto_tab(3)', 'Tab 3', show=False, system=True, priority=True),
+        Binding('ctrl+4,ctrl+shift+4', 'goto_tab(4)', 'Tab 4', show=False, system=True, priority=True),
+        Binding('ctrl+5,ctrl+shift+5', 'goto_tab(5)', 'Tab 5', show=False, system=True, priority=True),
         # Binding('ctrl+tab', 'next_tab', 'Next Tab', show=True, priority=True),
         # Binding('ctrl+shift+tab', 'prev_tab', 'Previous Tab', show=True, priority=True),
     ]
@@ -70,6 +72,9 @@ class HelperApp(App):
         yield self.tabs
         yield self.popup
         yield Footer()
+
+    def action_open_mobility_menu(self):
+        self.active_case.action_open_mobility_menu()
 
     def action_open_external_notes_menu(self):
         self.active_case.action_open_external_notes_menu()

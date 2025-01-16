@@ -125,7 +125,7 @@ class MobilityMenu(VerticalGroup):
             'undock',
             'dock',
             'navigate',
-            'rice',
+            'picks_up_debris',
             'refill',
             'auto_evac',
             'manual_evac',
@@ -135,14 +135,33 @@ class MobilityMenu(VerticalGroup):
             # 'other_value',
         )
 
+    # TODO: This doesn't work
+    BINDINGS = [
+        ('esc', 'close')
+    ]
+
     def __init__(self, case):
         super().__init__(classes='mobility-menu', id=f'mobility-menu-{case.ref}')
         self.visible = False
         self.case = case
+        self._been_opened = False
 
-    def update_on_close(self):
+    def update_values(self):
         """ Run whenever the menu gets closed """
+        # If we have a dock, always assume we're using it
+        if self.case.dock:
+            self.base.value = 'customer ' + self.case.dock
         self.notes.value = ''
+
+    def toggle(self):
+        self.visible = not self.visible
+        # The first time, we need to update everything. After that, update only after we insert one
+        if not self._been_opened:
+            self.update_values()
+            self._been_opened = True
+
+    def action_close(self):
+        self.visible = False
 
     def compose(self):
         yield Label('[bold]Mobility Test[/]', id='mobility-title')
@@ -195,8 +214,8 @@ class MobilityMenu(VerticalGroup):
         yield self.manual_evac
 
         yield Label('Picks up Rice:')
-        self.rice = TriSwitch(value=None)
-        yield self.rice
+        self.picks_up_debris = TriSwitch(value=None)
+        yield self.picks_up_debris
 
         yield Label('Spray:')
         self.spray = TriSwitch(value=None)
@@ -221,7 +240,7 @@ class MobilityMenu(VerticalGroup):
         # yield Static(classes='quadruple')
         yield Static(classes='double')
 
-        yield Button('Cancel', id='cancel', classes='')
+        yield Button('Close', id='cancel', classes='')
         yield Button('Done', id='done', classes='')
 
     def on_button_pressed(self, event):
@@ -231,7 +250,7 @@ class MobilityMenu(VerticalGroup):
             case 'done':
                 self.visible = False
                 self.case.text_area.text = self.case.text_area.text.strip() + '\n\n' + self.stringify() + '\n\n'
-        self.update_on_close()
+                self.update_values()
 
     def stringify(self):
         has_pass = any(getattr(self, i).value for i in self.switches)
@@ -267,7 +286,7 @@ class MobilityMenu(VerticalGroup):
         if lines_pass:
             if has_pass:
                 l2 += ', '
-            l2 += '2 lines'
+            l2 += f'{self.num_lines} lines'
 
         if has_fail or lines_pass is False:
             if has_pass or lines_pass is True:
@@ -281,7 +300,7 @@ class MobilityMenu(VerticalGroup):
         if lines_pass is False:
             if has_fail:
                 l2 += ', '
-            l2 += '2 lines'
+            l2 += f'{self.num_lines} lines'
 
         l3 = '** Result: ' + ("Fail" if has_fail or lines_pass is False else 'Pass')
         if self.notes.value:

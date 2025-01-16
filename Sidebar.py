@@ -69,7 +69,7 @@ class Sidebar(VerticalGroup):
         # yield Label(f'{" Model ":-^{SIDEBAR_WIDTH}}')
         # self.model = Label('', id=f'model-label-{self.case.ref}')
         # yield self.model
-        yield Label(f'{" Sleep Mode ":-^{SIDEBAR_WIDTH}}')
+        yield Label(f'{" Shipping Mode ":-^{SIDEBAR_WIDTH}}')
         self.sleep_mode = Label('', id=f'sleep-mode-label-{self.case.ref}')
         yield self.sleep_mode
         yield Label(f'{" Factory Reset ":-^{SIDEBAR_WIDTH}}')

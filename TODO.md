@@ -442,6 +442,4 @@ in mobility menu, organize by how often i use it, not by sequence
 
 have the open menu bindings toggle instead of just open
 
-in sidebar rename "sleep mode" to "shipping mode"
-
 LOW PRIORITY: move step s9 check lid pins to be before cleaning

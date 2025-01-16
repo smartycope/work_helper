@@ -1,8 +1,10 @@
 from clipboard import copy
+from streamlit import text_area
 from textual.containers import *
 from textual.widgets import *
 from Phase import Phase
 from texts import Steps
+from multi_paste import multi_paste
 
 
 def execute_step(self, resp):
@@ -115,6 +117,7 @@ def execute_step(self, resp):
                 elif resp:
                     self.add_step('Found signs of liquid residue', bullet='!')
                     self.step = Steps.liquid_check_corrosion
+                    self._liquid_found = True
                 else:
                     self.add_step('No signs of liquid damage')
                     self.step = Steps.ask_blower_play
@@ -138,8 +141,10 @@ def execute_step(self, resp):
                     match resp.strip():
                         case '1':
                             self.add_step('Tank float screw has a spot of rust on it', bullet='!')
+                            self._bin_screw_has_rust = True
                         case '2':
                             self.add_step('Tank float screw is entirely rusted', bullet='!')
+                            self._bin_screw_has_rust = True
                         case _:
                             return
 
@@ -307,18 +312,20 @@ def execute_step(self, resp):
                 self.step = Steps.ask_sidebrush_screws
 
             case Steps.ask_sidebrush_screws:
-                self.step = Steps.generate_external_notes_1
-
-            case Steps.generate_external_notes_1:
                 self.external_notes_menu.visible = True
-                self.step = Steps.generate_external_notes_2
+                self.step = Steps.generate_external_notes
 
-            case Steps.generate_external_notes_2:
+            case Steps.generate_external_notes:
                 self.external_notes_menu.visible = False
                 copy(self.text_area.text.strip())
                 self.step = Steps.ask_copy_notes_1
 
             case Steps.ask_copy_notes_1:
+                multi_paste(
+                    f'Double Check: {self.ref}',
+                    self.text_area.text,
+                )
+                # copy()
                 self.step = Steps.ask_double_check
 
             case Steps.ask_double_check:
@@ -337,8 +344,12 @@ def execute_step(self, resp):
                 copy(self.text_area.text.strip())
                 self.step = Steps.ask_copy_notes_2
 
-            case Steps.ask_notes_copied_over:
-                copy(self.ref)
+            case Steps.ask_copy_notes_2:
+                multi_paste(
+                    self.ref,
+                    'Repair Report',
+                )
+                # copy(self.ref)
                 self.step = Steps.ask_complete_case_CSS
 
             case Steps.ask_complete_case_CSS:
@@ -358,7 +369,11 @@ def execute_step(self, resp):
                 self.step = Steps.swap_update_css
 
             case Steps.swap_update_css:
-                copy(self.ref + ' - ')
+                multi_paste(
+                    self.ref + ' - ',
+                    self.text_area.text,
+                )
+                # copy(self.ref + ' - ')
                 self.step = Steps.swap_email
 
             case Steps.swap_email:

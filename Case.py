@@ -15,8 +15,6 @@ class Case(VerticalGroup):
     from step_algorithm import execute_step as _execute_step
 
     BINDINGS = (
-        Binding('ctrl+m', 'open_mobility_menu', 'Mobility', priority=True, system=True),
-        Binding('ctrl+e', 'open_external_notes_menu', 'Ext notes', priority=True, system=True),
         ('_s', 'change_serial', 'Set Serial'),
     )
 
@@ -54,6 +52,10 @@ class Case(VerticalGroup):
 
         self.mobility_menu = MobilityMenu(self)
         self.external_notes_menu = ExternalNotesMenu(self)
+
+        # Some internal values to make auto guessing external notes easier
+        self._bin_screw_has_rust = False
+        self._liquid_found = False
 
         # This gets run on mount of the color selector
         # self.set_color(color)
@@ -116,11 +118,13 @@ class Case(VerticalGroup):
 
     def action_open_mobility_menu(self):
         # Only allow the mobility menu to be opened if we have information about the bot
-        self.mobility_menu.visible = bool(self.serial)
+        if self.serial and self.phase == Phase.DEBUGGING:
+            self.mobility_menu.toggle()
 
     def action_open_external_notes_menu(self):
-        self.external_notes_menu.visible = bool(self.serial)
-        # self.external_notes_menu.visible = True
+        # Only allow the mobility menu to be opened if we have information about the bot
+        if self.serial:
+            self.external_notes_menu.toggle()
 
     def action_change_serial(self):
         self.ensure_serial(self.step, force=True)
@@ -242,3 +246,10 @@ class Case(VerticalGroup):
             return self.serial.lower().startswith('c')
         else:
             return None
+
+    @property
+    def has_lapis(self):
+        try:
+            return self.serial[3] == '7'
+        except IndexError:
+            return False

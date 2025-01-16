@@ -6,7 +6,7 @@ from HelperApp import HelperApp
 # import HelperApp as
 from Phase import Phase
 from Sidebar import Sidebar
-from globals import COLORS, COPY_SERIAL_BUTTON_WIDTH, SIDEBAR_WIDTH
+from globals import *
 from Case import Case
 from info import docks, factory_reset, sleep_mode
 from CustomTextArea import CustomTextArea
@@ -295,3 +295,8 @@ async def test_copy_ref_step():
         ref = await create_case(pilot)
         await pilot.press(*'j9j9', *['enter']*3)
         assert paste() == ref
+
+
+# def test_multi_paste():
+#     multi_paste('a', 'b', 'c', 'd')
+#     assert

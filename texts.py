@@ -7,7 +7,7 @@ class Steps:
     confirm_id = "Confirm IDs"
     check_repeat = "Check if case is a repeat"
     check_spl_sku = "Check that the SPL SKU is valid"
-    pick_up_case = "Go pick up the case on CSS (case ID copied)"
+    pick_up_case = "Go pick up the case on CSS {case ID} [done]"
     ask_dock = "Additional dock"
     ask_damage = "Additional damage"
     customer_states = "Customer States"
@@ -22,7 +22,7 @@ class Steps:
     ask_s9_lid_pins = "Are the lid pins sunken [no]"
     ask_cleaned = 'Robot cleaned ("na" if not, notes or empty if so)'
     battery_test = "Battery test (don't forget the traveller) [current, health]"
-    ask_user_base_contacts = "How to the charging contacts on the user base look [good]"
+    ask_user_base_contacts = "How do the charging contacts on the user base look [good]"
     ask_charge_customer_dock = "What's the charging wattage on the customer's dock"
     ask_charge_test_dock = "What's the charging wattage on a test base"
     ask_bin_rust = (
@@ -44,9 +44,9 @@ class Steps:
 
     # SWAP
     swap_unuse_parts = "Unuse all parts [done]"
-    swap_update_css = "Update CSS repair action and copy notes over (notes copied) [done]"
-    swap_email = "Send swap email (subject copied) [confirmed]"
-    swap_order = "Order swap (original serial copied) [done]"
+    swap_update_css = "Update CSS repair action and copy notes over {notes} [done]"
+    swap_email = "Send swap email {subject, notes} [confirmed]"
+    swap_order = "Order swap {original serial} [done]"
     swap_order_S9 = "Order main board (not a whole bot!) [done]"
     swap_order_M6 = "Order the correctly colored swap [done]"
     swap_move_bin = "Move bin and battery over, if necessary [no bin needed]"
@@ -65,16 +65,15 @@ class Steps:
     ask_has_pad = "There's a pad on the bot [done]"
     # ask_tight_screws = "All screws are screwed in all the way [done]"
     ask_debug_cover = "The debug cover is in place [done]"
-    ask_double_check = "Have the case double checked [good]"
+    ask_double_check = "Have the case double checked {subject line, then notes} [good]"
     ask_shipping_mode = "Placed into shipping mode [done]"
     ask_close_parts = "Close out all parts and get out of case [done]"
     ask_tags_off = "All the tags are off, including the bin and dock [done]"
     ask_put_bin_back = "Put the bin back [done]"
-    ask_copy_notes_1 = "Copy notes over to CSS and add a repair action (notes copied) [done]"
-    ask_copy_notes_2 = "Copy notes over to CSS (notes copied) [done]"
-    ask_complete_case_CSS = "Finish the case on CSS (case ID copied) [done]"
+    ask_copy_notes_1 = "Copy notes over to CSS and add a repair action {notes} [done]"
+    ask_copy_notes_2 = "Copy notes over to CSS {notes} [done]"
+    ask_complete_case_CSS = "Finish the case on CSS {case ID, then 'rr'} [done]"
     ask_put_bot_on_shelf = "Put the robot and traveler on the shelf [done]"
-    generate_external_notes_1 = "Create external notes [open menu]"
-    generate_external_notes_2 = "Copy external notes [done]"
+    generate_external_notes = "Create and copy external notes [done]";
     # finish_case = 'All done! [close case]'
     finish_case = "All done! Good to close case now"
