@@ -2,16 +2,14 @@ URGENT: ctrl+end shortcut / fix all the shortcuts
 
 HIGH: phase deserialize doesn't load correctly
 HIGH: add periodic saving
-HIGH: If its any sort of auto-evac problem, clean the bumper
-HIGH: If the robot doesn't turn on at all or liquid damage, test the battery
 HIGH: add a global shortcut to jump focus to input box
 HIGH: in checking the user dock charging contacts, add the ability to include notes
-HIGH: If there's a bad contact, still check the battery if I need to
 HIGH: when doing a mobility test, if the dock specified is a base, not a dock, ask to confirm the bin does not have ad evac port, and if it should
 HIGH: add ctrl+A to *all* input boxes
 HIGH: J1-6 don't have DCT cards specified
 
-MEDIUM: add mobility test step to debugging phase
+MEDIUM: Auto-guess which test dock the mobility test will use
+MEDIUM: add a "put on hold" phase
 MEDIUM: Add some toasts? (copied, pick up case, case ref copied, etc)
 MEDIUM: ctrl+home/ctrl+end
 MEDIUM: J955 - 1st 5 means evac dock, 1 means base. 2nd 5, if 7, means lapis bin
@@ -23,7 +21,6 @@ MEDIUM: lose case from input box (may already work?)
 MEDIUM: copy serial button gets pushed off page if window too small
 MEDIUM: if replaced bot and dock, combine them in external notes
 MEDIUM: set capitalization for each word in the Dock: box in the mobility menu
-MEDIUM: if battery tests are needed, also measure contacts, even if they don't feel sunken, but allow na
 MEDIUM: in checking the SPL SKU confirm phase step, parse the serial and give it (i.e. "Is the SPL SKU 577?")
 MEDIUM: add a binary slider in mobility menu to manually control the overall result, but which gets self-updated
 MEDIUM: if provisioned on app, remind in finish phase to factory reset again -- not sure how to tell
@@ -35,12 +32,11 @@ MEDIUM: add a binding for recovering state from the state backup file
 MEDIUM: in step "put bot and traveler on shelf", add "and box"
 MEDIUM: in mobility menu, make the spray test disabled unless M6
 MEDIUM: add "esc" binding to both menus
-MEDIUM: add a "put on hold" phase
 MEDIUM: have a variable that indicates a rusted bin screw, for the external notes menu
 MEDIUM: if serial numbers are different, automatically go to a new step that offers (and allows) you to close the case immediately
-MEDIUM: Auto-guess which test dock the mobility test will use
-MEDUIM: if we measured one contact, and it's good, ask if the other one needs to be measured as well
+MEDIUM: if battery tests are needed, also measure contacts, even if they don't feel sunken, but allow na
 
+LOW: add mobility test step to debugging phase
 LOW: clean chirp sensor holes, if needed
 LOW: some sort of reminder to clean the bin sensors: especially if they come in with bin not clearing and/or evac issues
 LOW: If swap, copy the robot's defective serial number
@@ -63,6 +59,7 @@ LOW: Bold the 3 middle characters of the ref id?
 LOW: I can auto remove lines if there's 3 newlines in a row
 LOW: maaaybe try to auto generate and send the swap email
 LOW: back broke
+LOW: If its any sort of auto-evac problem, clean the bumper
 LOW: only c9's can refill
 LOW: add a warning or something if characters exceed 4000
 LOW: Adding proper versioning is a good idea

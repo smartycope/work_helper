@@ -210,7 +210,10 @@ def execute_step(self, resp):
 
             case Steps.battery_test:
                 if resp.lower() != 'na':
-                    charge, health = resp.split(',')
+                    # charge, health = resp.split(',')
+                    try:
+                        charge, health = re.split(r'(?:,|\s)(?:\s)?', resp)
+                    except ValueError: return
                     self.add_step(f'Tested battery: {charge.strip()}%/{health.strip()}%', bullet='!' if float(health.strip()) < 80 else '*')
 
                 if self._swap_after_battery_test:
@@ -317,7 +320,7 @@ def execute_step(self, resp):
                     self.input.value = resp
                     return
 
-                self.add_step(f'Measured right contact: {mean(measurements):.1f}mm +/- {std(measurements) or .1:.1f}')
+                self.add_step(f'Measured left contact: {mean(measurements):.1f}mm +/- {round(std(measurements), 1) or .1:.1f}')
 
                 if mean(measurements) < 3.8:
                     self.ensure_process()
@@ -493,7 +496,7 @@ def execute_step(self, resp):
             next_step = 'battery_test/charging'
 
     if next_step == 'battery_test/charging':
-        if 'charg' in self.customer_states.lower() or 'batt' in self.customer_states.lower():
+        if 'charg' in self.customer_states.lower() or 'batt' in self.customer_states.lower() or self._liquid_found:
             self.step = Steps.battery_test
         elif self._swap_after_battery_test:
             self.phase = Phase.SWAP
