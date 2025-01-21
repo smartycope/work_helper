@@ -15,7 +15,8 @@ class ExternalNotesMenu(VerticalGroup):
         ("Recommend cleaning dock charging contacts", "Recommend regular cleaning of dock charging contacts"),
         ("Recommend cleaning filter", "Recommend regular cleaning of the bin filter"),
         ("Use correct bags", "Recommend using only OEM replacement bags"),
-        ("Rusty bin screw", "Recommend only using OEM cleaning products, as some products can rust components"),
+        # auto-change this to exclude Bona if robot is a C10 (C10's can't use Bona)
+        ("Rusty bin screw", "Recommend only using water, Bona, or iRobot cleaning solution, as other products can rust components"),
         ("Liquid spill", "Robot is not rated for liquid cleanup"),
         ("Broken mop pad", "Recommend hand washing mop pads"),
         ("Factory reset and Lapis bin", "Recommend re-provisioning the mop bin to the robot"),
@@ -71,7 +72,7 @@ class ExternalNotesMenu(VerticalGroup):
             if self.case.serial.startswith('j7'):
                 self.select("J7 and a swap")
 
-        if self.case._bin_screw_has_rust:
+        if self.case._bin_screw_has_rust or self.case._dock_tank_screw_has_rust:
             self.select("Rusty bin screw")
 
         if self.case._liquid_found:

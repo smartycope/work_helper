@@ -1,5 +1,4 @@
 from textual.containers import *
-from textual.reactive import reactive
 from textual.widgets import *
 
 from CustomInput import CustomInput
@@ -159,13 +158,16 @@ class MobilityMenu(VerticalGroup):
         if not self._been_opened:
             self.update_values()
             self._been_opened = True
+            self.cx_states.update('Customer States: ' + self.case.customer_states if self.case.customer_states else '')
+
 
     def action_close(self):
         self.visible = False
 
     def compose(self):
         yield Label('[bold]Mobility Test[/]', id='mobility-title')
-        # yield Label('Customer States: ' + self.case.customer_states, id='cx-states')
+        self.cx_states = Label('Customer States: ', id='cx-states')
+        yield self.cx_states
 
         yield Label('Where:')
         self.where = Select.from_values(('top bench', 'floor', 'bottom bench'), allow_blank=False, value='top bench')
@@ -213,7 +215,7 @@ class MobilityMenu(VerticalGroup):
         self.manual_evac = TriSwitch(value=None)
         yield self.manual_evac
 
-        yield Label('Picks up Rice:')
+        yield Label('Picks up Debris:')
         self.picks_up_debris = TriSwitch(value=None)
         yield self.picks_up_debris
 
@@ -238,10 +240,12 @@ class MobilityMenu(VerticalGroup):
         yield self.notes
 
         # yield Static(classes='quadruple')
-        yield Static(classes='double')
+        # yield Static(classes='double')
+        yield TextArea(classes='double extend')
 
         yield Button('Close', id='cancel', classes='')
         yield Button('Done', id='done', classes='')
+
 
     def on_button_pressed(self, event):
         match event.button.id:
@@ -249,7 +253,8 @@ class MobilityMenu(VerticalGroup):
                 self.visible = False
             case 'done':
                 self.visible = False
-                self.case.text_area.text = self.case.text_area.text.strip() + '\n\n' + self.stringify() + '\n\n'
+                extra_line = '' if self.case.text_area.text.strip().endswith('Process:') else '\n'
+                self.case.text_area.text = self.case.text_area.text.strip() + '\n' + extra_line + self.stringify() + '\n\n'
                 self.update_values()
 
     def stringify(self):
@@ -286,7 +291,7 @@ class MobilityMenu(VerticalGroup):
         if lines_pass:
             if has_pass:
                 l2 += ', '
-            l2 += f'{self.num_lines} lines'
+            l2 += f'{self.num_lines.value} lines'
 
         if has_fail or lines_pass is False:
             if has_pass or lines_pass is True:
@@ -300,7 +305,7 @@ class MobilityMenu(VerticalGroup):
         if lines_pass is False:
             if has_fail:
                 l2 += ', '
-            l2 += f'{self.num_lines} lines'
+            l2 += f'{self.num_lines.value} lines'
 
         l3 = '** Result: ' + ("Fail" if has_fail or lines_pass is False else 'Pass')
         if self.notes.value:

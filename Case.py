@@ -1,3 +1,4 @@
+import re
 from globals import COLORS
 import random
 from textual.containers import *
@@ -9,6 +10,7 @@ from CustomTextArea import CustomTextArea
 from Sidebar import Sidebar
 from MobilityMenu import MobilityMenu
 from ExternalNotesMenu import ExternalNotesMenu
+from textual import on
 
 
 class Case(VerticalGroup):
@@ -16,6 +18,9 @@ class Case(VerticalGroup):
 
     BINDINGS = (
         ('_s', 'change_serial', 'Set Serial'),
+        ('ctrl+l', 'parse_for_info', 'Parse Info'),
+        # TODO: This doesn't work
+        Binding('ctrl+i', 'focus_input', 'Focus Input', show=False, priority=True),
     )
 
     step = reactive(Steps.ask_labels)
@@ -23,9 +28,10 @@ class Case(VerticalGroup):
 
     # The step that gets switched to when switched to that phase (the first step of each phase)
     first_steps = {
+        Phase.CONFIRM: Steps.confirm_id,
         Phase.ROUTINE_CHECKS: Steps.ask_sunken_contacts,
         Phase.DEBUGGING: Steps.add_step,
-        Phase.FINISH: Steps.ask_final_cleaned,
+        Phase.FINISH: Steps.generate_external_notes,
         Phase.SWAP: Steps.swap_unuse_parts,
     }
 
@@ -55,12 +61,20 @@ class Case(VerticalGroup):
 
         # Some internal values to make auto guessing external notes easier
         self._bin_screw_has_rust = False
+        self._dock_tank_screw_has_rust = False
         self._liquid_found = False
+        self._modular = True
+
+        self._finish_first_copy_notes = ''
+        self._also_check_left = False
+        self._swap_after_battery_test = False
 
         # This gets run on mount of the color selector
         # self.set_color(color)
 
-    def set_color(self, to_color):
+    @on(Select.Changed, "#color-selector")
+    def set_color(self, event: Select.Changed):
+        to_color = event.value
         # old_color = self.color
         self.color = to_color
         self.sidebar.styles.background = to_color
@@ -103,18 +117,17 @@ class Case(VerticalGroup):
         self.text_area.text = self.text_area.text.strip() + '\n'
         self.text_area.text += f'{bullet} {step}\n'
 
-    def on_select_changed(self, event: Select.Changed) -> None:
-        match event.select.id:
-            case "color-selector":
-                self.set_color(event.value)
-            case "phase-select":
-                self.phase = Phase(event.value)
-                match self.phase:
-                    case Phase.CONFIRM:
-                        # At first, we want to confirm ids, not just get the model number
-                        self.step = Steps.ask_labels if not self.serial else Steps.check_repeat
-                    case _:
-                        self.ensure_serial(self.first_steps[self.phase])
+    @on(Select.Changed, "#phase-select")
+    def on_phase_changed(self, event: Select.Changed) -> None:
+        self.phase = Phase(event.value)
+
+        if self.phase == Phase.FINISH:
+            self.external_notes_menu.visible = True
+
+        if self.phase == Phase.CONFIRM:
+            self.step = self.first_steps[Phase.CONFIRM] if not self.serial else Steps.check_repeat
+        else:
+            self.ensure_serial(self.first_steps[self.phase])
 
     def action_open_mobility_menu(self):
         # Only allow the mobility menu to be opened if we have information about the bot
@@ -154,9 +167,12 @@ class Case(VerticalGroup):
         case = Case(data['ref'], data.get('color', random.choice(list(COLORS.keys()))))
         case.text_area.text = data.get('notes', data['ref'] + '\n')
         case.serial = data.get('serial', '')
+        case.sidebar.serial = case.serial
         case.sidebar.todo.text = data.get('todo', '')
         case.phase = Phase(data.get('phase', Phase.DEBUGGING))
         case.step = data.get('step', Steps.add_step)
+        case.sidebar.phase_selector.value = case.phase.value
+        case.action_parse_for_info()
         return case
 
     def ensure_process(self):
@@ -168,6 +184,25 @@ class Case(VerticalGroup):
             self._execute_step(event.value)
             self.input.value = ''
 
+    def action_parse_for_info(self):
+        """ Parse the currently set text for things like the dock, customer states, things like that """
+        # "Parts in: Robot" + group(optional(', ' + word))
+        if (found := re.search(r'Parts\ in:\ Robot((?:,\ \w+)?)', self.text_area.text)):
+            self.dock = found.group(1)
+
+        # "Customer States: " + group(+anything)
+        if (found := re.search(r'Customer\ States:\ ((?:.)+)', self.text_area.text)):
+            self.customer_states = found.group(1)
+
+        # 'Routine Checks' + match_max(literallyAnything) + '* ' + chunk + ... + match_max(literallyAnything) + 'Process:'
+        self._modular = not bool(re.search(r'Routine\ Checks(?:(?:.|\n))+\*\ .+is\ non\-modular(?:(?:.|\n))+Process:', self.text_area.text))
+        self._bin_screw_has_rust = bool(re.search(r'Routine\ Checks(?:(?:.|\n))+\*\ (?:Tank\ float\ screw\ has\ a\ spot\ of\ rust\ on\ it|Tank\ float\ screw\ is\ entirely\ rusted)(?:(?:.|\n))+Process:', self.text_area.text))
+        self._dock_tank_screw_has_rust = bool(re.search(r'Routine\ Checks(?:(?:.|\n))+\*\ (?:Dock tank\ float\ screw\ has\ a\ spot\ of\ rust\ on\ it|Dock tank\ float\ screw\ is\ entirely\ rusted)(?:(?:.|\n))+Process:', self.text_area.text))
+        self._liquid_found = bool(re.search(r'Routine\ Checks(?:(?:.|\n))+\*\ Found\ signs\ of\ liquid\ (?:(?:.|\n))+Process:', self.text_area.text))
+
+    def action_focus_input(self):
+        self.input.focus()
+
     # Helper methods
     def get_quick_model(self):
         if self.serial[0] == 'r':
@@ -176,22 +211,26 @@ class Case(VerticalGroup):
             return self.serial[:2].upper()
 
     def get_DCT(self):
-        if self.serial.startswith(('i1', 'i2', 'i3', 'i4', 'i5')):
-            return 'Red card'
+        if self.serial.startswith('i') and not self._modular:
+            return '[on red]Red card[/] from the top'
+        elif self.serial.startswith(('i1', 'i2', 'i3', 'i4', 'i5')):
+            return '[on red]Red card[/]'
         elif self.serial.startswith('r') and not self.serial.startswith('r9'):
             return 'Serial'
         elif self.serial.startswith(('r', 's')):
             return 'USB'
         elif self.serial.startswith(('j8', 'q7', 'i6', 'i7', 'i8', 'c9')):
-            return 'Green card'
+            return '[on green]Green card[/]'
         elif self.serial.startswith('m6'):
             return 'Small debug card, use Trident driver'
         elif self.serial.startswith(('j9')):
-            return 'Blue card'
+            return '[on blue]Blue card[/]'
         elif self.serial.startswith('e'):
-            return 'Green card with micro USB plugged into right side'
+            return '[on green]Green card[/], with micro USB\nplugged into the other side\non the card'
         elif self.serial.startswith(('j7', 'c7')):
-            return 'Green or Blue card. Try the Green card first'
+            return '[on green]Green card[/] / [on blue]Blue card[/]'
+        elif self.serial.startswith(('j5', 'j6', 'j4', 'j3', 'j2', 'j1')):
+            return '!!! Unknown, find out and put in TODO !!!'
         else:
             return 'Error: Model from serial number not recognized'
 
@@ -212,20 +251,37 @@ class Case(VerticalGroup):
                 ○ Ignore if you know the battery State of Charge is high.
         """
 
-        if self.serial.startswith('j'):
+        if not self._modular:
+            return 'DCT won\'t work, only BBK'
+        elif self.serial.startswith('j'):
             return 'Second dock comms test, if FW == 24.29.x (ensure robot still evacs)'
         elif self.serial.startswith('s9'):
             return 'Low-current vacuum test, pass if the value is <1500'
         elif self.serial.startswith('m'):
             return 'Pad detection test (run both wet and dry missions)'
         elif self.serial.startswith('c'):
-            return 'Actuator arm test, if FW >= 23.53.6 (ensure it deploys in mobility mission)'
+            return 'Actuator arm test, if FW >= 23.53.6 (ensure it deploys in mobility mission). If FW >= v24.29.5, DCT can\'t run'
         else:
             return 'Optical bin tests (at most 2, if barely out of range)'
 
     def get_notes(self):
-        if self.serial.startswith('j'):
-            return 'If the last digit of the SPL SKU is 7, they have a Lapis bin at home! If the middle number is 1, it came with just a home base. In that case, don\'t test on a dock! Just a base.'
+        # if self.serial.startswith('j'):
+            # return 'If the last digit of the SPL SKU is 7, they have a Lapis bin at home! If the middle number is 1, it came with just a home base. In that case, don\'t test on a dock! Just a base.'
+        if self.serial.startswith('c9'):
+            return "Remember to remove battery before removing the CHM. Also, if the blue DCT card doesn't work, try a hard reset"
+
+        if self.serial.startswith('i'):
+            return 'If having weird trouble with DCT, try factory reset'
+
+        if self.serial.startswith('r'):
+            return 'To BiT: lights have to be on, then hold home & clean and press spot 5x'
+
+        if self.serial.startswith('e'):
+            return 'To BiT: lights have to be off, then hold home & clean and press spot 5x. You also have to press clean to get it to connect to DCT'
+
+        if self.serial.startswith('j7'):
+            return "If the blue DCT card doesn't work, try a hard reset"
+
         return ''
 
     @property
@@ -239,6 +295,10 @@ class Case(VerticalGroup):
     @property
     def is_dock(self):
         return self.dock.lower() not in ('bombay', 'san marino', 'torino')
+
+    @property
+    def dock_can_refill(self):
+        return self.dock.lower() in ('aurora', 'boulder')
 
     @property
     def is_combo(self):

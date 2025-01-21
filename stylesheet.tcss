@@ -14,8 +14,16 @@ Screen {
     height: 100%;
     width: 30%;
     min-width: 30;
+    # content-align: center top;
+    # content-align-horizontal: center;
+    # align-horizontal: center;
+    align: center top;
     # background: ;
     color: black;
+}
+
+.align-center{
+    content-align-horizontal: center;
 }
 
 #reference_popup {
@@ -104,10 +112,15 @@ Screen {
 }
 
 #mobility-title{
-    column-span: 4;
+    column-span: 1;
     content-align: center middle;
 }
 
 #cx-states{
+    column-span: 3;
+    content-align: right middle;
+}
 
+.serial-label{
+    margin: 0 1;
 }

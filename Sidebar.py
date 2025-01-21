@@ -7,6 +7,7 @@ from textual.widgets import *
 from info import sleep_mode, factory_reset
 from Phase import Phase
 from globals import COLORS, SIDEBAR_WIDTH, COPY_SERIAL_BUTTON_WIDTH
+from CopyText import CopyText
 
 class TodoTextArea(TextArea):
     BINDINGS = (
@@ -30,15 +31,47 @@ class Sidebar(VerticalGroup):
         self.phase_selector = Select([(i.name, i.value) for i in Phase], id='phase-select', allow_blank=False)
         self.phase_selector.can_focus = False
 
+        # self.ref_model = Label(f'{self.case.ref:^{SIDEBAR_WIDTH}}\n', id=f'ref-label-{self.case.ref}')
+        # self.ref_model = Label(f'{self.case.ref:^{SIDEBAR_WIDTH}}\n', id=f'ref-label-{self.case.ref}')
+        self.ref = CopyText(self.case.ref, id=f'ref-label-{self.case.ref}')
+        self.model = Label("")
+        self.color_switcher = Select(
+            [(f'[{color}]{name}[/]', color) for color, name in COLORS.items()],
+            id="color-selector",
+            allow_blank=False,
+            value=self.case.color,
+        )
+        self.color_switcher.can_focus = False
+        self.sleep_mode = Label('', id=f'sleep-mode-label-{self.case.ref}')
+        self.factory_reset = Label('', id=f'factory-reset-label-{self.case.ref}')
+        self.dct = Label('', id=f'dct-label-{self.case.ref}')
+        self.dct_exp = Label('', id=f'dct-exp-label-{self.case.ref}')
+        self.notes_sep = Label('')
+        self.notes = Label('', id=f'notes-label-{self.case.ref}')
+        # self.serial_label = Label(' '*(SIDEBAR_WIDTH-COPY_SERIAL_BUTTON_WIDTH), id=f'serial-label-{self.case.ref}')
+        self.serial_label = CopyText(' '*(SIDEBAR_WIDTH), None, id=f'serial-label-{self.case.ref}', classes='serial-label')
+        # self.id_button = Button(f'Copy', id='copy-serial-button')
+        # self.id_button.can_focus = False
+
+    def update_dct(self):
+        # Just re-update DCT, cause the case will suddenly realize it's modular now
+        self.dct.update(f'DCT: {self.case.get_DCT()}\n')
+        self.dct_exp.update(f'{{:^{SIDEBAR_WIDTH}}}'.format(textwrap.fill(self.case.get_DCT_exceptions(), SIDEBAR_WIDTH)) + '\n')
+
     def watch_serial(self, *args):
         if self.serial:
-            self.ref_model.update(f'{self.case.ref+" • "+self.case.get_quick_model():^{SIDEBAR_WIDTH}}\n')
+            # self.ref_model.update(f'{self.case.ref+" • "+self.case.get_quick_model():^{SIDEBAR_WIDTH}}\n')
+            self.model.update(f' • {self.case.get_quick_model()}')
             # self.model.update(f'{{:^{SIDEBAR_WIDTH}}}'.format(self.case.get_quick_model() + '\n'))
             self.sleep_mode.update(textwrap.fill(sleep_mode.get(self.serial[0], 'Unknown'), SIDEBAR_WIDTH) + '\n')
             self.factory_reset.update(textwrap.fill(factory_reset.get(self.serial[0], 'Unknown'), SIDEBAR_WIDTH) + '\n')
-            self.dct.update(f'{{:^{SIDEBAR_WIDTH}}}'.format(textwrap.fill(self.case.get_DCT(), SIDEBAR_WIDTH)) + '\n')
+            # self.dct.update(f'DCT: {{:^{SIDEBAR_WIDTH-5}}}'.format(textwrap.fill(self.case.get_DCT(), SIDEBAR_WIDTH-5)) + '\n')
+            # self.dct.update(f'DCT: {{:^{SIDEBAR_WIDTH-5}}}'.format(self.case.get_DCT()) + '\n')
+            self.dct.update(f'DCT: {self.case.get_DCT()}\n')
             self.dct_exp.update(f'{{:^{SIDEBAR_WIDTH}}}'.format(textwrap.fill(self.case.get_DCT_exceptions(), SIDEBAR_WIDTH)) + '\n')
-            self.serial_label.update(f'\n{self.serial.upper():^{SIDEBAR_WIDTH-COPY_SERIAL_BUTTON_WIDTH}}')
+            # self.serial_label.update(f'\n{self.serial.upper():^{SIDEBAR_WIDTH}}')
+            self.serial_label.text = f'{self.serial.upper():^{SIDEBAR_WIDTH}}'
+            self.serial_label.to_copy = self.serial.upper()
             # self.serial_label.update(self.serial)
             notes = textwrap.fill(self.case.get_notes(), SIDEBAR_WIDTH)
             if notes:
@@ -46,44 +79,31 @@ class Sidebar(VerticalGroup):
                 self.notes.update(notes)
 
     def compose(self):
-        self.color_switcher = Select(
-            [(f'[{color}]{name}[/]', color) for color, name in COLORS.items()],
-            id="color-selector",
-            allow_blank=False,
-            value=self.case.color,
-        )
-        # self.color_switcher.styles.margin = 0
-        # self.color_switcher.styles.padding = 0
-        # self.color_switcher.styles.height = 1
-        # self.color_switcher.styles.background = list(COLORS.keys())[self.case.color]
-        self.color_switcher.can_focus = False
         yield self.color_switcher
-
-        self.ref_model = Label(f'{self.case.ref:^{SIDEBAR_WIDTH}}\n', id=f'ref-label-{self.case.ref}')
-        yield self.ref_model
+        with HorizontalGroup(classes='align-center'):
+            # Quick hack, cause CSS is stupid
+            yield Label(' '*((SIDEBAR_WIDTH-7)//2))
+            yield self.ref
+            yield self.model
+        # yield self.ref_model
         with HorizontalGroup():
             # yield Label(f'{"Phase":^{SIDEBAR_WIDTH}}\n')
             yield Label("\nPhase: ")
             yield self.phase_selector
         yield Label('\n')
+
+        # yield Label(f'{" DCT ":-^{SIDEBAR_WIDTH}}')
+        yield self.dct
+        yield Label(f'{" DCT Exceptions ":-^{SIDEBAR_WIDTH}}')
+        yield self.dct_exp
         # yield Label(f'{" Model ":-^{SIDEBAR_WIDTH}}')
         # self.model = Label('', id=f'model-label-{self.case.ref}')
         # yield self.model
         yield Label(f'{" Shipping Mode ":-^{SIDEBAR_WIDTH}}')
-        self.sleep_mode = Label('', id=f'sleep-mode-label-{self.case.ref}')
         yield self.sleep_mode
         yield Label(f'{" Factory Reset ":-^{SIDEBAR_WIDTH}}')
-        self.factory_reset = Label('', id=f'factory-reset-label-{self.case.ref}')
         yield self.factory_reset
-        yield Label(f'{" DCT ":-^{SIDEBAR_WIDTH}}')
-        self.dct = Label('', id=f'dct-label-{self.case.ref}')
-        yield self.dct
-        yield Label(f'{" DCT Exceptions ":-^{SIDEBAR_WIDTH}}')
-        self.dct_exp = Label('', id=f'dct-exp-label-{self.case.ref}')
-        yield self.dct_exp
-        self.notes_sep = Label('')
         yield self.notes_sep
-        self.notes = Label('', id=f'notes-label-{self.case.ref}')
         yield self.notes
 
         with VerticalGroup(id='lower-sidebar'):
@@ -91,12 +111,9 @@ class Sidebar(VerticalGroup):
             yield self.todo
             # yield Label('')
 
-            self.serial_label = Label(' '*(SIDEBAR_WIDTH-COPY_SERIAL_BUTTON_WIDTH), id=f'serial-label-{self.case.ref}')
-            self.id_button = Button(f'Copy', id='copy-serial-button')
-            self.id_button.can_focus = False
             with HorizontalGroup():
                 yield self.serial_label
-                yield self.id_button
+                # yield self.id_button
 
             # yield Label('')
             button = Button('Copy Notes', id='copy-button')

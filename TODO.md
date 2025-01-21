@@ -1,445 +1,97 @@
-TODO
-clean optical bin sensors
-mobility test
-bbk
-dct
-clean chirp sensor holes, if needed
-non-modular i5's are different
-add an option to not check battery and things like that (detect na)
-check if wheels click good?
-swapping checklist
-
-remind that older robots, when testing, need to be activated manually
-battery test input should allow splitting on whitespace as well
-
-Make note that J5, J6 ,& J7, if it just boots (white light spins) indefinitely, then you need to replace the *battery*, with one of the following SKUs (in order of preference):
-4706313
-4763362           
-4785636
-4624864
-This is caused by firmware version 24.29.1
-
-
-If swap, copy the robot's defective serial number
-DONE: if bot is a combo, check for rust (and don't check for liquid damage)
-if it's a big base, and it's any sort of vacuum stall or filter clog or something, remind to check the dock evac channel
-
-
-when finishing, and a combo, remind to clean pad and under the pad
-
-if charging issue, final check the charging wattage
-
-ctrl + backspace doesn't seem to work
-    ability to change colors on cases
-The whole sidebar color is a little glaring
-autocapitalizing
-on focus (window focus, at least), the input shouldn't select all of it's text
-make it so it finds where it should put text, so lower down I can manually add notes and it won't keep just adding to the end
-if it's a mopping model (m* serial number), don't ask a lot of the routine questions
-at the end, add the "process" section
-esc should cancel the new case dialog
-change/check the shade of blue
-make it cycle through colors better
-reorder colors
-check sunken contacts *before* cleaning (removing the bottom)
-when asking if the user charging docks are good, add an option to say I cleaned them
-add mobility test before going directly to add_step (later)
-ask if rollers are good immediately after cleaning
-check if user charging contacts are good needs an "(empty for yes)"
-forcibly disallow multiple lines of whitespace between lines that start with *
-some sort of reminder to clean the bin sensors: especially if they come in with bin not clearing and/or evac issues
-if we measured one contact, and it's good, ask if the other one needs to be measured as well
-always keep 1 newline at the end of the text
-i series factory reset is wrong
-Show the phase somewhere
-finish phase
-when textarea is focused, it should always put the cursor at the very end
-Add a section for TODO?
-only show notes if there is notes
-strip input box text
-confirm closing a case
-have an option to create a case and just paste stuff in, instead of starting from the beginning
-If its any sort of auto-evac problem, clean the bumper
-strip the copied string (copy button)
-Add some toasts? (copied, pick up case, case ref copied, etc)
-it's asking about the user contacts without self.base being true
-Consider an option to reopen a case
-autofocus to input box on tab switch
-make the tab switch shortcuts show=False
-Allow multicolored tabs
-put customer states immediately after picking up case instead
-add an option to say non-modular when checking for liquid (or first thing to open the back)
-ctrl+home/ctrl+end
-no sign of liquid *resudue* (not damage)
-If I ever type "cancel", just go directly to "add step"
-
-ctrl + t is toggle case
-IF the robot doesn't turn on at all (i.e. liquid damage), test the battery
-double click select word
-
-J955 - 1st 5 means evac dock, 1 means base. 2nd 5, if 7, means lapis bin
-warn if the robot has an evac bin and/or dock, and I haven't mobility tested with evac bin, or with customers dock
-
-highlight DCT colors?
-maybe just ask if a battery test is needed?
-
-remind to put in the new robot's serial number, if a swap occurs
-remind to pout in sleep mode
-maybe have up and down keys put the previous lines in the input box to edit
-
-if the text_area ends in "* ", remove it as well
-remind to stick DCT cable under the mop pad in combo modles
-remind to empty bin before shipping on combo modles
-
-clean optical bin sensors
-mobility test
-bbk
-dct
-clean chirp sensor holes, if needed
-non-modular i5's are different
-add an option to not check battery and things like that (detect na)
-check if wheels click good?
-swapping checklist
- *
-remind me to bring traveler when doing a battery check
-Display current phase, to make context switching easy
-remind that older robots, when testing, need to be activated manually
-make routine checks that dont pass start with !
-sub checks (like for liquid) should start with **
-battery test input should allow splitting on whitespace as well
-
-DCT known failures:
-J-Series robots with FW version 24.29.x will fail test #2 dock comms.
-○ Ensure robot will evacuate and ignore DCT dock comms failure
-● S9 robots may fail vacuum tests with low-current above 1000.
-○ Ignore as long as value is below 1500
-● Some robots will fail optical bin tests. 2 failures allowed, as long as the values are close
-○ E.G. 500-1000 and the robot fails with 490.
-● Pad detection tests on the M6 will sometimes fail.
-○ Ignore if both wet and dry mobility missions are successful.
-● C7 and C9 robots will fail actuator arm with FW’s higher that 23.53.6
-○ As long as the actuator arm will deploy normally during mobility and the failures
-are for speed and range, ignore DCT.
-● Battery charging will fail on a full battery
-○ Ignore if you know the battery State of Charge is high.
-
-
-If swap, copy the robot's defective serial number
-if bot is a combo, check for rust (and don't check for liquid damage)
-check if the blower motor spins freely as well
-if it's a big base, and it's any sort of vacuum stall or filter clog or something, remind to check the dock evac channel
-
-when finishing, and a combo, remind to clean pad and under the pad
-automaqtically assign colors to cases, so i can use multicolored markers to keep track easily
-
-if charging issue, final check the charging wattage
-
-a "cancel out of the prewritten script" option
-ctrl + backspace doesn't seem to work
-dct breaks on "C9C9"
-definitely make the sidebar smaller
-add ctrl+s to save
-remind to check tank bin screw on combo models
-ability to change colors on cases
-The whole sidebar color is a little glaring
-
-on focus (window focus, at least), the input shouldn't select all of it's text
-make it so it finds where it should put text, so lower down I can manually add notes and it won't keep just adding to the end
-if it's a mopping model (m* serial number), don't ask a lot of the routine questions
-at the end, add the "process" section
-esc should cancel the new case dialog
-change/check the shade of blue
-check sunken contacts *before* cleaning (removing the bottom)
-when asking if the user charging docks are good, add an option to say I cleaned them
-add mobility test before going directly to add_step (later)
-ask if rollers are good immediately after cleaning
-check if user charging contacts are good needs an "(empty for yes)"
-forcibly disallow multiple lines of whitespace between lines that start with *
-some sort of reminder to clean the bin sensors: especially if they come in with bin not clearing and/or evac issues
-if we measured one contact, and it's good, ask if the other one needs to be measured as well
-always keep 1 newline at the end of the text
-i series factory reset is wrong
-Show the phase somewhere
-finish phase
-when textarea is focused, it should always put the cursor at the very end
-Add a section for TODO?
-only show notes if there is notes
-strip input box text
-confirm closing a case
-have an option to create a case and just paste stuff in, instead of starting from the beginning
-If its any sort of auto-evac problem, clean the bumper
-strip the copied string (copy button)
-Add some toasts? (copied, pick up case, case ref copied, etc)
-it's asking about the user contacts without self.base being true
-Consider an option to reopen a case
-autofocus to input box on tab switch
-make the tab switch shortcuts show=False
-Allow multicolored tabs
-put customer states immediately after picking up case instead
-add an option to say non-modular when checking for liquid (or first thing to open the back)
-ctrl+home/ctrl+end
-no sign of liquid *resudue* (not damage)
-If I ever type "cancel", just go directly to "add step"
-
-ctrl + t is toggle case
-IF the robot doesn't turn on at all (i.e. liquid damage), test the battery
-double click select word
-
-J955 - 1st 5 means evac dock, 1 means base. 2nd 5, if 7, means lapis bin
-warn if the robot has an evac bin and/or dock, and I haven't mobility tested with evac bin, or with customers dock
-
-highlight DCT colors?
-maybe just ask if a battery test is needed?
-
-remind to put in the new robot's serial number, if a swap occurs
-remind to pout in sleep mode
-maybe have up and down keys put the previous lines in the input box to edit
-
-if the text_area ends in "* ", remove it as well
-remind to stick DCT cable under the mop pad in combo modles
-remind to empty bin before shipping on combo modles
-
-
-# Split everything into functions
-# add comments
-# make it easily updatable
-# consider using rich or something to make it even more easy to use
-# Make absolutely sure that if it fails, it still prints and copies the current report
-# add more modes and things
-# parse docks and get information
-# add an information section
-# LOTS of testing
-# Get robot nicknames
-# remind to scan the new swap ID
-# maaaybe pyautogui
-# lots of different entrypoints
-# a dict? of cases
-# swap sunken and liquid damage checks
-# ask for any cleaning notes
-# if charge wattage is 2-6, battery is likely already charged
-# add paper reference tag to bot and base
-# if J7 flint variant (blue dct card) doesn't work, then: disconnect battery, hold down the clean button for 20 seconds, then reboot, factory reset, wait, and try to connect it again
-# have a factory reset flag, so if I do, it remembers to tell the user on external notes
-# see if I can get an error reference built in
-# add step to check if dock has a bag
-# make all the steps inturruptable
-# add chargining notes
-# change dict accessors to .get() calls
-# Bug: 'c' not found in some dict
-# auto capitalize notes
-# if not charging, don't put the wattage
-# autocorrect, somehow?
-# put in the notes if contacts are not sunken
-# combine both steps into one section called "Process", and just stick a diagnosis in there somewhere
-
-
-test dct exceptions
-Always keeping a single newline at the end of the text isn't working - test this
-test adding text manually
-remove the todo box margins, if possible
-
-NEXT: make UI for mobility tests:
-I think I want the mobility test to be formatted like this:
-
-* 2nd Mobility test - floor, new Aurora, empty bin
-** Pass: undock, clean | Fail: refill, pad deploy | Result: Fail
-** Notes ntoes notes
-
-options: undock, dock, "navigate" (instead of clean), pick up rice, other, refill, auto-evac, manual evac, pad deploy, number of water lines, is streaky
-
-
-Number the mobility tests automatically
-consider having a preview of what the mobility test entry will look like
-
-Make swap have a bunch of separators (i.e. *************** Swap ***************)
-
-Consider a "clear TODO" button (or at least make it select everything on focus)
-check what DCT card j9 uses
-Low priority: Add some color to the notes area to make things easily distinguishable (but make sure not to copy it!)
-
-add a in notes that if it's a C9, and I can't get DCT to work, to pull the battery out, and hold the clean button down for 10 seconds, then reboot
-
-At the end, do a bunch of regex on the notes and confirm that I'm not forgetting anything -- including adding in the customer notes that a factory reset was performed
-
-for sleep mode on C9, remove the "and press again to confirm"
-
-Tests for changing color
-
-add a "can close" variable to case
-
-remove the margins on the serial copy button
-
-URGENT: add periodic saving
-
-URGENT: ctrl+end shortcut
-
-Add to notes that J9s, as well as C9s, can need hard reset to get DCT to work
-
-test not same ids
-
-URGENT:  make the DCT card a single line
-
-LOW PRIORITY: a find shortcut
-
-in the play in blower motor task, say in notes that it spins freely
-
-say explicitly that the extractors look good
-
-LOW PRIORITY: Bold the 3 middle characters of the ref id?
-
-make the add_step() method strip the text and then readd whitespace to ensure it's always correct
-
-LOW PRIORITY: add if the dock or bot have been swapped next to the TODO box for context
-
-add shortcut to jump to input box
-
-Add an indicator to the tabs when the case is finished
-
-J9 is in fact the blue card
-
-test adding 5 cases all at once
-
-add a way to change the serial number
-
-whenever i get to swap logic, check to see if the in stock SPL (refilter for all bots) is in stock, or if there's an upgrade available
-
-I can auto remove lines if there's 3 newlines in a row
-
-Low Priority: maaaybe try to auto generate and send the swap email
-
-Make note that if I can't get BBK to work, I can ask Michelle to look it up on RDP (as a double check final step)
-
-in mobility mission menu and is_mopping, ask if tank is full
-
-for contact measurements, add an option to take a number of them, then average and std them together
-
-back broke
-
-in checking the user dock charging contacts, add the ability to include notes
-
-only c9's can refill
-
+URGENT: ctrl+end shortcut / fix all the shortcuts
+
+HIGH: phase deserialize doesn't load correctly
+HIGH: add periodic saving
+HIGH: If its any sort of auto-evac problem, clean the bumper
+HIGH: If the robot doesn't turn on at all or liquid damage, test the battery
+HIGH: add a global shortcut to jump focus to input box
+HIGH: in checking the user dock charging contacts, add the ability to include notes
+HIGH: If there's a bad contact, still check the battery if I need to
+HIGH: when doing a mobility test, if the dock specified is a base, not a dock, ask to confirm the bin does not have ad evac port, and if it should
+HIGH: add ctrl+A to *all* input boxes
+HIGH: J1-6 don't have DCT cards specified
+
+MEDIUM: add mobility test step to debugging phase
+MEDIUM: Add some toasts? (copied, pick up case, case ref copied, etc)
+MEDIUM: ctrl+home/ctrl+end
+MEDIUM: J955 - 1st 5 means evac dock, 1 means base. 2nd 5, if 7, means lapis bin
+MEDIUM: Consider a "clear TODO" button (or at least make it select everything on focus)
+MEDIUM:  make the DCT card a single line
+MEDIUM: Add an indicator to the tabs when the case is finished
+MEDIUM: in mobility mission menu and combo (not can_mop), ask if tank is full
+MEDIUM: lose case from input box (may already work?)
+MEDIUM: copy serial button gets pushed off page if window too small
+MEDIUM: if replaced bot and dock, combine them in external notes
+MEDIUM: set capitalization for each word in the Dock: box in the mobility menu
+MEDIUM: if battery tests are needed, also measure contacts, even if they don't feel sunken, but allow na
+MEDIUM: in checking the SPL SKU confirm phase step, parse the serial and give it (i.e. "Is the SPL SKU 577?")
+MEDIUM: add a binary slider in mobility menu to manually control the overall result, but which gets self-updated
+MEDIUM: if provisioned on app, remind in finish phase to factory reset again -- not sure how to tell
+MEDIUM: if factory reset and factory reset and mop bin, combine the 2 automatically (in external notes)
+MEDIUM: have a step in swap that asks for the new serial, so it can update the sidebar with it. BUT keep the old serial. Also in that step, auto copy
+MEDIUM: in mobility menu, show what the customer states is, for reference
+MEDIUM: in mobility menu, organize by how often i use it, not by sequence
+MEDIUM: add a binding for recovering state from the state backup file
+MEDIUM: in step "put bot and traveler on shelf", add "and box"
+MEDIUM: in mobility menu, make the spray test disabled unless M6
+MEDIUM: add "esc" binding to both menus
+MEDIUM: add a "put on hold" phase
+MEDIUM: have a variable that indicates a rusted bin screw, for the external notes menu
+MEDIUM: if serial numbers are different, automatically go to a new step that offers (and allows) you to close the case immediately
+MEDIUM: Auto-guess which test dock the mobility test will use
+MEDUIM: if we measured one contact, and it's good, ask if the other one needs to be measured as well
+
+LOW: clean chirp sensor holes, if needed
+LOW: some sort of reminder to clean the bin sensors: especially if they come in with bin not clearing and/or evac issues
+LOW: If swap, copy the robot's defective serial number
+LOW: if it's a big base, and it's any sort of vacuum stall or filter clog or something, remind to check the dock evac channel
+LOW: ctrl + backspace doesn't seem to work
+LOW: on focus (window focus, at least), the input shouldn't select all of it's text
+LOW: make it so it finds where it should put text, so lower down I can manually add notes and it won't keep just adding to the end
+LOW: strip input box text
+LOW: confirm closing a case
+LOW: ctrl + t is toggle case
+LOW: double click select word
+LOW: warn if the robot has an evac bin and/or dock, and I haven't mobility tested with evac bin, or with customers dock
+LOW: maybe have up and down keys put the previous lines in the input box to edit
+LOW: remind to stick DCT cable under the mop pad in combo modles
+LOW: include robot nicknames
+LOW: add a binding to auto-compact large cases to fit within 4000 characters
+LOW: Add some color to the notes area to make things easily distinguishable (but make sure not to copy it!)
+LOW: add a "can close" variable to case
+LOW: Bold the 3 middle characters of the ref id?
+LOW: I can auto remove lines if there's 3 newlines in a row
+LOW: maaaybe try to auto generate and send the swap email
+LOW: back broke
+LOW: only c9's can refill
+LOW: add a warning or something if characters exceed 4000
+LOW: Adding proper versioning is a good idea
+LOW: in the mobility menu, have the outline reflect whether the ultimate result is a pass or fail (with red/green)
+LOW: if no dock indicated on dock (in mobility menu), then auto-unselect dock and undock sliders
+LOW: in add_step(): if the previous line has "** Result: " in it, add an extra line -- maybe
+LOW: on double check, add "double checked by michelle" to the notes (and then recopy the notes into CSS)
+LOW: Add a readme with run instructions and the like
+LOW: if the text_area ends in "* ", remove it as well
+LOW: ask about the blower motor after cleaning, not before
+LOW: See if bot charges on customer dock BEFORE battery test (if both applicable)
+LOW: If a bot needs a battery test, ask about it immediately before cleaning
+
+TEST: dct exceptions
+TEST: adding text manually
+TEST: for changing color
+TEST: adding 5 cases all at once
 TEST: tests for combos vs non-combos
-
 TEST: tests for seralizing/deserializing
 
-serialization should include the current phase
+EPIC: Consider an option to reopen a case
+EPIC: autocorrect, somehow?
+EPIC: At the end, do a bunch of regex on the notes and confirm that I'm not forgetting anything -- including adding in the customer notes that a
+EPIC: add if the dock or bot have been swapped next to the TODO box for context, along with other context things (factory reset, etc)
+EPIC: add a double check phase, after finish, that regexes everything. Include: factory reset, swap, dct
+EPIC: combine step "clean dock" and "clean base" -- this will actually take a rewrite to enable dynamic steps
+EPIC: make the serial and ref labels into a new class that is a "CopyText" or something like that: a button that when clicked gets copied
 
-add a warning or something if characters exceed 4000
+MINOR: change/check the shade of blue
+MINOR: if "lapis" mentioned in the notes, OR if there's a 7 in the serial number place, remind to reprovision lapis bin in the app in the external
 
-if FW >= v24.29.5 on C9 (and C7?), DCT exception: can't run at all
-
-add a double check phase, after finish, that regexes everything. Include:
-factory reset
-swap
-dct
-
-See if bot charges on customer dock BEFORE battery test (if both applicable)
-
-i series: if having weird trouble with DCT, try factory reset
-
-which side (sunken) add "both"
-
-bad contact should go to swap phase, instead of finish phase
-
-immediately after customer states, go to a new step: "update case failure code on CSS"
-
-If there's a bad contact, still check the battery if I need to
-
-disable tests based on serial number
-
-close case from input box
-
-BUG: when pasting cases, setting the phase from Case.deserialize doesn't work right
-
-BUG: in finish phase, if we've just copied the case in, it might have dock, but the case doesn't recognize it. Add regexing the case to see if we need to celan the dock and things
-- Actually, add regexing the case to manual serial number enter
-
-when doing a mobility test, always check if it has an evac port or not (and if it should)
-
-If a bot needs a battery test, ask about it immediately before cleaning
-
-copy serial button gets pushed off page if window too small
-
-Adding proper versioning is a good idea
-
-if replaced bot and dock, combine them in external notes
-
-set capitalization for each word in the Dock: box in the mobility menu
-
-add ctrl+A to *all* input boxes
-
-if battery tests are needed, also measure contacts, even if they don't feel sunken, but allow na
-
-in checking the SPL SKU confirm phase step, parse the serial and give it (i.e. "Is the SPL SKU 577?")
-
-Low Priority: in the mobility menu, have the outline reflect whether the ultimate result is a pass or fail (with red/green)
-
-add a binary slider in mobility menu to manually control the overall result, but which gets self-updated
-
-LOW PRIORITY: in step "close out parts and get out of case" italicize or highlight "and get out of case"
-
-NOT NECISSARY (I think): in the step "unuse parts" -> "unuse parts and close out of the case" (and highlight/italicize it)
-
-if "lapis" mentioned in the notes, OR if there's a 7 in the serial number place, remind to reprovision lapis bin in the app in the external notes
-
-DCT broke on serial: "J557020Y240819N100975"
-
-LOW PRIORITY: combine step "clean dock" and "clean base" -- this will actually take a rewrite to enable dynamic steps
-
-M6 edits:
-if m6, bot does not have a sidebrush
-don't ask about a blower motor on an M6 - or extractors
-if M6, remind in finish phase to remove pad
-
-ERROR: json parsing is broken
-
-mobility menu auto insert user dock is broken
-
-remove ! from if user base dock contacts response bullet entirely
-
-LOW PRIORITY: if no dock indicated on dock (in mobility menu), then auto-unselect dock and undock sliders
-
-mobility menu: if process is on the last line, then don't add the extra new line before
-
-in add_step(): if the previous line has "** Result: " in it, add an extra line -- maybe
-
-if a non-modular i series, it's the red card from the top - also, only BBK works, not BiT
-
-if provisioned on app, remind in finish phase to factory reset again -- not sure how to tell
-
-auto selecting external notes aren't working (watch_visible probably isn't being called, try @on(Mount))
-
-if factory reset and factory reset and mop bin, combine the 2 automatically (in external notes)
-
-on have the case double checked step (in finish phase), autocopy the header (in the step previous)
-
-move update notes step to be before double checking step (in finish phase) (and also fill in the repair action box)
-
-add a comment in texts.py that they all need to be unique
-
-make the serial and ref labels into a new class that is a "CopyText" or something like that: a button that when clicked gets copied
-
-on double check, add "double checked by michelle" to the notes (and then recopy the notes into CSS)
-
-make ctrl+w system=True
-
-have a step in swap that asks for the new serial, so it can update the sidebar with it. BUT keep the old serial. Also in that step, auto copy it.
-
-Actually, confirm serial numbers immediately *before* put labels on everything, instead of after
-
-add a TODO box in mobility menu
-
-step s9 check lid pins, add to notes if good OR bad "Lid pins don't appear sunken"
-
-make "are extractors good" step ask for response -> "how to the extractors look [good]"
-
-add to notes, if C9 (specifically): remove battery to replace CHM
-
-in mobility menu, show what the customer states is, for reference
-
-in mobility menu, organize by how often i use it, not by sequence
-
-have the open menu bindings toggle instead of just open
-
-LOW PRIORITY: move step s9 check lid pins to be before cleaning
+factory reset was performed

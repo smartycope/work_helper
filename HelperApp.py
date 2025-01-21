@@ -3,6 +3,7 @@ import random
 from pathlib import Path
 
 from textual.app import App, ComposeResult
+from textual import on
 from textual.containers import *
 from textual.widgets import *
 from Phase import Phase
@@ -10,8 +11,7 @@ from Case import Case
 from globals import COLORS
 from clipboard import copy, paste
 
-DEBUG_STATE = '''[{"notes": "19000IR\\n", "color": "#377a11", "ref": "19000IR", "serial": null, "phase": 0, "step": "Put labels on everything", "todo": ""}, {"notes": "19001IR\\n", "color": "#ef9e16", "ref": "19001IR", "serial": null, "phase": 0, "step": "Put labels on everything", "todo": ""}, {"notes": "19002IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: Waaaaaa\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n! Robot does not charge on test base @ ~0W\\n\\nProcess:\\n* Step\\n* Step\\n* Step\\n* Done\\n", "color": "#d1dd0b", "ref": "19002IR", "serial": "i3", "phase": 3, "step": "All screws are screwed in all the way [done]", "todo": ""}, {"notes": "19003IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: I want money back\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n* Robot charges on test base @ ~9W (battery is full)\\n\\nProcess:\\n* Tehe\\n* Swap\\n", "color": "#ea9daf", "ref": "19003IR", "serial": "j7", "phase": 4, "step": "Send swap email [confirmed]", "todo": ""}, {"notes": "19004IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: It broke\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No play in blower motor\\n* Tank float screw has no signs of rust\\n* Cleaned robot\\n* Robot charges on test base @ ~21W\\n\\nProcess:\\n* Step1\\n* Step2\\n", "color": "#799fad", "ref": "19004IR", "serial": "c9", "phase": 2, "step": "Add Step", "todo": ""}]'''
-
+DEBUG_STATE = '''[{"notes": "19000IR\\n", "color": "#377a11", "ref": "19000IR", "serial": null, "phase": 0, "step": "Put labels on everything", "todo": ""}, {"notes": "19002IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: Waaaaaa\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n! Robot does not charge on test base @ ~0W\\n\\nProcess:\\n* Step\\n* Step\\n* Step\\n* Done\\n", "color": "#d1dd0b", "ref": "19002IR", "serial": "i3", "phase": 3, "step": "All screws are screwed in all the way [done]", "todo": ""}, {"notes": "19003IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: I want money back\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n* Robot charges on test base @ ~9W (battery is full)\\n\\nProcess:\\n* Tehe\\n* Swap\\n", "color": "#ea9daf", "ref": "19003IR", "serial": "j7", "phase": 4, "step": "Send swap email [confirmed]", "todo": ""}, {"notes": "19004IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: It broke\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No play in blower motor\\n* Tank float screw has no signs of rust\\n* Cleaned robot\\n* Robot charges on test base @ ~21W\\n\\nProcess:\\n* Step1\\n* Step2\\n", "color": "#799fad", "ref": "19004IR", "serial": "c9", "phase": 2, "step": "Add Step", "todo": ""}, {"notes": "new\\n", "color": "#ef9e16", "ref": "new", "serial": null, "phase": 0, "step": "Confirm IDs", "todo": ""}]'''
 
 class HelperApp(App):
     BINDINGS = [
@@ -29,20 +29,14 @@ class HelperApp(App):
         Binding('ctrl+3,ctrl+shift+3', 'goto_tab(3)', 'Tab 3', show=False, system=True, priority=True),
         Binding('ctrl+4,ctrl+shift+4', 'goto_tab(4)', 'Tab 4', show=False, system=True, priority=True),
         Binding('ctrl+5,ctrl+shift+5', 'goto_tab(5)', 'Tab 5', show=False, system=True, priority=True),
+
+
         # Binding('ctrl+tab', 'next_tab', 'Next Tab', show=True, priority=True),
         # Binding('ctrl+shift+tab', 'prev_tab', 'Previous Tab', show=True, priority=True),
     ]
     CSS_PATH = "stylesheet.tcss"
-
-    #     '''.replace('{', '{{').replace('}', '}}').replace('[', '{').replace(']', '}').format(
-    #     SIDEBAR_WIDTH=SIDEBAR_WIDTH,
-    #     COPY_SERIAL_BUTTON_WIDTH=COPY_SERIAL_BUTTON_WIDTH,
-    #     color_0=list(COLORS.keys())[0],
-    #     color_1=list(COLORS.keys())[1],
-    #     color_2=list(COLORS.keys())[2],
-    #     color_3=list(COLORS.keys())[3],
-    #     color_4=list(COLORS.keys())[4],
-    # )
+    COMMAND_PALETTE_DISPLAY = False
+    ESCAPE_TO_MINIMIZE = False
 
     def __init__(self, debug=False):
         super().__init__()
@@ -56,19 +50,12 @@ class HelperApp(App):
         self.popup = Input(placeholder='Case ID', id='reference_popup')
         self.popup.visible = False
 
-
     def on_mount(self):
         if self._debug:
             self.deserialize(DEBUG_STATE)
 
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
-            # with self.tabs:
-            #     for cnt, clr in enumerate(COLORS):
-            #         ref = f'1900{cnt}IR'
-            #         case = Case(ref, clr)
-            #         self.cases.append(case)
-            #         yield TabPane(ref, case)
         yield self.tabs
         yield self.popup
         yield Footer()
@@ -78,6 +65,10 @@ class HelperApp(App):
 
     def action_open_external_notes_menu(self):
         self.active_case.action_open_external_notes_menu()
+
+    def key_escape(self):
+        if self.popup.visible:
+            self.popup.visible = False
 
     def on_input_submitted(self):
         # This should be the only way cases get deployed
@@ -107,6 +98,10 @@ class HelperApp(App):
         if self.active_case.phase == Phase.FINISH:
             self.cases.remove(self.active_case)
             self.tabs.remove_pane(self.tabs.active_pane.id)
+
+    @on(TabbedContent.TabActivated)
+    def action_focus_input(self):
+        self.active_case.input.focus()
 
     @property
     def active_case(self):
@@ -144,15 +139,14 @@ class HelperApp(App):
         return json.dumps([case.serialize() for case in self.cases])
 
     def deserialize(self, string, clear=False):
-        """ If clear == True, it clears all the current cases before adding the new ones """
+        """ If clear, it clears all the current cases before adding the new ones """
         try:
             self.cases = [Case.deserialize(case) for case in json.loads(string)]
         except Exception as err:
-            return
-        #     if self._debug:
-        #         raise err
-        #     else:
-        #         return
+            if self._debug:
+                raise err
+            else:
+                return
 
         if clear:
             self.clear_panes()
@@ -160,7 +154,11 @@ class HelperApp(App):
         for case in self.cases:
             self.tabs.add_pane(TabPane(case.ref, case))
 
+    # def action_focus_input(self):
+    #     self.active_case.input.focus()
+
     def action_goto_tab(self, index):
+        self.bell()
         self.tabs.active = f'tab-{index}'
 
     def action_save(self):
