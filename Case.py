@@ -43,7 +43,7 @@ class Case(VerticalGroup):
         self.dock = None
         # Set in set_color()
         self.color = color
-        self.customer_states = None
+        self.customer_states = ''
 
         self.prev_step = None
 
@@ -227,10 +227,10 @@ class Case(VerticalGroup):
             return '[on blue]Blue card[/]'
         elif self.serial.startswith('e'):
             return '[on green]Green card[/], with micro USB\nplugged into the other side\non the card'
-        elif self.serial.startswith(('j7', 'c7')):
+        elif self.serial.startswith(('j7', 'c7', 'j5')):
             return '[on green]Green card[/] / [on blue]Blue card[/]'
-        elif self.serial.startswith(('j5', 'j6', 'j4', 'j3', 'j2', 'j1')):
-            return '!!! Unknown, find out and put in TODO !!!'
+        elif self.serial.startswith(('j6')):
+            return 'Rare model, go ask'
         else:
             return 'Error: Model from serial number not recognized'
 
@@ -279,7 +279,7 @@ class Case(VerticalGroup):
         if self.serial.startswith('e'):
             return 'To BiT: lights have to be off, then hold home & clean and press spot 5x. You also have to press clean to get it to connect to DCT'
 
-        if self.serial.startswith('j7'):
+        if self.serial.startswith(('j7', 'j9')):
             return "If the blue DCT card doesn't work, try a hard reset"
 
         return ''

@@ -1,5 +1,13 @@
 URGENT: ctrl+end shortcut / fix all the shortcuts
+URGENT: in external notes menu, factory reset and lapis bin should include factory reset and lapis bin components -- also, should be after plain factory reset in order
+URGENT: Add DCT exceptions: for a J9 v2 (a J9 with the big clip battery), DCT is allowed to fail Main brush rotory encoder tests (as well as any others, if they don't seem consequential)
 
+Cut mangos up into pieces
+
+HIGH: when external notes menu opens via steps, it doesn't auto-load (call the open/toggle function instead of setting visible to True)
+HIGH: add if the case has a lapis bin to notes -- and also that, if there's a lapis bin due to serial number, it doesn't need to be provisioned to the app to work
+HIGH: in M6 bot, with no dock specified, it's asking if there's a bag in the dock - same case is asking if blower play
+HIGH: if the case has a lapis bin, *in the serial number*, it should *not* suggest in external notes to reprovision bot to the lapis bin (and should even prevent it if it is checked, just disable it). But if the bot does *not* have a 7 in the serial, but *does* have one in the notes, (add a regex for it), then it *should* recommend reprovisioning, if a factory reset OR a swap
 HIGH: phase deserialize doesn't load correctly
 HIGH: add periodic saving
 HIGH: add a global shortcut to jump focus to input box
@@ -8,6 +16,8 @@ HIGH: when doing a mobility test, if the dock specified is a base, not a dock, a
 HIGH: add ctrl+A to *all* input boxes
 HIGH: J1-6 don't have DCT cards specified
 
+MEDIUM: Make "is there liquid damage" step allow for explanations, or just 'y' if simply "yes". Also, update the text to reflect this
+MEDIUM: remove todo box can focus
 MEDIUM: Auto-guess which test dock the mobility test will use
 MEDIUM: add a "put on hold" phase
 MEDIUM: Add some toasts? (copied, pick up case, case ref copied, etc)
@@ -90,5 +100,8 @@ EPIC: make the serial and ref labels into a new class that is a "CopyText" or so
 
 MINOR: change/check the shade of blue
 MINOR: if "lapis" mentioned in the notes, OR if there's a 7 in the serial number place, remind to reprovision lapis bin in the app in the external
-
-factory reset was performed
+MINOR: immediately after opening a new case, autofocus on the input box
+MINOR: the colors of the CopyText buttons are arbitrary: make the text color the color of the case
+MINOR: in step check for damage, add "[no damage]"
+MINOR: when checking for 'charg' or 'batt', also check for "does not turn on", or "doesn't turn on", or "won't turn on" and similar
+MINOR: make the mobility todo box an input box and give it a placeholder

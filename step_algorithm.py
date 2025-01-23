@@ -143,7 +143,9 @@ def execute_step(self, resp):
                 next_step = 'post blower play'
 
             case Steps.ask_bin_rust:
-                if not resp:
+                if resp.lower() == 'na':
+                    pass
+                elif not resp:
                     self.add_step('Tank float screw has no signs of rust')
                 else:
                     match resp.strip():
@@ -277,7 +279,8 @@ def execute_step(self, resp):
                     self.phase = Phase.SWAP
                 else:
                     # If there's liquid residue, but not on the main board, proceed
-                    self.step = Steps.ask_sunken_contacts
+                    # self.step = Steps.ask_sunken_contacts
+                    next_step = 'ask blower play'
 
             # Sunken contacts path
             case Steps.sunken_ask_side:
@@ -336,14 +339,15 @@ def execute_step(self, resp):
         match self.step:
             case Steps.add_step:
                 if resp:
-                    self.add_step(resp[0].upper() + resp[1:])
+                    r = resp.strip()
+                    self.add_step(r[0].upper() + r[1:])
                 else:
                     self.ensure_process()
 
     elif self.phase == Phase.FINISH:
         match self.step:
             case Steps.generate_external_notes:
-                self.external_notes_menu.visible = False
+                self.external_notes_menu.open()
                 copy(self.text_area.text.strip())
                 self._finish_first_copy_notes = self.text_area.text.strip()
                 self.step = Steps.ask_copy_notes_1
@@ -511,7 +515,7 @@ def execute_step(self, resp):
 
     if next_step == 'ask blower play':
         if self.can_vacuum:
-            self.steps = Steps.ask_blower_play
+            self.step = Steps.ask_blower_play
         else:
             next_step = 'post blower play'
 

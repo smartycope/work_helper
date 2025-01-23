@@ -151,6 +151,7 @@ class MobilityMenu(VerticalGroup):
         if self.case.dock:
             self.base.value = 'customer ' + self.case.dock
         self.notes.value = ''
+        self.todo.value = ''
 
     def toggle(self):
         self.visible = not self.visible
@@ -158,8 +159,7 @@ class MobilityMenu(VerticalGroup):
         if not self._been_opened:
             self.update_values()
             self._been_opened = True
-            self.cx_states.update('Customer States: ' + self.case.customer_states if self.case.customer_states else '')
-
+            self.cx_states.update('| cx: ' + self.case.customer_states if self.case.customer_states else '')
 
     def action_close(self):
         self.visible = False
@@ -174,7 +174,7 @@ class MobilityMenu(VerticalGroup):
         yield self.where
 
         yield Label('Dock:')
-        self.base = CustomInput(('customer ' + self.case.dock) if self.case.dock else 'test ', placeholder='no dock')
+        self.base = CustomInput(('cx ' + self.case.dock) if self.case.dock else 'test ', placeholder='no dock')
         yield self.base
 
         yield Label('Parameters:')
@@ -241,11 +241,11 @@ class MobilityMenu(VerticalGroup):
 
         # yield Static(classes='quadruple')
         # yield Static(classes='double')
-        yield TextArea(classes='double extend')
+        self.todo = TextArea(classes='double extend')
+        yield self.todo
 
         yield Button('Close', id='cancel', classes='')
         yield Button('Done', id='done', classes='')
-
 
     def on_button_pressed(self, event):
         match event.button.id:
