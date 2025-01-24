@@ -148,8 +148,8 @@ class MobilityMenu(VerticalGroup):
     def update_values(self):
         """ Run whenever the menu gets closed """
         # If we have a dock, always assume we're using it
-        if self.case.dock:
-            self.base.value = 'customer ' + self.case.dock
+        if self.case.dock and (not self.base.value or self.base.value == 'test '):
+            self.base.value = 'cx ' + self.case.dock
         self.notes.value = ''
         self.todo.value = ''
 
