@@ -40,6 +40,7 @@ class Case(VerticalGroup):
         super().__init__(id=f'case-{id}')
         self.ref = id
         self.serial = None
+        self.swap_serials = []
         self.dock = None
         # Set in set_color()
         self.color = color
@@ -122,7 +123,8 @@ class Case(VerticalGroup):
         self.phase = Phase(event.value)
 
         if self.phase == Phase.FINISH:
-            self.external_notes_menu.visible = True
+            # self.external_notes_menu.visible = True
+            self.external_notes_menu.open()
 
         if self.phase == Phase.CONFIRM:
             self.step = self.first_steps[Phase.CONFIRM] if not self.serial else Steps.check_repeat
@@ -253,6 +255,8 @@ class Case(VerticalGroup):
 
         if not self._modular:
             return 'DCT won\'t work, only BBK'
+        elif self.serial.startswith('j9'):
+            return 'If v2 (clip battery), can fail basically everything. Otherwise, second dock comms test, if FW == 24.29.x (ensure robot still evacs)'
         elif self.serial.startswith('j'):
             return 'Second dock comms test, if FW == 24.29.x (ensure robot still evacs)'
         elif self.serial.startswith('s9'):
@@ -267,22 +271,26 @@ class Case(VerticalGroup):
     def get_notes(self):
         # if self.serial.startswith('j'):
             # return 'If the last digit of the SPL SKU is 7, they have a Lapis bin at home! If the middle number is 1, it came with just a home base. In that case, don\'t test on a dock! Just a base.'
+        notes = ''
         if self.serial.startswith('c9'):
-            return "Remember to remove battery before removing the CHM. Also, if the blue DCT card doesn't work, try a hard reset"
+            notes += "Remember to remove battery before removing the CHM. Also, if the blue DCT card doesn't work, try a hard reset"
 
         if self.serial.startswith('i'):
-            return 'If having weird trouble with DCT, try factory reset'
+            notes += 'If having weird trouble with DCT, try factory reset'
 
         if self.serial.startswith('r'):
-            return 'To BiT: lights have to be on, then hold home & clean and press spot 5x'
+            notes += 'To BiT: lights have to be on, then hold home & clean and press spot 5x'
 
         if self.serial.startswith('e'):
-            return 'To BiT: lights have to be off, then hold home & clean and press spot 5x. You also have to press clean to get it to connect to DCT'
+            notes += 'To BiT: lights have to be off, then hold home & clean and press spot 5x. You also have to press clean to get it to connect to DCT'
 
         if self.serial.startswith(('j7', 'j9')):
-            return "If the blue DCT card doesn't work, try a hard reset"
+            notes += "If the blue DCT card doesn't work, try a hard reset"
 
-        return ''
+        if self.is_factory_lapis:
+            notes += '\n        [on red]Factory provisioned lapis bin![/]'
+
+        return notes
 
     @property
     def can_mop(self):
@@ -308,7 +316,7 @@ class Case(VerticalGroup):
             return None
 
     @property
-    def has_lapis(self):
+    def is_factory_lapis(self):
         try:
             return self.serial[3] == '7'
         except IndexError:

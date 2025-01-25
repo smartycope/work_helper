@@ -116,7 +116,7 @@ def execute_step(self, resp):
                     self.add_step('Robot is non-modular')
                     self._modular = False
                     # Update the sidebar, cause DCT is different for modular models
-                    self.sidebar.update_dct()
+                    self.sidebar.update()
                     self.step = Steps.ask_cleaned
                 else:
                     # We don't need to confirm that it's not a mopper here; there are no i-series moppers
@@ -347,7 +347,7 @@ def execute_step(self, resp):
     elif self.phase == Phase.FINISH:
         match self.step:
             case Steps.generate_external_notes:
-                self.external_notes_menu.open()
+                self.external_notes_menu.close()
                 copy(self.text_area.text.strip())
                 self._finish_first_copy_notes = self.text_area.text.strip()
                 self.step = Steps.ask_copy_notes_1
@@ -422,7 +422,7 @@ def execute_step(self, resp):
                         self.ref,
                         'Repair Report',
                     )
-                    self.step = Steps.ask_complete_case_CSS
+                    self.step = Steps.wait_parts_closed
                 else:
                     copy(self.text_area.text.strip())
                     self.step = Steps.ask_copy_notes_2
@@ -433,6 +433,9 @@ def execute_step(self, resp):
                     'Repair Report',
                 )
                 # copy(self.ref)
+                self.step = Steps.wait_parts_closed
+
+            case Steps.wait_parts_closed:
                 self.step = Steps.ask_complete_case_CSS
 
             case Steps.ask_complete_case_CSS:

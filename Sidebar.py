@@ -53,30 +53,33 @@ class Sidebar(VerticalGroup):
         # self.id_button = Button(f'Copy', id='copy-serial-button')
         # self.id_button.can_focus = False
 
-    def update_dct(self):
-        # Just re-update DCT, cause the case will suddenly realize it's modular now
+    # def update_dct(self):
+    #     # Just re-update DCT, cause the case will suddenly realize it's modular now
+    #     self.dct.update(f'DCT: {self.case.get_DCT()}\n')
+    #     self.dct_exp.update(f'{{:^{SIDEBAR_WIDTH}}}'.format(textwrap.fill(self.case.get_DCT_exceptions(), SIDEBAR_WIDTH)) + '\n')
+
+    def update(self):
+        # self.ref_model.update(f'{self.case.ref+" • "+self.case.get_quick_model():^{SIDEBAR_WIDTH}}\n')
+        self.model.update(f' • {self.case.get_quick_model()}')
+        # self.model.update(f'{{:^{SIDEBAR_WIDTH}}}'.format(self.case.get_quick_model() + '\n'))
+        self.sleep_mode.update(textwrap.fill(sleep_mode.get(self.serial[0], 'Unknown'), SIDEBAR_WIDTH) + '\n')
+        self.factory_reset.update(textwrap.fill(factory_reset.get(self.serial[0], 'Unknown'), SIDEBAR_WIDTH) + '\n')
+        # self.dct.update(f'DCT: {{:^{SIDEBAR_WIDTH-5}}}'.format(textwrap.fill(self.case.get_DCT(), SIDEBAR_WIDTH-5)) + '\n')
+        # self.dct.update(f'DCT: {{:^{SIDEBAR_WIDTH-5}}}'.format(self.case.get_DCT()) + '\n')
         self.dct.update(f'DCT: {self.case.get_DCT()}\n')
         self.dct_exp.update(f'{{:^{SIDEBAR_WIDTH}}}'.format(textwrap.fill(self.case.get_DCT_exceptions(), SIDEBAR_WIDTH)) + '\n')
+        # self.serial_label.update(f'\n{self.serial.upper():^{SIDEBAR_WIDTH}}')
+        self.serial_label.text = f'{self.serial.upper():^{SIDEBAR_WIDTH}}'
+        self.serial_label.to_copy = self.serial.upper()
+        # self.serial_label.update(self.serial)
+        notes = textwrap.fill(self.case.get_notes(), SIDEBAR_WIDTH)
+        if notes:
+            self.notes_sep.update(f'{" Notes ":-^{SIDEBAR_WIDTH}}')
+            self.notes.update(notes)
 
     def watch_serial(self, *args):
         if self.serial:
-            # self.ref_model.update(f'{self.case.ref+" • "+self.case.get_quick_model():^{SIDEBAR_WIDTH}}\n')
-            self.model.update(f' • {self.case.get_quick_model()}')
-            # self.model.update(f'{{:^{SIDEBAR_WIDTH}}}'.format(self.case.get_quick_model() + '\n'))
-            self.sleep_mode.update(textwrap.fill(sleep_mode.get(self.serial[0], 'Unknown'), SIDEBAR_WIDTH) + '\n')
-            self.factory_reset.update(textwrap.fill(factory_reset.get(self.serial[0], 'Unknown'), SIDEBAR_WIDTH) + '\n')
-            # self.dct.update(f'DCT: {{:^{SIDEBAR_WIDTH-5}}}'.format(textwrap.fill(self.case.get_DCT(), SIDEBAR_WIDTH-5)) + '\n')
-            # self.dct.update(f'DCT: {{:^{SIDEBAR_WIDTH-5}}}'.format(self.case.get_DCT()) + '\n')
-            self.dct.update(f'DCT: {self.case.get_DCT()}\n')
-            self.dct_exp.update(f'{{:^{SIDEBAR_WIDTH}}}'.format(textwrap.fill(self.case.get_DCT_exceptions(), SIDEBAR_WIDTH)) + '\n')
-            # self.serial_label.update(f'\n{self.serial.upper():^{SIDEBAR_WIDTH}}')
-            self.serial_label.text = f'{self.serial.upper():^{SIDEBAR_WIDTH}}'
-            self.serial_label.to_copy = self.serial.upper()
-            # self.serial_label.update(self.serial)
-            notes = textwrap.fill(self.case.get_notes(), SIDEBAR_WIDTH)
-            if notes:
-                self.notes_sep.update(f'{" Notes ":-^{SIDEBAR_WIDTH}}')
-                self.notes.update(notes)
+            self.update()
 
     def compose(self):
         yield self.color_switcher

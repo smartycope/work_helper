@@ -50,6 +50,10 @@ class ExternalNotesMenu(VerticalGroup):
         self.visible = True
         self.set_default_selections()
 
+    def close(self):
+        self.visible = False
+        # self.set_default_selections()
+
     def action_close(self):
         self.visible = False
 

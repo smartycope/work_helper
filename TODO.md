@@ -1,9 +1,30 @@
-URGENT: ctrl+end shortcut / fix all the shortcuts
+URGENT: S9: no dock indicated, and still asking if there's a bag in the dock
+URGENT: updating sidebar with the swap info (they can use different DCT cards!)
 URGENT: in external notes menu, factory reset and lapis bin should include factory reset and lapis bin components -- also, should be after plain factory reset in order
-URGENT: Add DCT exceptions: for a J9 v2 (a J9 with the big clip battery), DCT is allowed to fail Main brush rotory encoder tests (as well as any others, if they don't seem consequential)
 
-Cut mangos up into pieces
+MINOR: change mobility menu dock Input to not reset on submit
+MINOR: add "and tie up the cord" to the finish step "cleaned the base"
+MINOR: if mobility menu attempted to open with no cases, it throws an error. Catch that
+MINOR: decrease the time param on the add_hotkey function in multi_paste
+MINOR: in the mobility menu update function, in the if statement to reset the dock box, remove the or'ed statement if it's empty (don't reset if it's empty)
+MINOR: if "lapis" mentioned in the notes, OR if there's a 7 in the serial number place, remind to reprovision lapis bin in the app in the external
+MINOR: immediately after opening a new case, autofocus on the input box
+MINOR: the colors of the CopyText buttons are arbitrary: make the text color the color of the case
+MINOR: when checking for 'charg' or 'batt', also check for "does not turn on", or "doesn't turn on", or "won't turn on" and similar
+MINOR: make the mobility todo box an input box and give it a placeholder
 
+
+HIGH: ctrl+end shortcut / fix all the shortcuts
+HIGH: regex for extracting the dock from notes also captures the comma and space before it
+HIGH: mobility menu dock still using customer instead of cx (when using scraped dock info)
+HIGH: on close of mobility menu, focus the end of the notes
+HIGH: add a 2nd CopyText button for the other swap id, if there is one
+HIGH: somehow emphasize C9's remove battery before CHM in notes
+HIGH: cx stated charging error, and there was liquid damage, and did not ask for a battery test
+HIGH: add a hotkey for ordering parts as follows: enter, tab x3, "NA", tab, "NA", tab x2, enter
+HIGH: C9, Aurora, didn't ask to empty dock tank (I think, double check)
+HIGH: auto guess the "where" in the mobility menu
+HIGH: add a step (and make it the first step) in Finish phase, that asks if I've completed a successful mobility test, and attempted DCT
 HIGH: when external notes menu opens via steps, it doesn't auto-load (call the open/toggle function instead of setting visible to True)
 HIGH: add if the case has a lapis bin to notes -- and also that, if there's a lapis bin due to serial number, it doesn't need to be provisioned to the app to work
 HIGH: in M6 bot, with no dock specified, it's asking if there's a bag in the dock - same case is asking if blower play
@@ -22,6 +43,14 @@ MEDIUM: Auto-guess which test dock the mobility test will use
 MEDIUM: add a "put on hold" phase
 MEDIUM: Add some toasts? (copied, pick up case, case ref copied, etc)
 MEDIUM: ctrl+home/ctrl+end
+MEDIUM: in the external notes regex, allow "swap dock", "swapped dock" and "swapping dock" (or robot)
+MEDIUM: have copy be a custom function that, when called, cancels multi_paste()
+MEDIUM: if mobility menu was opened automatically via step, and then closed via it's button, it should progress to the next step
+MEDIUM: in "order correctly colored swap" (for M6 specifically) copy the serial (in step prior)
+MEDIUM: add a "has been swapped" member that indicates whether the "order swap" step has been performed before, for the external notes menu to use
+MEDIUM: put all the mobility menu switches for combos and mops on one side
+MEDIUM: multi_paste() is buggy somehow, it stopped working after a while
+MEDIUM: allow different serial numbers, if it follows the document (i.e. i5g5 instead of i5g7) (also, in the case of g, it means it's a lapis combo)
 MEDIUM: J955 - 1st 5 means evac dock, 1 means base. 2nd 5, if 7, means lapis bin
 MEDIUM: Consider a "clear TODO" button (or at least make it select everything on focus)
 MEDIUM:  make the DCT card a single line
@@ -54,7 +83,12 @@ LOW: if it's a big base, and it's any sort of vacuum stall or filter clog or som
 LOW: ctrl + backspace doesn't seem to work
 LOW: on focus (window focus, at least), the input shouldn't select all of it's text
 LOW: make it so it finds where it should put text, so lower down I can manually add notes and it won't keep just adding to the end
-LOW: strip input box text
+LOW: add a switch to mobility menu to indicate testing a swapped bot
+LOW: instead of manually uppercasing strings, turn it into a function, and don't un-uppercase the string if the 2nd letter is uppercase (we don't want "cHM is...")
+LOW: consider refactoring all the private members into public properties, that return self._member or regex to find it if self._member is None
+LOW: disallow unfocusing new case input box when visible
+LOW: don't ask about sunken contacts on an S9 specifically
+LOW: strip all input box text
 LOW: confirm closing a case
 LOW: ctrl + t is toggle case
 LOW: double click select word
@@ -72,6 +106,7 @@ LOW: back broke
 LOW: If its any sort of auto-evac problem, clean the bumper
 LOW: only c9's can refill
 LOW: add a warning or something if characters exceed 4000
+LOW: make all characters after 4000 be tinged red in notes
 LOW: Adding proper versioning is a good idea
 LOW: in the mobility menu, have the outline reflect whether the ultimate result is a pass or fail (with red/green)
 LOW: if no dock indicated on dock (in mobility menu), then auto-unselect dock and undock sliders
@@ -82,6 +117,7 @@ LOW: if the text_area ends in "* ", remove it as well
 LOW: ask about the blower motor after cleaning, not before
 LOW: See if bot charges on customer dock BEFORE battery test (if both applicable)
 LOW: If a bot needs a battery test, ask about it immediately before cleaning
+LOW: change/check the shade of blue
 
 TEST: dct exceptions
 TEST: adding text manually
@@ -98,10 +134,26 @@ EPIC: add a double check phase, after finish, that regexes everything. Include: 
 EPIC: combine step "clean dock" and "clean base" -- this will actually take a rewrite to enable dynamic steps
 EPIC: make the serial and ref labels into a new class that is a "CopyText" or something like that: a button that when clicked gets copied
 
-MINOR: change/check the shade of blue
-MINOR: if "lapis" mentioned in the notes, OR if there's a 7 in the serial number place, remind to reprovision lapis bin in the app in the external
-MINOR: immediately after opening a new case, autofocus on the input box
-MINOR: the colors of the CopyText buttons are arbitrary: make the text color the color of the case
-MINOR: in step check for damage, add "[no damage]"
-MINOR: when checking for 'charg' or 'batt', also check for "does not turn on", or "doesn't turn on", or "won't turn on" and similar
-MINOR: make the mobility todo box an input box and give it a placeholder
+EPIC: common phrases:
+Attempting Aurora refill debug steps
+Robot charges on <dock> @ ~nW
+Battery test: n%/n%
+Swapping bot
+Swapping dock
+
+EPIC: Put on hold phase:
+copy notes over step
+retrun any *unused* parts
+
+EPIC: add specific "sections" (probably just more phases, maybe something distinct) for troubleshooting specific problems:
+- Evac issues:
+try cleaning the IR sensor
+try swapping the CHM
+check for a clog
+try a new bin
+try a new filter
+
+EPIC: consider adding a bunch of read-only checkboxes immediately below the "copy notes button" (also, the copy notes button can be a lot smaller)
+
+
+cut caffine pills in half

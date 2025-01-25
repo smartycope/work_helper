@@ -12,8 +12,8 @@ class Steps:
     check_repeat = "Check if case is a repeat"
     check_spl_sku = "Check that the SPL SKU is valid"
     pick_up_case = "Go pick up the case on CSS {case ID} [done]"
-    ask_dock = "Additional dock"
-    ask_damage = "Additional damage"
+    ask_dock = "Additional dock [no dock]"
+    ask_damage = "Additional damage [no damage]"
     ask_came_with_bag = "Is there a bag in the dock [yes]"
     customer_states = "Customer States"
     update_css_failure = "Update the CSS failure box [done]"
@@ -52,7 +52,7 @@ class Steps:
     swap_order = "Order swap {original serial} [done]"
     swap_order_S9 = "Order main board (not a whole bot!) [done]"
     swap_order_M6 = "Order the correctly colored swap [done]"
-    swap_move_bin = "Move bin and battery over, if necessary [no bin needed]"
+    swap_move_bin = "Unbox, and move bin and battery over, if necessary [no bin needed]"
     swap_put_in_box = "Put the old bot in the box [done]"
     swap_note_serial = "Put the new (and old) serial number into CSS [done]"
 
@@ -77,6 +77,7 @@ class Steps:
     ask_put_bin_back = "Put the bin back [done]"
     ask_copy_notes_1 = "Copy notes over to CSS and add a repair action {notes} [done]"
     ask_copy_notes_2 = "Copy notes over to CSS {notes} [done]"
+    wait_parts_closed = 'Wait for parts to get closed out [done]'
     ask_complete_case_CSS = "Finish the case on CSS {case ID, then 'rr'} [done]"
     ask_put_bot_on_shelf = "Put the robot and traveler on the shelf [done]"
     generate_external_notes = "Create and copy external notes [done]";
