@@ -5,7 +5,8 @@
 
 Screen {
     # align: center middle;
-    layers: below above above2;
+    layers: below hintButton ext mobility hints ref;
+    # layers: ref mobility ext hintButton below hints;
 }
 
 
@@ -27,7 +28,7 @@ Screen {
 }
 
 #reference_popup {
-    layer: above;
+    layer: ref;
     content-align: center middle;
     align: center middle;
     width: 100%;
@@ -72,7 +73,7 @@ Screen {
     height: 100%;
     padding: 2;
     # background: #515151
-    layer: above;
+    layer: mobility;
     grid-rows: 3;
 #     content-align: center middle;
 #     align: center middle;
@@ -84,7 +85,7 @@ Screen {
     height: 100%;
     width: 70%;
     padding: 2;
-    layer: above2;
+    layer: ext;
 }
 
 #external-preview{

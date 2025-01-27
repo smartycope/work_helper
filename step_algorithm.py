@@ -23,8 +23,7 @@ def execute_step(self, resp):
             self.step = self._step_after_manual_serial
 
         if resp:
-            self.serial = resp.lower()
-            self.sidebar.serial = self.serial.lower()
+            self.add_serial(resp.lower())
             self.step = self._step_after_manual_serial
         return
 
@@ -487,7 +486,13 @@ def execute_step(self, resp):
                 self.step = Steps.swap_put_in_box
 
             case Steps.swap_put_in_box:
-                self.step = Steps.swap_note_serial
+                self.step = Steps.swap_input_new_serial
+
+            case Steps.swap_input_new_serial:
+                if resp:
+                    self.add_serial(resp)
+                    copy(resp.upper())
+                    self.step = Steps.swap_note_serial
 
             case Steps.swap_note_serial:
                 self.phase = Phase.DEBUGGING

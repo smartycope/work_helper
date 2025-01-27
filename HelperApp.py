@@ -155,7 +155,7 @@ class HelperApp(App):
             self.tabs.add_pane(TabPane(case.ref, case))
 
     # def action_focus_input(self):
-    #     self.active_case.input.focus()
+        # self.active_case.input.focus()
 
     def action_goto_tab(self, index):
         self.bell()

@@ -1,6 +1,4 @@
 # NOTE: these all need to be unique (though it's not enforced)
-from numpy import double
-
 
 class Steps:
     manual_get_serial = "Enter the model number, or scan a serial number"
@@ -46,19 +44,20 @@ class Steps:
     add_step = "Add Step"
 
     # SWAP
-    swap_unuse_parts = "Unuse all parts and get out of the case[done]"
+    swap_unuse_parts = "Unuse all parts and get out of the case [done]"
     swap_update_css = "Update CSS repair action and copy notes over {notes} [done]"
     swap_email = "Send swap email {address, subject, notes} [confirmed]"
     swap_order = "Order swap {original serial} [done]"
     swap_order_S9 = "Order main board (not a whole bot!) [done]"
     swap_order_M6 = "Order the correctly colored swap [done]"
-    swap_move_bin = "Unbox, and move bin and battery over, if necessary [no bin needed]"
+    swap_move_bin = "Unbox and move bin and battery over, if necessary [no bin needed]"
     swap_put_in_box = "Put the old bot in the box [done]"
-    swap_note_serial = "Put the new (and old) serial number into CSS [done]"
+    swap_input_new_serial = "What's the serial number of the new bot"
+    swap_note_serial = "Put the new serial number into CSS {new serial} [done]"
 
     # FINISH
     ask_final_cleaned = "Cleaned the robot [done]"
-    ask_base_cleaned = "Cleaned the base [done]"
+    ask_base_cleaned = "Cleaned the base and cord tied up [done]"
     ask_dock_has_bag = "Does the dock have a bag [done]"
     ask_emptied_dock = "Dock tank is emptied [done]"
     ask_emptied_bin = "Bin is cleaned out [done]"
@@ -80,6 +79,6 @@ class Steps:
     wait_parts_closed = 'Wait for parts to get closed out [done]'
     ask_complete_case_CSS = "Finish the case on CSS {case ID, then 'rr'} [done]"
     ask_put_bot_on_shelf = "Put the robot and traveler on the shelf [done]"
-    generate_external_notes = "Create and copy external notes [done]";
+    generate_external_notes = "Create and copy external notes [done]"
     # finish_case = 'All done! [close case]'
     finish_case = "All done! Good to close case now"

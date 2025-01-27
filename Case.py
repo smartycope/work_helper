@@ -17,7 +17,8 @@ class Case(VerticalGroup):
     from step_algorithm import execute_step as _execute_step
 
     BINDINGS = (
-        ('_s', 'change_serial', 'Set Serial'),
+        # TODO: reenable this eventually. Somehow.
+        # ('_s', 'change_serial', 'Set Serial'),
         ('ctrl+l', 'parse_for_info', 'Parse Info'),
         # TODO: This doesn't work
         Binding('ctrl+i', 'focus_input', 'Focus Input', show=False, priority=True),
@@ -39,8 +40,9 @@ class Case(VerticalGroup):
         # If the id has spaces, this will raise an error that gets caught by when we instantiate it
         super().__init__(id=f'case-{id}')
         self.ref = id
-        self.serial = None
-        self.swap_serials = []
+        # The serial numbers: first is the original, last is the current swap (or the original), and
+        # anythinng in the middle is a DOA swap
+        self.serials = []
         self.dock = None
         # Set in set_color()
         self.color = color
@@ -158,7 +160,7 @@ class Case(VerticalGroup):
             'notes': self.text_area.text,
             'color': self.color,
             'ref': self.ref,
-            'serial': self.serial,
+            'serials': self.serials,
             'phase': self.phase.value,
             'step': self.step,
             'todo': self.sidebar.todo.text,
@@ -168,8 +170,14 @@ class Case(VerticalGroup):
     def deserialize(data):
         case = Case(data['ref'], data.get('color', random.choice(list(COLORS.keys()))))
         case.text_area.text = data.get('notes', data['ref'] + '\n')
-        case.serial = data.get('serial', '')
-        case.sidebar.serial = case.serial
+        try:
+            case.serials = data['serials']
+        except KeyError:
+            case.serials = [data.get('serial', '') or '']
+            if not case.serials[0]:
+                case.serials = []
+        if case.serial:
+            case.sidebar.update()
         case.sidebar.todo.text = data.get('todo', '')
         case.phase = Phase(data.get('phase', Phase.DEBUGGING))
         case.step = data.get('step', Steps.add_step)
@@ -229,10 +237,8 @@ class Case(VerticalGroup):
             return '[on blue]Blue card[/]'
         elif self.serial.startswith('e'):
             return '[on green]Green card[/], with micro USB\nplugged into the other side\non the card'
-        elif self.serial.startswith(('j7', 'c7', 'j5')):
+        elif self.serial.startswith(('j7', 'c7', 'j5', 'j6')):
             return '[on green]Green card[/] / [on blue]Blue card[/]'
-        elif self.serial.startswith(('j6')):
-            return 'Rare model, go ask'
         else:
             return 'Error: Model from serial number not recognized'
 
@@ -264,7 +270,10 @@ class Case(VerticalGroup):
         elif self.serial.startswith('m'):
             return 'Pad detection test (run both wet and dry missions)'
         elif self.serial.startswith('c'):
-            return 'Actuator arm test, if FW >= 23.53.6 (ensure it deploys in mobility mission). If FW >= v24.29.5, DCT can\'t run'
+            text = 'Actuator arm test, if FW >= 23.53.6 (ensure it deploys in mobility mission). If FW >= v24.29.5, DCT can\'t run'
+            if self.serial.startswith('c9'):
+                text = 'Sprayer current off, but note the firmware version. ' + text
+            return text
         else:
             return 'Optical bin tests (at most 2, if barely out of range)'
 
@@ -273,7 +282,7 @@ class Case(VerticalGroup):
             # return 'If the last digit of the SPL SKU is 7, they have a Lapis bin at home! If the middle number is 1, it came with just a home base. In that case, don\'t test on a dock! Just a base.'
         notes = ''
         if self.serial.startswith('c9'):
-            notes += "Remember to remove battery before removing the CHM. Also, if the blue DCT card doesn't work, try a hard reset"
+            notes += "Remember to remove battery before removing the CHM. Also, if the DCT card doesn't work, try a hard reset"
 
         if self.serial.startswith('i'):
             notes += 'If having weird trouble with DCT, try factory reset'
@@ -321,3 +330,29 @@ class Case(VerticalGroup):
             return self.serial[3] == '7'
         except IndexError:
             return False
+
+    @property
+    def has_lapis(self):
+        return 'lapis' in self.text_area.text.lower()
+
+    @property
+    def notes(self):
+        return self.text_area.text
+
+    @notes.setter
+    def set_notes(self, to):
+        self.text_area.text = to
+
+    @property
+    def serial(self):
+        if self.serials:
+            # It would be great if this were actually upper(), switching it would be a major refactor
+            return self.serials[-1].lower()
+        else:
+            return None
+
+    def add_serial(self, serial):
+        # It would be great if this were actually upper(), switching it would be a major refactor
+        self.serials.append(serial.lower())
+        # The sidebar always uses the last serial to load info
+        self.sidebar.update()

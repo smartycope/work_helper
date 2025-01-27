@@ -1,20 +1,21 @@
 URGENT: S9: no dock indicated, and still asking if there's a bag in the dock
-URGENT: updating sidebar with the swap info (they can use different DCT cards!)
-URGENT: in external notes menu, factory reset and lapis bin should include factory reset and lapis bin components -- also, should be after plain factory reset in order
 
-MINOR: change mobility menu dock Input to not reset on submit
-MINOR: add "and tie up the cord" to the finish step "cleaned the base"
 MINOR: if mobility menu attempted to open with no cases, it throws an error. Catch that
-MINOR: decrease the time param on the add_hotkey function in multi_paste
-MINOR: in the mobility menu update function, in the if statement to reset the dock box, remove the or'ed statement if it's empty (don't reset if it's empty)
-MINOR: if "lapis" mentioned in the notes, OR if there's a 7 in the serial number place, remind to reprovision lapis bin in the app in the external
+MINOR: only if "lapis" mentioned in the notes, remind to reprovision lapis bin in the app in the external
 MINOR: immediately after opening a new case, autofocus on the input box
 MINOR: the colors of the CopyText buttons are arbitrary: make the text color the color of the case
 MINOR: when checking for 'charg' or 'batt', also check for "does not turn on", or "doesn't turn on", or "won't turn on" and similar
 MINOR: make the mobility todo box an input box and give it a placeholder
-
+MINOR: in the comment in the texts.py that the steps have to be unique: they technically only have to be unique within each phase
+MINOR: maybe - in the mobility menu update function, in the if statement to reset the dock box, remove the or'ed statement if it's empty (don't reset if it's empty)
 
 HIGH: ctrl+end shortcut / fix all the shortcuts
+HIGH: focus on input box on MM close
+HIGH: give external notes menu open/close/toggle - or just make a Menu parent class
+HIGH: when checking dock values, search the string instead of using == (alex-albany should still match Albany)
+HIGH: in step " Found signs of liquid corrosion on the top board", if input is a single character, just assume motherboard
+HIGH: add a step in swap phase to put a tag on the new bot
+HIGH: on start of the program, load the currently saved state file
 HIGH: regex for extracting the dock from notes also captures the comma and space before it
 HIGH: mobility menu dock still using customer instead of cx (when using scraped dock info)
 HIGH: on close of mobility menu, focus the end of the notes
@@ -40,6 +41,11 @@ HIGH: J1-6 don't have DCT cards specified
 MEDIUM: Make "is there liquid damage" step allow for explanations, or just 'y' if simply "yes". Also, update the text to reflect this
 MEDIUM: remove todo box can focus
 MEDIUM: Auto-guess which test dock the mobility test will use
+MEDIUM: add another hotkey sequence for add attachment:
+down, enter, tab, enter, (shift+tab, shift+tab, down, up, enter) OR (type current id, down, enter), tab, "Repair Report", tab, enter
+MEDIUM: in external notes menu, disallow "factory reset" and "replaced robot" to both be active at the same time
+MEDIUM: improve the external notes swap regex (i.e. match swap, if not followed by dock or battery)
+MEDUIM: add a step in final phase, if there was a swap, to salvage parts (consider adding it to an existing step)
 MEDIUM: add a "put on hold" phase
 MEDIUM: Add some toasts? (copied, pick up case, case ref copied, etc)
 MEDIUM: ctrl+home/ctrl+end
@@ -114,7 +120,6 @@ LOW: in add_step(): if the previous line has "** Result: " in it, add an extra l
 LOW: on double check, add "double checked by michelle" to the notes (and then recopy the notes into CSS)
 LOW: Add a readme with run instructions and the like
 LOW: if the text_area ends in "* ", remove it as well
-LOW: ask about the blower motor after cleaning, not before
 LOW: See if bot charges on customer dock BEFORE battery test (if both applicable)
 LOW: If a bot needs a battery test, ask about it immediately before cleaning
 LOW: change/check the shade of blue
@@ -157,3 +162,4 @@ EPIC: consider adding a bunch of read-only checkboxes immediately below the "cop
 
 
 cut caffine pills in half
+superglue headphone case

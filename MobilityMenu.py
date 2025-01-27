@@ -151,7 +151,7 @@ class MobilityMenu(VerticalGroup):
         if self.case.dock and (not self.base.value or self.base.value == 'test '):
             self.base.value = 'cx ' + self.case.dock
         self.notes.value = ''
-        self.todo.value = ''
+        self.todo.text = ''
 
     def toggle(self):
         self.visible = not self.visible
