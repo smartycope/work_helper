@@ -5,10 +5,27 @@
 
 Screen {
     # align: center middle;
-    layers: below hintButton ext mobility hints ref;
+    # layers: below hintButton ext mobility hints ref;
+    layers: below hintButton menus ref;
     # layers: ref mobility ext hintButton below hints;
 }
 
+
+ExternalNotesMenu{
+    margin: 4;
+    height: 90%;
+    width: 70%;
+    padding: 2;
+    layer: ext;
+}
+
+Menu{
+    margin: 4;
+    height: 100%;
+    width: 70%;
+    padding: 2;
+    layer: menus;
+}
 
 .sidebar{
     dock: right;
@@ -78,14 +95,6 @@ Screen {
 #     content-align: center middle;
 #     align: center middle;
 #     background: darkblue;
-}
-
-.external-menu{
-    margin: 4;
-    height: 100%;
-    width: 70%;
-    padding: 2;
-    layer: ext;
 }
 
 #external-preview{

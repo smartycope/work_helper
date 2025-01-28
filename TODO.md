@@ -1,8 +1,11 @@
-URGENT: S9: no dock indicated, and still asking if there's a bag in the dock
+URGENT: ya, the sidebars aren't update after deserialization
 
 MINOR: if mobility menu attempted to open with no cases, it throws an error. Catch that
 MINOR: only if "lapis" mentioned in the notes, remind to reprovision lapis bin in the app in the external
 MINOR: immediately after opening a new case, autofocus on the input box
+MINOR: M6 factory reset: hold down all 3 buttons until light swirls
+MINOR: uppercase all the serial buttons
+MINOR: in "all tags are off" step, add "and grab the traveler"
 MINOR: the colors of the CopyText buttons are arbitrary: make the text color the color of the case
 MINOR: when checking for 'charg' or 'batt', also check for "does not turn on", or "doesn't turn on", or "won't turn on" and similar
 MINOR: make the mobility todo box an input box and give it a placeholder
@@ -14,6 +17,7 @@ HIGH: focus on input box on MM close
 HIGH: give external notes menu open/close/toggle - or just make a Menu parent class
 HIGH: when checking dock values, search the string instead of using == (alex-albany should still match Albany)
 HIGH: in step " Found signs of liquid corrosion on the top board", if input is a single character, just assume motherboard
+HIGH: M6 still asking about blower motor
 HIGH: add a step in swap phase to put a tag on the new bot
 HIGH: on start of the program, load the currently saved state file
 HIGH: regex for extracting the dock from notes also captures the comma and space before it
@@ -28,7 +32,7 @@ HIGH: auto guess the "where" in the mobility menu
 HIGH: add a step (and make it the first step) in Finish phase, that asks if I've completed a successful mobility test, and attempted DCT
 HIGH: when external notes menu opens via steps, it doesn't auto-load (call the open/toggle function instead of setting visible to True)
 HIGH: add if the case has a lapis bin to notes -- and also that, if there's a lapis bin due to serial number, it doesn't need to be provisioned to the app to work
-HIGH: in M6 bot, with no dock specified, it's asking if there's a bag in the dock - same case is asking if blower play
+HIGH: in M6 bot, with no dock specified, it's asking if there's a bag in the dock - same case is asking if play
 HIGH: if the case has a lapis bin, *in the serial number*, it should *not* suggest in external notes to reprovision bot to the lapis bin (and should even prevent it if it is checked, just disable it). But if the bot does *not* have a 7 in the serial, but *does* have one in the notes, (add a regex for it), then it *should* recommend reprovisioning, if a factory reset OR a swap
 HIGH: phase deserialize doesn't load correctly
 HIGH: add periodic saving
@@ -41,8 +45,9 @@ HIGH: J1-6 don't have DCT cards specified
 MEDIUM: Make "is there liquid damage" step allow for explanations, or just 'y' if simply "yes". Also, update the text to reflect this
 MEDIUM: remove todo box can focus
 MEDIUM: Auto-guess which test dock the mobility test will use
-MEDIUM: add another hotkey sequence for add attachment:
-down, enter, tab, enter, (shift+tab, shift+tab, down, up, enter) OR (type current id, down, enter), tab, "Repair Report", tab, enter
+MEDIUM: add the current date somewhere, and don't update it. Also, add the name of the parent directory of main.py These together should work as a "version"
+MEDIUM: if M6, in routine checks, ask if the filter is clogged at all
+MEDIUM: add another hotkey sequence for add attachment: down, enter, tab, enter, (shift+tab, shift+tab, down, up, enter) OR (type current id, down, enter), tab, "Repair Report", tab, enter
 MEDIUM: in external notes menu, disallow "factory reset" and "replaced robot" to both be active at the same time
 MEDIUM: improve the external notes swap regex (i.e. match swap, if not followed by dock or battery)
 MEDUIM: add a step in final phase, if there was a swap, to salvage parts (consider adding it to an existing step)
@@ -80,11 +85,13 @@ MEDIUM: add "esc" binding to both menus
 MEDIUM: have a variable that indicates a rusted bin screw, for the external notes menu
 MEDIUM: if serial numbers are different, automatically go to a new step that offers (and allows) you to close the case immediately
 MEDIUM: if battery tests are needed, also measure contacts, even if they don't feel sunken, but allow na
+--- COME BACK TO THIS --- MEDIUM: add a row immediately above the "parameters" row that just adds 2 more disable-able parameters: is the tank full (full, empty, or 1/4) and something else
 
 LOW: add mobility test step to debugging phase
 LOW: clean chirp sensor holes, if needed
 LOW: some sort of reminder to clean the bin sensors: especially if they come in with bin not clearing and/or evac issues
 LOW: If swap, copy the robot's defective serial number
+LOW: the 8th digit of the serial number, if N or Z, indicates it's non-modular -- or if the 16th digit is 7, but focus on the first one
 LOW: if it's a big base, and it's any sort of vacuum stall or filter clog or something, remind to check the dock evac channel
 LOW: ctrl + backspace doesn't seem to work
 LOW: on focus (window focus, at least), the input shouldn't select all of it's text
@@ -159,7 +166,11 @@ try a new bin
 try a new filter
 
 EPIC: consider adding a bunch of read-only checkboxes immediately below the "copy notes button" (also, the copy notes button can be a lot smaller)
+EPIC: just make a menu somewhere that has all the buttons - and in that menu, have a collapsible which has a bunch of debug buttons for when stuff goes wrong (like update sidebar)
 
-
-cut caffine pills in half
-superglue headphone case
+HINT: not mopping/pad not deploying
+blow out chirp sensors
+check there's water in the bin
+factory reset
+test pad/test bin
+If it fails with both a test pad and a test bin, and chirp sensors are blown out, it's a swap

@@ -52,9 +52,7 @@ def execute_step(self, resp):
                             self.text_area.text = self.step = f'!!! Serial numbers are different !!!\n{ids[half:]}\n{ids[:half]}'
                             self.phase = Phase.FINISH
                             return
-                    self.serial = ids[len(resp)//2:].lower()
-                    # Fill in all the info now that we have the serial number
-                    self.sidebar.serial = self.serial
+                    self.add_serial(ids[len(resp)//2:])
                     self.step = Steps.ask_labels
 
             case Steps.ask_labels:
@@ -86,7 +84,7 @@ def execute_step(self, resp):
                 self.step = Steps.ask_came_with_bag if self.is_dock else Steps.customer_states
 
             case Steps.ask_came_with_bag:
-                if resp:
+                if resp and resp != 'na':
                     self.text_area.text = self.text_area.text.strip() + ', no evac bag\n'
                 self.step = Steps.customer_states
 

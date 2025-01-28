@@ -18,7 +18,7 @@ class ExternalNotesMenu(VerticalGroup):
         # auto-change this to exclude Bona if robot is a C10 (C10's can't use Bona)
         ("Rusty bin screw", "Recommend only using water, Bona, or iRobot cleaning solution, as other products can rust components"),
         ("Liquid spill", "Robot is not rated for liquid cleanup"),
-        ("Broken mop pad", "Recommend hand washing mop pads"),
+        ("Broken mop pad", "Recommend hand washing mop pads, as machine wash can break them"),
         ("The Glitch", "If issues persist, factory reset as necessary"),
         ("Factory reset", "Factory reset performed, recommend re-provisioning robot on app"),
         ("Factory reset and Lapis bin", "Factory reset performed, recommend re-provisioning the robot and mop bin in the app"),
@@ -39,6 +39,7 @@ class ExternalNotesMenu(VerticalGroup):
         self.visible = False
         self.case = case
         self.text = Label('', id='external-preview')
+        self.cx_states = Label('cx states:\n', id='cx-states')
 
     def select(self, name):
         self.selection.select(list(self.notes.keys()).index(name))
@@ -87,6 +88,9 @@ class ExternalNotesMenu(VerticalGroup):
         if self.case._liquid_found:
             self.select("Liquid spill")
 
+        self.cx_states.update('cx states:\n' + self.case.customer_states)
+
+
     def compose(self):
         self.selection = SelectionList(*zip(self.notes.keys(), range(len(self.notes))))
         yield self.selection
@@ -96,6 +100,8 @@ class ExternalNotesMenu(VerticalGroup):
         with HorizontalGroup():
             yield Button('Close', id='close-external-notes')
             yield Button('Copy', id='copy-external-notes')
+        yield Static()
+        yield self.cx_states
         self.set_default_selections()
 
     def get_notes(self):

@@ -176,8 +176,7 @@ class Case(VerticalGroup):
             case.serials = [data.get('serial', '') or '']
             if not case.serials[0]:
                 case.serials = []
-        if case.serial:
-            case.sidebar.update()
+        case.sidebar.update()
         case.sidebar.todo.text = data.get('todo', '')
         case.phase = Phase(data.get('phase', Phase.DEBUGGING))
         case.step = data.get('step', Steps.add_step)
@@ -258,7 +257,6 @@ class Case(VerticalGroup):
             ● Battery charging will fail on a full battery
                 ○ Ignore if you know the battery State of Charge is high.
         """
-
         if not self._modular:
             return 'DCT won\'t work, only BBK'
         elif self.serial.startswith('j9'):
@@ -270,7 +268,7 @@ class Case(VerticalGroup):
         elif self.serial.startswith('m'):
             return 'Pad detection test (run both wet and dry missions)'
         elif self.serial.startswith('c'):
-            text = 'Actuator arm test, if FW >= 23.53.6 (ensure it deploys in mobility mission). If FW >= v24.29.5, DCT can\'t run'
+            text = 'Actuator arm current and speed tests, if FW >= 23.53.6 (ensure it deploys in mobility mission). If FW >= v24.29.5, DCT can\'t run'
             if self.serial.startswith('c9'):
                 text = 'Sprayer current off, but note the firmware version. ' + text
             return text
@@ -306,12 +304,12 @@ class Case(VerticalGroup):
         return self.serial.startswith(('m', 'c'))
 
     @property
-    def can_vacuum(self):
+    def can_vacuum(self) -> bool:
         return not self.serial.startswith('m')
 
     @property
-    def is_dock(self):
-        return self.dock.lower() not in ('bombay', 'san marino', 'torino')
+    def is_dock(self) -> bool:
+        return self.dock.lower() not in ('bombay', 'san marino', 'torino') and bool(self.dock)
 
     @property
     def dock_can_refill(self):
