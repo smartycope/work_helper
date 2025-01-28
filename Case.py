@@ -1,4 +1,6 @@
 import re
+from HintsMenu import HintsMenu
+from MenuMenu import MenuMenu
 from globals import COLORS
 import random
 from textual.containers import *
@@ -61,6 +63,10 @@ class Case(VerticalGroup):
 
         self.mobility_menu = MobilityMenu(self)
         self.external_notes_menu = ExternalNotesMenu(self)
+        self.hints_menu = HintsMenu(self)
+        self.menu_menu = MenuMenu()
+
+        self.menu_button = Button('', id='menu-button')
 
         # Some internal values to make auto guessing external notes easier
         self._bin_screw_has_rust = False
@@ -90,7 +96,10 @@ class Case(VerticalGroup):
         # with HorizontalGroup():
         yield self.mobility_menu
         yield self.external_notes_menu
+        yield self.hints_menu
+        yield self.menu_menu
         yield self.input
+        yield self.menu_button
         yield self.sidebar
 
         self.input.focus()
@@ -126,7 +135,7 @@ class Case(VerticalGroup):
 
         if self.phase == Phase.FINISH:
             # self.external_notes_menu.visible = True
-            self.external_notes_menu.open()
+            self.external_notes_menu.action_open()
 
         if self.phase == Phase.CONFIRM:
             self.step = self.first_steps[Phase.CONFIRM] if not self.serial else Steps.check_repeat
@@ -136,12 +145,12 @@ class Case(VerticalGroup):
     def action_open_mobility_menu(self):
         # Only allow the mobility menu to be opened if we have information about the bot
         if self.serial and self.phase == Phase.DEBUGGING:
-            self.mobility_menu.toggle()
+            self.mobility_menu.action_toggle()
 
     def action_open_external_notes_menu(self):
         # Only allow the mobility menu to be opened if we have information about the bot
         if self.serial:
-            self.external_notes_menu.toggle()
+            self.external_notes_menu.action_toggle()
 
     def action_change_serial(self):
         self.ensure_serial(self.step, force=True)
@@ -211,6 +220,20 @@ class Case(VerticalGroup):
 
     def action_focus_input(self):
         self.input.focus()
+
+    @on(Button.Pressed, '#menu-button')
+    def toggle_menu_menu(self):
+        self.menu_menu.action_toggle()
+
+    @on(Button.Pressed, '#update-sidebar-button')
+    def update_sidebar(self):
+        self.sidebar.update()
+        self.menu_menu.action_close()
+
+    @on(Button.Pressed, '#hints-button')
+    def toggle_hints_menu(self):
+        self.hints_menu.action_open()
+        self.menu_menu.action_close()
 
     # Helper methods
     def get_quick_model(self):

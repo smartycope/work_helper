@@ -3,9 +3,7 @@ URGENT: ya, the sidebars aren't update after deserialization
 MINOR: if mobility menu attempted to open with no cases, it throws an error. Catch that
 MINOR: only if "lapis" mentioned in the notes, remind to reprovision lapis bin in the app in the external
 MINOR: immediately after opening a new case, autofocus on the input box
-MINOR: M6 factory reset: hold down all 3 buttons until light swirls
 MINOR: uppercase all the serial buttons
-MINOR: in "all tags are off" step, add "and grab the traveler"
 MINOR: the colors of the CopyText buttons are arbitrary: make the text color the color of the case
 MINOR: when checking for 'charg' or 'batt', also check for "does not turn on", or "doesn't turn on", or "won't turn on" and similar
 MINOR: make the mobility todo box an input box and give it a placeholder
@@ -47,7 +45,6 @@ MEDIUM: remove todo box can focus
 MEDIUM: Auto-guess which test dock the mobility test will use
 MEDIUM: add the current date somewhere, and don't update it. Also, add the name of the parent directory of main.py These together should work as a "version"
 MEDIUM: if M6, in routine checks, ask if the filter is clogged at all
-MEDIUM: add another hotkey sequence for add attachment: down, enter, tab, enter, (shift+tab, shift+tab, down, up, enter) OR (type current id, down, enter), tab, "Repair Report", tab, enter
 MEDIUM: in external notes menu, disallow "factory reset" and "replaced robot" to both be active at the same time
 MEDIUM: improve the external notes swap regex (i.e. match swap, if not followed by dock or battery)
 MEDUIM: add a step in final phase, if there was a swap, to salvage parts (consider adding it to an existing step)
@@ -99,6 +96,7 @@ LOW: make it so it finds where it should put text, so lower down I can manually 
 LOW: add a switch to mobility menu to indicate testing a swapped bot
 LOW: instead of manually uppercasing strings, turn it into a function, and don't un-uppercase the string if the 2nd letter is uppercase (we don't want "cHM is...")
 LOW: consider refactoring all the private members into public properties, that return self._member or regex to find it if self._member is None
+LOW: clean up all the comments and things
 LOW: disallow unfocusing new case input box when visible
 LOW: don't ask about sunken contacts on an S9 specifically
 LOW: strip all input box text

@@ -23,16 +23,16 @@ sleep_mode = {
     'r': 'Add the plastic piece',
 }
 
-spot_and_clean = 'Hold down all 3 buttons until the clean lights start to spin'
+all_3 = 'Hold down all 3 buttons until the clean lights start to spin'
 remove_bin = 'Remove dust bin, then hold clean for 7 seconds until it beeps. Press clean again to confirm'
 factory_reset = {
-    's': spot_and_clean,
-    'i': spot_and_clean,
+    's': all_3,
+    'i': all_3,
+    'm': all_3,
     'j': remove_bin,
     'c': remove_bin,
     'e': 'Hold home and spot together for 20 seconds',
     'r': 'Hold dock and spot and clean until all LEDs turn on (9xx), or it beeps (6xx & 8xx)',
-    'm': 'Go ask',
 }
 
 

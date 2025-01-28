@@ -344,7 +344,7 @@ def execute_step(self, resp):
     elif self.phase == Phase.FINISH:
         match self.step:
             case Steps.generate_external_notes:
-                self.external_notes_menu.close()
+                self.external_notes_menu.action_close()
                 copy(self.text_area.text.strip())
                 self._finish_first_copy_notes = self.text_area.text.strip()
                 self.step = Steps.ask_copy_notes_1
@@ -415,10 +415,11 @@ def execute_step(self, resp):
             case Steps.ask_put_bin_back:
                 # If the notes haven't changed since we last updated CSS, we don't need to update CSS again
                 if self._finish_first_copy_notes == self.text_area.text.strip():
-                    multi_paste(
-                        self.ref,
-                        'Repair Report',
-                    )
+                    copy(self.ref)
+                    # multi_paste(
+                        # self.ref,
+                        # 'Repair Report',
+                    # )
                     self.step = Steps.wait_parts_closed
                 else:
                     copy(self.text_area.text.strip())

@@ -2,124 +2,10 @@ from textual.containers import *
 from textual.widgets import *
 
 from CustomInput import CustomInput
+from Menu import Menu
+from TriSwitch import TriSwitch
 
-class TriSwitch(Switch):
-    DEFAULT_CSS = """
-    TriSwitch {
-        border: tall $border-blurred;
-        background: $surface;
-        height: auto;
-        width: auto;
-
-        padding: 0 2;
-        &.-on .switch--slider {
-            color: $success;
-        }
-        &.-off .switch--slider {
-            color: $error;
-        }
-        & .switch--slider {
-            color: $panel;
-            background: $panel-darken-2;
-        }
-        &:hover {
-            & > .switch--slider {
-                color: $panel-lighten-1
-            }
-            &.-on > .switch--slider {
-                color: $success-lighten-1;
-            }
-            &.-off > .switch--slider {
-                color: $error-lighten-1;
-            }
-        }
-        &:focus {
-            border: tall $border;
-            background-tint: $foreground 5%;
-        }
-
-        &:light {
-            &.-on .switch--slider {
-                color: $success;
-            }
-            &.-off .switch--slider {
-                color: $error;
-            }
-            & .switch--slider {
-                color: $primary 15%;
-                background: $panel-darken-2;
-            }
-            &:hover {
-                & > .switch--slider {
-                    color: $primary 25%;
-                }
-                &.-on > .switch--slider {
-                    color: $success-lighten-1;
-                }
-                &.-off > .switch--slider {
-                    color: $error-lighten-1;
-                }
-            }
-        }
-    }
-    """
-
-    def __init__(
-        self,
-        value: bool = False,
-        *,
-        animate: bool = False,
-        name: str | None = None,
-        id: str | None = None,
-        classes: str | None = None,
-        disabled: bool = False,
-        tooltip = None,
-    ):
-        super().__init__(name=name, id=id, classes=classes, disabled=disabled, animate=animate, tooltip=tooltip)
-        if value is True:
-            self._slider_position = 1.0
-            self.set_reactive(Switch.value, value)
-        elif value is None:
-            self._slider_position = 0.5
-            self.set_reactive(Switch.value, value)
-        # self._should_animate = animate
-        # if tooltip is not None:
-        #     self.tooltip = tooltip
-
-    def toggle(self):
-        match self.value:
-            case True:  self.value = False
-            case False: self.value = None
-            case None:  self.value = True
-        return self
-
-    def watch_value(self, value: bool|None) -> None:
-        # target_slider_position = 1.0 if value else 0.0
-        match self.value:
-            case True:  target_slider_position = 1.0
-            case False: target_slider_position = 0.0
-            case None:  target_slider_position = 0.5
-
-        if self._should_animate:
-            self.animate(
-                "_slider_position",
-                target_slider_position,
-                duration=0.3,
-                level="basic",
-            )
-        else:
-            self._slider_position = target_slider_position
-        self.post_message(self.Changed(self, self.value))
-
-    def watch__slider_position(self, slider_position: float) -> None:
-        self.set_class(slider_position == 1, "-on")
-        self.set_class(slider_position == 0, "-off")
-        # self.style.
-        # self.set_class(self.value is True, "-on")
-        # self.set_class(self.value is None, "-off")
-
-
-class MobilityMenu(VerticalGroup):
+class MobilityMenu(Menu):
     switches = (
             'undock',
             'dock',
@@ -130,39 +16,12 @@ class MobilityMenu(VerticalGroup):
             'manual_evac',
             'deploy_pad',
             'spray',
-            # 'streaky',
-            # 'other_value',
         )
 
-    # TODO: This doesn't work
-    BINDINGS = [
-        ('esc', 'close')
-    ]
-
     def __init__(self, case):
-        super().__init__(classes='mobility-menu', id=f'mobility-menu-{case.ref}')
-        self.visible = False
-        self.case = case
+        # super().__init__(classes='mobility-menu', id=f'mobility-menu-{case.ref}')
+        super().__init__(case)
         self._been_opened = False
-
-    def update_values(self):
-        """ Run whenever the menu gets closed """
-        # If we have a dock, always assume we're using it
-        if self.case.dock and (not self.base.value or self.base.value == 'test '):
-            self.base.value = 'cx ' + self.case.dock
-        self.notes.value = ''
-        self.todo.text = ''
-
-    def toggle(self):
-        self.visible = not self.visible
-        # The first time, we need to update everything. After that, update only after we insert one
-        if not self._been_opened:
-            self.update_values()
-            self._been_opened = True
-            self.cx_states.update('| cx: ' + self.case.customer_states if self.case.customer_states else '')
-
-    def action_close(self):
-        self.visible = False
 
     def compose(self):
         yield Label('[bold]Mobility Test[/]', id='mobility-title')
@@ -223,15 +82,6 @@ class MobilityMenu(VerticalGroup):
         self.spray = TriSwitch(value=None)
         yield self.spray
 
-        # yield Label('Streaky:')
-        # self.streaky = TriSwitch(value=None)
-        # yield self.streaky
-
-        # self.other = CustomInput(placeholder='Other:')
-        # yield self.other
-        # self.other_value = TriSwitch(value=None)
-        # yield self.other_value
-
         # yield Static(classes='double')
         yield Static(classes='quadruple')
 
@@ -246,6 +96,22 @@ class MobilityMenu(VerticalGroup):
 
         yield Button('Close', id='cancel', classes='')
         yield Button('Done', id='done', classes='')
+
+    def update_values(self):
+        """ Run whenever the menu gets closed """
+        # If we have a dock, always assume we're using it
+        if self.case.dock and (not self.base.value or self.base.value == 'test '):
+            self.base.value = 'cx ' + self.case.dock
+        self.notes.value = ''
+        self.todo.text = ''
+
+    def action_toggle(self):
+        super().action_toggle()
+        # The first time, we need to update everything. After that, update only after we insert one
+        if not self._been_opened:
+            self.update_values()
+            self._been_opened = True
+            self.cx_states.update('| cx: ' + self.case.customer_states if self.case.customer_states else '')
 
     def on_button_pressed(self, event):
         match event.button.id:

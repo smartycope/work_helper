@@ -5,8 +5,9 @@ from textual import on
 from textual.events import Mount
 from clipboard import copy
 import textwrap
+from Menu import Menu
 
-class ExternalNotesMenu(VerticalGroup):
+class ExternalNotesMenu(Menu):
     # These are in the order they should be in in the final notes
     notes = OrderedDict((
         ("Replaced robot", "Replaced robot with equivalent model"),
@@ -35,29 +36,34 @@ class ExternalNotesMenu(VerticalGroup):
     ]
 
     def __init__(self, case):
-        super().__init__(classes='external-menu', id=f'external-menu-{case.ref}')
-        self.visible = False
-        self.case = case
+        # super().__init__(classes='external-menu', id=f'external-menu-{case.ref}')
+        super().__init__(case)
         self.text = Label('', id='external-preview')
         self.cx_states = Label('cx states:\n', id='cx-states')
+
+    def compose(self):
+        self.selection = SelectionList(*zip(self.notes.keys(), range(len(self.notes))))
+        yield self.selection
+        yield Static()
+        yield self.text
+        yield Static()
+        with HorizontalGroup():
+            yield Button('Close', id='close-external-notes')#, action='close')
+            yield Button('Copy', id='copy-external-notes')#, action='copy')
+        yield Static()
+        yield self.cx_states
+        self.set_default_selections()
 
     def select(self, name):
         self.selection.select(list(self.notes.keys()).index(name))
 
-    def toggle(self):
-        self.visible = not self.visible
+    def action_toggle(self):
+        super().action_toggle()
         self.set_default_selections()
 
-    def open(self):
-        self.visible = True
+    def action_open(self):
+        super().action_open()
         self.set_default_selections()
-
-    def close(self):
-        self.visible = False
-        # self.set_default_selections()
-
-    def action_close(self):
-        self.visible = False
 
     def set_default_selections(self):
         notes = self.case.text_area.text.lower()
@@ -90,20 +96,6 @@ class ExternalNotesMenu(VerticalGroup):
 
         self.cx_states.update('cx states:\n' + self.case.customer_states)
 
-
-    def compose(self):
-        self.selection = SelectionList(*zip(self.notes.keys(), range(len(self.notes))))
-        yield self.selection
-        yield Static()
-        yield self.text
-        yield Static()
-        with HorizontalGroup():
-            yield Button('Close', id='close-external-notes')
-            yield Button('Copy', id='copy-external-notes')
-        yield Static()
-        yield self.cx_states
-        self.set_default_selections()
-
     def get_notes(self):
         return '. '.join(list(self.notes.values())[i] for i in sorted(self.selection.selected)) + '.'
 
@@ -113,9 +105,11 @@ class ExternalNotesMenu(VerticalGroup):
         self.text.update(textwrap.fill(self.get_notes(), 60))
 
     @on(Button.Pressed, '#copy-external-notes')
-    def copy(self):
+    def action_copy(self):
         copy(self.get_notes())
 
+    # I hate how this is necissary
     @on(Button.Pressed, '#close-external-notes')
     def close(self):
-        self.visible = False
+        self.action_close()
+    #     self.visible = False

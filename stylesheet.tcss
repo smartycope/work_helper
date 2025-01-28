@@ -1,22 +1,7 @@
-# TabbedContent {
-    # background: [color_0];
-    # color: black;
-# }
-
 Screen {
-    # align: center middle;
-    # layers: below hintButton ext mobility hints ref;
-    layers: below hintButton menus ref;
+    layers: below hintButton ext mobility hints menu ref;
+    # layers: below hintButton menus ref;
     # layers: ref mobility ext hintButton below hints;
-}
-
-
-ExternalNotesMenu{
-    margin: 4;
-    height: 90%;
-    width: 70%;
-    padding: 2;
-    layer: ext;
 }
 
 Menu{
@@ -24,7 +9,34 @@ Menu{
     height: 100%;
     width: 70%;
     padding: 2;
-    layer: menus;
+}
+
+ExternalNotesMenu{
+    height: 90%;
+    layer: ext;
+}
+
+MobilityMenu{
+    layout: grid;
+    grid-size: 4;
+    width: 75%;
+    margin: 2 0 4 4;
+    grid-gutter: 0 1;
+    layer: mobility;
+    grid-rows: 3;
+}
+
+HintsMenu{
+    layer: hints;
+    content-align: center middle;
+}
+
+MenuMenu{
+    layer: menu;
+    dock: right;
+    height: 10;
+    width: 20;
+    content-align: center middle;
 }
 
 .sidebar{
@@ -32,11 +44,7 @@ Menu{
     height: 100%;
     width: 30%;
     min-width: 30;
-    # content-align: center top;
-    # content-align-horizontal: center;
-    # align-horizontal: center;
     align: center top;
-    # background: ;
     color: black;
 }
 
@@ -54,19 +62,14 @@ Menu{
 #copy-button{
     height: 3;
     width: 100%;
-    # dock: bottom;
 }
 
 #lower-sidebar{
-    # max-height: 40%;
-    # min-height: 5;
     height: 13;
     dock: bottom;
 }
 
 #todo-textarea{
-    # min-height: 5;
-    # max-height: 7;
     height: 6;
 }
 
@@ -74,27 +77,6 @@ Menu{
     width: 30%;
     padding: 0;
     margin: 0;
-    # min-width: 30;
-}
-
-.mobility-menu{
-    layout: grid;
-    grid-size: 4;
-    width: 75%;
-
-    # grid-columns: auto 1fr 1fr;
-    # grid-rows: 25% 75%;
-#     # dock: center;
-    margin: 2 0 4 4;
-    grid-gutter: 0 1;
-    height: 100%;
-    padding: 2;
-    # background: #515151
-    layer: mobility;
-    grid-rows: 3;
-#     content-align: center middle;
-#     align: center middle;
-#     background: darkblue;
 }
 
 #external-preview{
@@ -133,4 +115,19 @@ Menu{
 
 .serial-label{
     margin: 0 1;
+}
+
+#menu-button{
+    layer: hintButton;
+    dock: right;
+    margin: 0;
+    padding: 0;
+    width: 2;
+    height: 2;
+    border: white;
+    background: $surface-lighten-1;
+}
+
+#hints-tree{
+    background: $surface-darken-1;
 }

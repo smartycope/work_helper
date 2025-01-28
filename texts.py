@@ -72,12 +72,12 @@ class Steps:
     double_check_confirmed = 'Wait for the case to be double checked [looks good]'
     ask_shipping_mode = "Placed into shipping mode [done]"
     ask_close_parts = "Close out all parts and get out of case [done]"
-    ask_tags_off = "All the tags are off, including the bin and dock [done]"
+    ask_tags_off = "All the tags are off, including the bin and dock, and grab the traveler [done]"
     ask_put_bin_back = "Put the bin back [done]"
     ask_copy_notes_1 = "Copy notes over to CSS and add a repair action {notes} [done]"
     ask_copy_notes_2 = "Copy notes over to CSS {notes} [done]"
     wait_parts_closed = 'Wait for parts to get closed out [done]'
-    ask_complete_case_CSS = "Finish the case on CSS {case ID, then 'rr'} [done]"
+    ask_complete_case_CSS = "Finish the case on CSS {case ID} [done]"
     ask_put_bot_on_shelf = "Put the robot and traveler on the shelf [done]"
     generate_external_notes = "Create and copy external notes [done]"
     # finish_case = 'All done! [close case]'

@@ -10,7 +10,7 @@ __HOTKEY_HOOKS = {}
 
 def _increment_paste(id):
     global __HOTKEY_HOOKS, __PASTE_SCHEDULE
-    print(__PASTE_SCHEDULE)
+    # print(__PASTE_SCHEDULE)
     if __PASTE_SCHEDULE:
         clipboard.copy(__PASTE_SCHEDULE.pop(0))
     # Not an else here, cause the size may have changed now
@@ -46,7 +46,7 @@ if os.name == 'nt':
         # we can delete from there
         id = monotonic()
 
-        params = dict(callback=_increment_paste, args=(id,), suppress=False, trigger_on_release=False)
+        params = dict(callback=_increment_paste, args=(id,), suppress=False, trigger_on_release=False, timeout=.2)
         try:
             __HOTKEY_HOOKS[id] = (
                 keyboard.add_hotkey('ctrl+v', **params),
@@ -81,7 +81,7 @@ else:
         # we can delete from there
         id = monotonic()
 
-        params = dict(callback=_increment_paste, args=(id,), suppress=True, trigger_on_release=True)
+        params = dict(callback=_increment_paste, args=(id,), suppress=True, trigger_on_release=True, timeout=.2)
         try:
             __HOTKEY_HOOKS[id] = (
                 keyboard.add_hotkey('ctrl+v', **params),
