@@ -1,6 +1,6 @@
 import re
 from HintsMenu import HintsMenu
-from MenuMenu import MenuMenu
+# from MenuMenu import MenuMenu
 from globals import COLORS
 import random
 from textual.containers import *
@@ -64,9 +64,10 @@ class Case(VerticalGroup):
         self.mobility_menu = MobilityMenu(self)
         self.external_notes_menu = ExternalNotesMenu(self)
         self.hints_menu = HintsMenu(self)
-        self.menu_menu = MenuMenu()
+        # self.menu_menu = MenuMenu()
+        self.menu_menu = Select(((m, m) for m in ('Hints', 'Update Sidebar')), id='menu-select', prompt='')
 
-        self.menu_button = Button('', id='menu-button')
+        # self.menu_button = Button('', id='menu-button')
 
         # Some internal values to make auto guessing external notes easier
         self._bin_screw_has_rust = False
@@ -80,6 +81,14 @@ class Case(VerticalGroup):
 
         # This gets run on mount of the color selector
         # self.set_color(color)
+
+    @on(Select.Changed, "#menu-select")
+    def open_menu(self, event: Select.Changed):
+        match event.value:
+            case 'Hints': self.hints_menu.action_open()
+            case 'Update Sidebar': self.sidebar.update()
+
+        self.menu_menu.clear()
 
     @on(Select.Changed, "#color-selector")
     def set_color(self, event: Select.Changed):
@@ -99,7 +108,6 @@ class Case(VerticalGroup):
         yield self.hints_menu
         yield self.menu_menu
         yield self.input
-        yield self.menu_button
         yield self.sidebar
 
         self.input.focus()
@@ -220,20 +228,6 @@ class Case(VerticalGroup):
 
     def action_focus_input(self):
         self.input.focus()
-
-    @on(Button.Pressed, '#menu-button')
-    def toggle_menu_menu(self):
-        self.menu_menu.action_toggle()
-
-    @on(Button.Pressed, '#update-sidebar-button')
-    def update_sidebar(self):
-        self.sidebar.update()
-        self.menu_menu.action_close()
-
-    @on(Button.Pressed, '#hints-button')
-    def toggle_hints_menu(self):
-        self.hints_menu.action_open()
-        self.menu_menu.action_close()
 
     # Helper methods
     def get_quick_model(self):

@@ -117,15 +117,20 @@ MenuMenu{
     margin: 0 1;
 }
 
-#menu-button{
+#menu-select{
     layer: hintButton;
     dock: right;
-    margin: 0;
-    padding: 0;
-    width: 2;
-    height: 2;
-    border: white;
-    background: $surface-lighten-1;
+    # margin: 0;
+    # padding: 0;
+    width: 8;
+    & > SelectOverlay {
+        # display: none;
+        constrain: none none;
+        width: 30;
+    }
+    # height: 3;
+    # border: white;
+    background: $surface-lighten-2;
 }
 
 #hints-tree{
