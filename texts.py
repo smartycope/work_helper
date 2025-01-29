@@ -5,10 +5,11 @@ class Steps:
     todo = "TODO"
 
     # CONFRIM
-    ask_labels = "Put labels on everything"
+    ask_labels = "Put labels on everything [done]"
+    turn_down_screwdriver = 'Turn down the power setting on the screwdriver [done]'
     confirm_id = "Confirm IDs"
-    check_repeat = "Check if case is a repeat"
-    check_spl_sku = "Check that the SPL SKU is valid"
+    check_repeat = "Check if case is a repeat [not a repeat]"
+    check_claimed_damage = "Check the claimed damage"
     pick_up_case = "Go pick up the case on CSS {case ID} [done]"
     ask_dock = "Additional dock [no dock]"
     ask_damage = "Additional damage [no damage]"
@@ -19,7 +20,7 @@ class Steps:
     # ROUTINE_CHECKS
     ask_modular = "Is the bot modular [yes]"
     check_liquid_damage = "Signs of liquid damage [no]"
-    ask_sunken_contacts = "Do the contacts feel sunken [no]"
+    ask_sunken_contacts = "Do the contacts feel sunken (R/L/B) [no]"
     ask_blower_play = "Play in blower motor, or doesn't spin freely [no]"
     ask_rollers = "How do the extractors look [good]"
     ask_s9_lid_pins = "Are the lid pins sunken [no]"
@@ -35,7 +36,6 @@ class Steps:
     liquid_check_bin = "Is there liquid residue in the robot bin [no]"
     liquid_take_pictures = "Take pictures of liquid residue"
 
-    sunken_ask_side = "Which side is sunken (R/L/B)"
     # sunken_ask_measurement = "Contact measurement"
     sunken_ask_right_measurement = "Right contact measurement"
     sunken_ask_left_measurement = "Left contact measurement"
@@ -52,6 +52,7 @@ class Steps:
     swap_order_M6 = "Order the correctly colored swap [done]"
     swap_move_bin = "Unbox and move bin and battery over, if necessary [no bin needed]"
     swap_put_in_box = "Put the old bot in the box [done]"
+    swap_add_labels = 'Put labels on the new bot'
     swap_input_new_serial = "What's the serial number of the new bot"
     swap_note_serial = "Put the new serial number into CSS {new serial} [done]"
 
@@ -79,6 +80,7 @@ class Steps:
     wait_parts_closed = 'Wait for parts to get closed out [done]'
     ask_complete_case_CSS = "Finish the case on CSS {case ID} [done]"
     ask_put_bot_on_shelf = "Put the robot and traveler on the shelf [done]"
+    ask_put_bot_on_shelf_mopping = "Put the robot and traveler on the shelf, and put the tank[s] on top [done]"
     generate_external_notes = "Create and copy external notes [done]"
     # finish_case = 'All done! [close case]'
     finish_case = "All done! Good to close case now"

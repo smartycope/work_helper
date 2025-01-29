@@ -65,7 +65,7 @@ class Case(VerticalGroup):
         self.external_notes_menu = ExternalNotesMenu(self)
         self.hints_menu = HintsMenu(self)
         # self.menu_menu = MenuMenu()
-        self.menu_menu = Select(((m, m) for m in ('Hints', 'Update Sidebar')), id='menu-select', prompt='')
+        self.menu_menu = Select(((m, m) for m in ('Hints', 'Update Sidebar')), id='menu-select', prompt='☰')
 
         # self.menu_button = Button('', id='menu-button')
 
@@ -73,7 +73,7 @@ class Case(VerticalGroup):
         self._bin_screw_has_rust = False
         self._dock_tank_screw_has_rust = False
         self._liquid_found = False
-        self._modular = True
+        # self._modular = True
 
         self._finish_first_copy_notes = ''
         self._also_check_left = False
@@ -221,7 +221,7 @@ class Case(VerticalGroup):
             self.customer_states = found.group(1)
 
         # 'Routine Checks' + match_max(literallyAnything) + '* ' + chunk + ... + match_max(literallyAnything) + 'Process:'
-        self._modular = not bool(re.search(r'Routine\ Checks(?:(?:.|\n))+\*\ .+is\ non\-modular(?:(?:.|\n))+Process:', self.text_area.text))
+        # self._modular = not bool(re.search(r'Routine\ Checks(?:(?:.|\n))+\*\ .+is\ non\-modular(?:(?:.|\n))+Process:', self.text_area.text))
         self._bin_screw_has_rust = bool(re.search(r'Routine\ Checks(?:(?:.|\n))+\*\ (?:Tank\ float\ screw\ has\ a\ spot\ of\ rust\ on\ it|Tank\ float\ screw\ is\ entirely\ rusted)(?:(?:.|\n))+Process:', self.text_area.text))
         self._dock_tank_screw_has_rust = bool(re.search(r'Routine\ Checks(?:(?:.|\n))+\*\ (?:Dock tank\ float\ screw\ has\ a\ spot\ of\ rust\ on\ it|Dock tank\ float\ screw\ is\ entirely\ rusted)(?:(?:.|\n))+Process:', self.text_area.text))
         self._liquid_found = bool(re.search(r'Routine\ Checks(?:(?:.|\n))+\*\ Found\ signs\ of\ liquid\ (?:(?:.|\n))+Process:', self.text_area.text))
@@ -237,7 +237,7 @@ class Case(VerticalGroup):
             return self.serial[:2].upper()
 
     def get_DCT(self):
-        if self.serial.startswith('i') and not self._modular:
+        if self.serial.startswith('i') and not self.is_modular:
             return '[on red]Red card[/] from the top'
         elif self.serial.startswith(('i1', 'i2', 'i3', 'i4', 'i5')):
             return '[on red]Red card[/]'
@@ -274,7 +274,7 @@ class Case(VerticalGroup):
             ● Battery charging will fail on a full battery
                 ○ Ignore if you know the battery State of Charge is high.
         """
-        if not self._modular:
+        if not self.is_modular:
             return 'DCT won\'t work, only BBK'
         elif self.serial.startswith('j9'):
             return 'If v2 (clip battery), can fail basically everything. Otherwise, second dock comms test, if FW == 24.29.x (ensure robot still evacs)'
@@ -303,7 +303,7 @@ class Case(VerticalGroup):
             notes += 'If having weird trouble with DCT, try factory reset'
 
         if self.serial.startswith('r'):
-            notes += 'To BiT: lights have to be on, then hold home & clean and press spot 5x'
+            notes += 'To BiT: lights have to be off (hold down clean to turn off), then hold home & clean and press spot 5x. Then press home to start the tests. Spot is next, home is prev. Hold clean when finished successfully, otherwise factory reset.'
 
         if self.serial.startswith('e'):
             notes += 'To BiT: lights have to be off, then hold home & clean and press spot 5x. You also have to press clean to get it to connect to DCT'
@@ -341,8 +341,10 @@ class Case(VerticalGroup):
 
     @property
     def is_factory_lapis(self):
+        """ True if *any* of the serials are a factory lapis, not just the current one """
         try:
-            return self.serial[3] == '7'
+            # return self.serial[3] == '7'
+            return any(i[3] == '7' for i in self.serials)
         except IndexError:
             return False
 
@@ -371,3 +373,9 @@ class Case(VerticalGroup):
         self.serials.append(serial.lower())
         # The sidebar always uses the last serial to load info
         self.sidebar.update()
+
+    @property
+    def is_modular(self):
+        # If the 8th digit of the serial number, if N or Z, indicates it's non-modular -- or if the 16th digit is 7, but focus on the first one
+        if len(self.serial) > 7:
+            return self.serial[7] not in ('n', 'z')

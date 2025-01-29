@@ -1,3 +1,4 @@
+from textual import on
 from textual.containers import *
 from textual.widgets import *
 
@@ -86,7 +87,7 @@ class MobilityMenu(Menu):
         yield Static(classes='quadruple')
 
         # yield Label('Notes')
-        self.notes = CustomInput(placeholder='Notes', classes='quadruple')
+        self.notes = CustomInput(placeholder='Notes', classes='quadruple', id='notes')
         yield self.notes
 
         # yield Static(classes='quadruple')
@@ -113,15 +114,17 @@ class MobilityMenu(Menu):
             self._been_opened = True
             self.cx_states.update('| cx: ' + self.case.customer_states if self.case.customer_states else '')
 
-    def on_button_pressed(self, event):
-        match event.button.id:
-            case 'cancel':
-                self.visible = False
-            case 'done':
-                self.visible = False
-                extra_line = '' if self.case.text_area.text.strip().endswith('Process:') else '\n'
-                self.case.text_area.text = self.case.text_area.text.strip() + '\n' + extra_line + self.stringify() + '\n\n'
-                self.update_values()
+    @on(Button.Pressed, '#done')
+    def cancel(self, event):
+        self.visible = False
+
+    @on(Input.Submitted, '#notes')
+    @on(Button.Pressed, '#cancel')
+    def done(self):
+        self.visible = False
+        extra_line = '' if self.case.text_area.text.strip().endswith('Process:') else '\n'
+        self.case.text_area.text = self.case.text_area.text.strip() + '\n' + extra_line + self.stringify() + '\n\n'
+        self.update_values()
 
     def stringify(self):
         has_pass = any(getattr(self, i).value for i in self.switches)

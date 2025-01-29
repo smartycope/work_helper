@@ -1,6 +1,10 @@
 URGENT: ya, the sidebars aren't update after deserialization
+URGENT: if there's a swap due to sunken contacts, and they don't have a dock, then state that I'll provide them with  a dock, and make a step for it (order a new dock) -- actually, make the "order a new dock" step whether they have a dock or not, it's needed in both cases
 
+MINOR: disable focus of menu_menu
 MINOR: if mobility menu attempted to open with no cases, it throws an error. Catch that
+MINOR: add the quick model number to the tab name
+MINOR: r series has to have lights off, not on
 MINOR: only if "lapis" mentioned in the notes, remind to reprovision lapis bin in the app in the external
 MINOR: immediately after opening a new case, autofocus on the input box
 MINOR: uppercase all the serial buttons
@@ -11,10 +15,13 @@ MINOR: in the comment in the texts.py that the steps have to be unique: they tec
 MINOR: maybe - in the mobility menu update function, in the if statement to reset the dock box, remove the or'ed statement if it's empty (don't reset if it's empty)
 
 HIGH: ctrl+end shortcut / fix all the shortcuts
+HIGH: add backup states, and be able to load them
 HIGH: focus on input box on MM close
 HIGH: give external notes menu open/close/toggle - or just make a Menu parent class
 HIGH: when checking dock values, search the string instead of using == (alex-albany should still match Albany)
 HIGH: in step " Found signs of liquid corrosion on the top board", if input is a single character, just assume motherboard
+HIGH: replace the check SPL SKU step with a "check if tech box is needed" step
+HIGH: move the menu_menu to the HelperApp, and have it pass it's events down to the active case manually
 HIGH: M6 still asking about blower motor
 HIGH: add a step in swap phase to put a tag on the new bot
 HIGH: on start of the program, load the currently saved state file
@@ -24,7 +31,6 @@ HIGH: on close of mobility menu, focus the end of the notes
 HIGH: add a 2nd CopyText button for the other swap id, if there is one
 HIGH: somehow emphasize C9's remove battery before CHM in notes
 HIGH: cx stated charging error, and there was liquid damage, and did not ask for a battery test
-HIGH: add a hotkey for ordering parts as follows: enter, tab x3, "NA", tab, "NA", tab x2, enter
 HIGH: C9, Aurora, didn't ask to empty dock tank (I think, double check)
 HIGH: auto guess the "where" in the mobility menu
 HIGH: add a step (and make it the first step) in Finish phase, that asks if I've completed a successful mobility test, and attempted DCT
@@ -58,6 +64,9 @@ MEDIUM: in "order correctly colored swap" (for M6 specifically) copy the serial 
 MEDIUM: add a "has been swapped" member that indicates whether the "order swap" step has been performed before, for the external notes menu to use
 MEDIUM: put all the mobility menu switches for combos and mops on one side
 MEDIUM: multi_paste() is buggy somehow, it stopped working after a while
+MEDIUM: torino asked about bag in the dock in the finish phase
+MEDIUM: CopyText needs some sort of feedback when pressed (lighten background like regular buttons do)
+MEDIUM: make the lower sidebar butt against the bottom properly
 MEDIUM: allow different serial numbers, if it follows the document (i.e. i5g5 instead of i5g7) (also, in the case of g, it means it's a lapis combo)
 MEDIUM: J955 - 1st 5 means evac dock, 1 means base. 2nd 5, if 7, means lapis bin
 MEDIUM: Consider a "clear TODO" button (or at least make it select everything on focus)
@@ -85,13 +94,16 @@ MEDIUM: if battery tests are needed, also measure contacts, even if they don't f
 --- COME BACK TO THIS --- MEDIUM: add a row immediately above the "parameters" row that just adds 2 more disable-able parameters: is the tank full (full, empty, or 1/4) and something else
 
 LOW: add mobility test step to debugging phase
+LOW: make a new class, something like AttentionText, which blinks until you click on it, then it stops
 LOW: clean chirp sensor holes, if needed
 LOW: some sort of reminder to clean the bin sensors: especially if they come in with bin not clearing and/or evac issues
 LOW: If swap, copy the robot's defective serial number
-LOW: the 8th digit of the serial number, if N or Z, indicates it's non-modular -- or if the 16th digit is 7, but focus on the first one
 LOW: if it's a big base, and it's any sort of vacuum stall or filter clog or something, remind to check the dock evac channel
 LOW: ctrl + backspace doesn't seem to work
 LOW: on focus (window focus, at least), the input shouldn't select all of it's text
+LOW: if only a single number is put into the battery test step, assume health is 100%
+LOW: clean up the flowchart
+LOW: make a 2nd shortcut for 1 tab vs 2 in the order part shortcut
 LOW: make it so it finds where it should put text, so lower down I can manually add notes and it won't keep just adding to the end
 LOW: add a switch to mobility menu to indicate testing a swapped bot
 LOW: instead of manually uppercasing strings, turn it into a function, and don't un-uppercase the string if the 2nd letter is uppercase (we don't want "cHM is...")
@@ -155,20 +167,5 @@ EPIC: Put on hold phase:
 copy notes over step
 retrun any *unused* parts
 
-EPIC: add specific "sections" (probably just more phases, maybe something distinct) for troubleshooting specific problems:
-- Evac issues:
-try cleaning the IR sensor
-try swapping the CHM
-check for a clog
-try a new bin
-try a new filter
-
 EPIC: consider adding a bunch of read-only checkboxes immediately below the "copy notes button" (also, the copy notes button can be a lot smaller)
 EPIC: just make a menu somewhere that has all the buttons - and in that menu, have a collapsible which has a bunch of debug buttons for when stuff goes wrong (like update sidebar)
-
-HINT: not mopping/pad not deploying
-blow out chirp sensors
-check there's water in the bin
-factory reset
-test pad/test bin
-If it fails with both a test pad and a test bin, and chirp sensors are blown out, it's a swap

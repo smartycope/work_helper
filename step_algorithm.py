@@ -33,7 +33,7 @@ def execute_step(self, resp):
             case Steps.confirm_id:
                 # If we (somehow) already have the serial number, we don't need to confirm it
                 if self.serial:
-                    self.step = Steps.ask_labels
+                    self.step = Steps.turn_down_screwdriver if self.serial.startswith('m6') else Steps.ask_labels
                     return
 
                 ids=  resp.lower()
@@ -53,15 +53,15 @@ def execute_step(self, resp):
                             self.phase = Phase.FINISH
                             return
                     self.add_serial(ids[len(resp)//2:])
-                    self.step = Steps.ask_labels
+                    self.step = Steps.turn_down_screwdriver if self.serial.startswith('m6') else Steps.ask_labels
 
             case Steps.ask_labels:
                 self.step = Steps.check_repeat
 
             case Steps.check_repeat:
-                self.step = Steps.check_spl_sku
+                self.step = Steps.check_claimed_damage
 
-            case Steps.check_spl_sku:
+            case Steps.check_claimed_damage:
                 copy(self.ref)
                 self.step = Steps.pick_up_case
 
@@ -103,7 +103,12 @@ def execute_step(self, resp):
                 if resp.lower() == 'na':
                     next_step = 'liquid damage'
                 elif resp:
-                    self.step = Steps.sunken_ask_side
+                    match resp.lower():
+                        case 'r': self.step = Steps.sunken_ask_right_measurement
+                        case 'l': self.step = Steps.sunken_ask_left_measurement
+                        case 'b':
+                            self._also_check_left = True
+                            self.step = Steps.sunken_ask_right_measurement
                 else:
                     self.add_step('Contacts don\'t feel sunken')
                     next_step = 'liquid damage'
@@ -111,7 +116,7 @@ def execute_step(self, resp):
             case Steps.ask_modular:
                 if resp:
                     self.add_step('Robot is non-modular')
-                    self._modular = False
+                    # self._modular = False
                     # Update the sidebar, cause DCT is different for modular models
                     self.sidebar.update()
                     self.step = Steps.ask_cleaned
@@ -280,14 +285,6 @@ def execute_step(self, resp):
                     next_step = 'ask blower play'
 
             # Sunken contacts path
-            case Steps.sunken_ask_side:
-                match resp.lower():
-                    case 'r': self.step = Steps.sunken_ask_right_measurement
-                    case 'l': self.step = Steps.sunken_ask_left_measurement
-                    case 'b':
-                        self._also_check_left = True
-                        self.step = Steps.sunken_ask_right_measurement
-
             case Steps.sunken_ask_right_measurement:
                 try:
                     # either(',', whitespace) + optional(whitespace)
@@ -297,12 +294,14 @@ def execute_step(self, resp):
                     self.input.value = resp
                     return
 
-                self.add_step(f'Measured right contact: {mean(measurements):.1f}mm +/- {std(measurements) or .1:.1f}')
+                meas = mean(measurements)
+                meas = round(meas, 1 if 3.8 > meas > 3.74 else 2)
+                self.add_step(f'Measured right contact: {meas}mm +/- {max(std(measurements), .1):.1f}', '*' if meas > 3.8 else '!')
 
                 if mean(measurements) < 3.8:
                     self.ensure_process()
                     self.add_step('Sunken right contact')
-                    self.add_step('Swap robot' + (f' and customer {self.dock}' if self.dock else ''))
+                    self.add_step('Swap robot and ' + (f'customer {self.dock}' if self.dock else 'ordering a new dock'))
                     self._swap_after_battery_test = True
                     next_step = 'battery_test/charging'
                     # self.phase = Phase.SWAP
@@ -437,9 +436,9 @@ def execute_step(self, resp):
                 self.step = Steps.ask_complete_case_CSS
 
             case Steps.ask_complete_case_CSS:
-                self.step = Steps.ask_put_bot_on_shelf
+                self.step = Steps.ask_put_bot_on_shelf_mopping if self.can_mop else Steps.ask_put_bot_on_shelf
 
-            case Steps.ask_put_bot_on_shelf:
+            case Steps.ask_put_bot_on_shelf | Steps.ask_put_bot_on_shelf_mopping:
                 self.step = Steps.finish_case
 
             case Steps.finish_case:
@@ -485,6 +484,9 @@ def execute_step(self, resp):
                 self.step = Steps.swap_put_in_box
 
             case Steps.swap_put_in_box:
+                self.step = Steps.swap_add_labels
+
+            case Steps.swap_add_labels:
                 self.step = Steps.swap_input_new_serial
 
             case Steps.swap_input_new_serial:
