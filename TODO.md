@@ -169,3 +169,17 @@ retrun any *unused* parts
 
 EPIC: consider adding a bunch of read-only checkboxes immediately below the "copy notes button" (also, the copy notes button can be a lot smaller)
 EPIC: just make a menu somewhere that has all the buttons - and in that menu, have a collapsible which has a bunch of debug buttons for when stuff goes wrong (like update sidebar)
+
+MINOR: in swap phase, combine "put the old bot in the box" step with the "unbox" step
+
+MEDIUM: in external notes menu, disable certain options based on the bot's model
+
+MEDIUM: don't ask about the blower motor on R series bots
+
+LOW: a button to allow you to reset the name of the dock
+
+HIGH: add a routine check for M6 specifically to check that the pad button works -- also add a step that asks how the filter looks
+
+MINOR: Guess what type the dock is out of select options, instead of accepting any answer (levenstein dist?)
+
+MINOR: Make the MM buttons width expand

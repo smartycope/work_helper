@@ -11,12 +11,14 @@ from texts import Steps
 from CustomTextArea import CustomTextArea
 from Sidebar import Sidebar
 from MobilityMenu import MobilityMenu
+from CommandsMenu import CommandsMenu
 from ExternalNotesMenu import ExternalNotesMenu
 from textual import on
 
 
 class Case(VerticalGroup):
     from step_algorithm import execute_step as _execute_step
+    from parse_commands import parse_command
 
     BINDINGS = (
         # TODO: reenable this eventually. Somehow.
@@ -34,7 +36,7 @@ class Case(VerticalGroup):
         Phase.CONFIRM: Steps.confirm_id,
         Phase.ROUTINE_CHECKS: Steps.ask_sunken_contacts,
         Phase.DEBUGGING: Steps.add_step,
-        Phase.FINISH: Steps.generate_external_notes,
+        Phase.FINISH: Steps.ask_bit_mobility_done,
         Phase.SWAP: Steps.swap_unuse_parts,
     }
 
@@ -64,8 +66,14 @@ class Case(VerticalGroup):
         self.mobility_menu = MobilityMenu(self)
         self.external_notes_menu = ExternalNotesMenu(self)
         self.hints_menu = HintsMenu(self)
+        self.cmd_menu = CommandsMenu()
         # self.menu_menu = MenuMenu()
-        self.menu_menu = Select(((m, m) for m in ('Hints', 'Update Sidebar')), id='menu-select', prompt='☰')
+        self.menu_menu = Select(((m, m) for m in (
+            'Hints',
+            'Commands',
+            'Update Sidebar'
+        )), id='menu-select', prompt='☰')
+        self.menu_menu.can_focus = False
 
         # self.menu_button = Button('', id='menu-button')
 
@@ -85,7 +93,8 @@ class Case(VerticalGroup):
     @on(Select.Changed, "#menu-select")
     def open_menu(self, event: Select.Changed):
         match event.value:
-            case 'Hints': self.hints_menu.action_open()
+            case 'Hints': self.hints_menu.action_toggle()
+            case 'Commands': self.cmd_menu.action_toggle()
             case 'Update Sidebar': self.sidebar.update()
 
         self.menu_menu.clear()
@@ -106,6 +115,7 @@ class Case(VerticalGroup):
         yield self.mobility_menu
         yield self.external_notes_menu
         yield self.hints_menu
+        yield self.cmd_menu
         yield self.menu_menu
         yield self.input
         yield self.sidebar
@@ -141,9 +151,9 @@ class Case(VerticalGroup):
     def on_phase_changed(self, event: Select.Changed) -> None:
         self.phase = Phase(event.value)
 
-        if self.phase == Phase.FINISH:
+        # if self.phase == Phase.FINISH:
             # self.external_notes_menu.visible = True
-            self.external_notes_menu.action_open()
+            # self.external_notes_menu.action_open()
 
         if self.phase == Phase.CONFIRM:
             self.step = self.first_steps[Phase.CONFIRM] if not self.serial else Steps.check_repeat
@@ -229,6 +239,11 @@ class Case(VerticalGroup):
     def action_focus_input(self):
         self.input.focus()
 
+    # TODO
+    def snap_to_dock(self, name):
+        """ Make the dock one of the allowed docks """
+        return name
+
     # Helper methods
     def get_quick_model(self):
         if self.serial[0] == 'r':
@@ -245,18 +260,23 @@ class Case(VerticalGroup):
             return 'Serial'
         elif self.serial.startswith(('r', 's')):
             return 'USB'
-        elif self.serial.startswith(('j8', 'q7', 'i6', 'i7', 'i8', 'c9')):
+        elif self.serial.startswith(('j8', 'q7', 'i6', 'i7', 'i8')):
             return '[on green]Green card[/]'
         elif self.serial.startswith('m6'):
             return 'Small debug card, use Trident driver'
         elif self.serial.startswith(('j9')):
             return '[on blue]Blue card[/]'
+        elif self.serial.startswith('c9'):
+            return '[on green]Green card[/] through the pad'
+        elif self.serial.startswith('c7'):
+            return '[on green]Green card[/] / [on blue]Blue card[/] through the pad'
         elif self.serial.startswith('e'):
             return '[on green]Green card[/], with micro USB\nplugged into the other side\non the card'
-        elif self.serial.startswith(('j7', 'c7', 'j5', 'j6')):
+        elif self.serial.startswith(('j7', 'j5', 'j6')):
             return '[on green]Green card[/] / [on blue]Blue card[/]'
         else:
             return 'Error: Model from serial number not recognized'
+            # MINOR: in combo models, for the DCT card, remind to put it under the pad
 
     def get_DCT_exceptions(self):
         """ DCT known failures:
@@ -283,7 +303,7 @@ class Case(VerticalGroup):
         elif self.serial.startswith('s9'):
             return 'Low-current vacuum test, pass if the value is <1500'
         elif self.serial.startswith('m'):
-            return 'Pad detection test (run both wet and dry missions)'
+            return 'Pad detection test (run both wet and dry missions). If the sprayer on current is too low, charge and try again'
         elif self.serial.startswith('c'):
             text = 'Actuator arm current and speed tests, if FW >= 23.53.6 (ensure it deploys in mobility mission). If FW >= v24.29.5, DCT can\'t run'
             if self.serial.startswith('c9'):
@@ -342,9 +362,10 @@ class Case(VerticalGroup):
     @property
     def is_factory_lapis(self):
         """ True if *any* of the serials are a factory lapis, not just the current one """
+        if self.serial.startswith(('e', 'r')):
+            return False
         try:
-            # return self.serial[3] == '7'
-            return any(i[3] == '7' for i in self.serials)
+            return any((i[3] == '7' or i.startswith('i5g')) for i in self.serials)
         except IndexError:
             return False
 
@@ -377,5 +398,8 @@ class Case(VerticalGroup):
     @property
     def is_modular(self):
         # If the 8th digit of the serial number, if N or Z, indicates it's non-modular -- or if the 16th digit is 7, but focus on the first one
+        if self.serial.startswith(('e', 'r')):
+            return False
+
         if len(self.serial) > 7:
             return self.serial[7] not in ('n', 'z')

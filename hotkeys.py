@@ -17,4 +17,6 @@ def add_repair_report_seq():
         sleep(.05)
 
 keyboard.add_hotkey('ctrl+alt+k', order_part_seq)
+keyboard.add_hotkey('caps lock+alt+k', order_part_seq)
 keyboard.add_hotkey('ctrl+alt+l', add_repair_report_seq)
+keyboard.add_hotkey('caps lock+alt+l', add_repair_report_seq)

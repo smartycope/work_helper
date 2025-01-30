@@ -1,5 +1,5 @@
 Screen {
-    layers: below hintButton ext mobility hints menu ref;
+    layers: below hintButton ext mobility hints cmd menu ref;
     # layers: below hintButton menus ref;
     # layers: ref mobility ext hintButton below hints;
 }
@@ -28,6 +28,11 @@ MobilityMenu{
 
 HintsMenu{
     layer: hints;
+    content-align: center middle;
+}
+
+CommandsMenu{
+    layer: cmd;
     content-align: center middle;
 }
 

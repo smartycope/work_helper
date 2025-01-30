@@ -114,12 +114,12 @@ class MobilityMenu(Menu):
             self._been_opened = True
             self.cx_states.update('| cx: ' + self.case.customer_states if self.case.customer_states else '')
 
-    @on(Button.Pressed, '#done')
+    @on(Button.Pressed, '#cancel')
     def cancel(self, event):
         self.visible = False
 
     @on(Input.Submitted, '#notes')
-    @on(Button.Pressed, '#cancel')
+    @on(Button.Pressed, '#done')
     def done(self):
         self.visible = False
         extra_line = '' if self.case.text_area.text.strip().endswith('Process:') else '\n'

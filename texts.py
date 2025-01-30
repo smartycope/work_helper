@@ -47,7 +47,7 @@ class Steps:
     swap_unuse_parts = "Unuse all parts and get out of the case [done]"
     swap_update_css = "Update CSS repair action and copy notes over {notes} [done]"
     swap_email = "Send swap email {address, subject, notes} [confirmed]"
-    swap_order = "Order swap {original serial} [done]"
+    swap_order = "Reload case and order swap {original serial} [done]"
     swap_order_S9 = "Order main board (not a whole bot!) [done]"
     swap_order_M6 = "Order the correctly colored swap [done]"
     swap_move_bin = "Unbox and move bin and battery over, if necessary [no bin needed]"
@@ -57,6 +57,7 @@ class Steps:
     swap_note_serial = "Put the new serial number into CSS {new serial} [done]"
 
     # FINISH
+    ask_bit_mobility_done = "Pass mobility and attempted BiT [done]"
     ask_final_cleaned = "Cleaned the robot [done]"
     ask_base_cleaned = "Cleaned the base and cord tied up [done]"
     ask_dock_has_bag = "Does the dock have a bag [done]"

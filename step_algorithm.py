@@ -55,6 +55,9 @@ def execute_step(self, resp):
                     self.add_serial(ids[len(resp)//2:])
                     self.step = Steps.turn_down_screwdriver if self.serial.startswith('m6') else Steps.ask_labels
 
+            case Steps.turn_down_screwdriver:
+                self.step = Steps.ask_labels
+
             case Steps.ask_labels:
                 self.step = Steps.check_repeat
 
@@ -69,7 +72,7 @@ def execute_step(self, resp):
                 self.step = Steps.ask_dock
 
             case Steps.ask_dock:
-                self.dock = resp
+                self.dock = self.snap_to_dock(resp)
                 self.text_area.text += 'Parts in: Robot'
                 if resp:
                     self.text_area.text += ', ' + resp + ', cord'
@@ -335,13 +338,16 @@ def execute_step(self, resp):
         match self.step:
             case Steps.add_step:
                 if resp:
-                    r = resp.strip()
-                    self.add_step(r[0].upper() + r[1:])
+                    self.parse_command(resp)
                 else:
                     self.ensure_process()
 
     elif self.phase == Phase.FINISH:
         match self.step:
+            case Steps.ask_bit_mobility_done:
+                self.step = Steps.generate_external_notes
+                self.external_notes_menu.action_open()
+
             case Steps.generate_external_notes:
                 self.external_notes_menu.action_close()
                 copy(self.text_area.text.strip())
@@ -425,11 +431,11 @@ def execute_step(self, resp):
                     self.step = Steps.ask_copy_notes_2
 
             case Steps.ask_copy_notes_2:
-                multi_paste(
-                    self.ref,
-                    'Repair Report',
-                )
-                # copy(self.ref)
+                # multi_paste(
+                #     self.ref,
+                #     'Repair Report',
+                # )
+                copy(self.ref)
                 self.step = Steps.wait_parts_closed
 
             case Steps.wait_parts_closed:
