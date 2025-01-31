@@ -145,7 +145,7 @@ class Case(VerticalGroup):
     def add_step(self, step, bullet='*'):
         # For consistency
         self.text_area.text = self.text_area.text.strip() + '\n'
-        self.text_area.text += f'{bullet} {step}\n'
+        self.text_area.text += f'{bullet} {step.strip()}\n'
 
     @on(Select.Changed, "#phase-select")
     def on_phase_changed(self, event: Select.Changed) -> None:
@@ -305,7 +305,7 @@ class Case(VerticalGroup):
         elif self.serial.startswith('m'):
             return 'Pad detection test (run both wet and dry missions). If the sprayer on current is too low, charge and try again'
         elif self.serial.startswith('c'):
-            text = 'Actuator arm current and speed tests, if FW >= 23.53.6 (ensure it deploys in mobility mission). If FW >= v24.29.5, DCT can\'t run'
+            text = 'Actuator arm current and speed tests, if FW >= 23.53.6 (ensure it deploys in mobility mission). If FW >= v24.29.5, DCT is brand new. FW >= v24.29.1: dock comms can fail'
             if self.serial.startswith('c9'):
                 text = 'Sprayer current off, but note the firmware version. ' + text
             return text
@@ -319,7 +319,7 @@ class Case(VerticalGroup):
         if self.serial.startswith('c9'):
             notes += "Remember to remove battery before removing the CHM. Also, if the DCT card doesn't work, try a hard reset"
 
-        if self.serial.startswith('i'):
+        if self.serial.startswith('i') and not self.serial.startswith('i5g'):
             notes += 'If having weird trouble with DCT, try factory reset'
 
         if self.serial.startswith('r'):
@@ -331,7 +331,9 @@ class Case(VerticalGroup):
         if self.serial.startswith(('j7', 'j9')):
             notes += "If the blue DCT card doesn't work, try a hard reset"
 
-        if self.is_factory_lapis:
+        if self.serial.startswith('i5g'):
+            notes += '\n        [on orange_red1]Possibly a factory provisioned lapis bin[/]'
+        elif self.is_factory_lapis:
             notes += '\n        [on red]Factory provisioned lapis bin![/]'
 
         return notes
@@ -365,7 +367,7 @@ class Case(VerticalGroup):
         if self.serial.startswith(('e', 'r')):
             return False
         try:
-            return any((i[3] == '7' or i.startswith('i5g')) for i in self.serials)
+            return any(i[3] == '7' for i in self.serials)
         except IndexError:
             return False
 
@@ -403,3 +405,7 @@ class Case(VerticalGroup):
 
         if len(self.serial) > 7:
             return self.serial[7] not in ('n', 'z')
+
+    @property
+    def is_swap(self):
+        return len(self.serials) > 1

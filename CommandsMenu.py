@@ -7,9 +7,7 @@ class CommandsMenu(Menu):
 
     def compose(self):
         yield Markdown("""\
-`b|batt x y` -> Battery test x% / y%
-
-`b|batt x` -> Battery test x%/100%
+`b|batt x [y]` -> Battery test x% / y[100]%
 
 `fr` -> Factory reset
 
@@ -18,5 +16,15 @@ class CommandsMenu(Menu):
 `sd` -> swapped dock
 
 `ar` -> Aurora refill debug steps
+
+`hr` -> Hard reset
+
+`hfr` -> Hard factory reset
+
+`bit [args]` -> BiT: args[pass]
+
+`bbk [args]` -> BBK: args[pass]
+
+`ms|meas r/l [measurements]` -> Measured Right/Left contact: [avg]mm +/- [std]
         """)
         yield Button('Close', action='close')

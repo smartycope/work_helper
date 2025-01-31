@@ -1,3 +1,4 @@
+import re
 from typing import OrderedDict
 from textual.containers import *
 from textual.widgets import *
@@ -69,7 +70,7 @@ class ExternalNotesMenu(Menu):
         notes = self.case.text_area.text.lower()
 
         try:
-            old_battery = self.case.serial.startswith('r')
+            old_battery = self.case.serial.startswith(('r', 'e'))
         except:
             old_battery = False
 
@@ -78,15 +79,18 @@ class ExternalNotesMenu(Menu):
         else:
             self.select("Wake from shipping mode")
 
-        if 'factory reset' in notes:
+        if 'factory reset' in notes and not self.case.is_swap:
             self.select("Factory reset")
             if self.case.has_lapis:
                 self.select("Factory reset and Lapis bin")
 
-        if 'swap' in notes:
+        if self.case.is_swap:
             self.select("Replaced robot")
             if self.case.serial.startswith('j7'):
                 self.select("J7 and a swap")
+
+        if re.search(r'(?i)swap.+dock', notes):
+            self.select("Replaced dock")
 
         if self.case._bin_screw_has_rust or self.case._dock_tank_screw_has_rust:
             self.select("Rusty bin screw")

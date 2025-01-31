@@ -1,6 +1,20 @@
 URGENT: ya, the sidebars aren't update after deserialization
+URGENT: if has_lapis OR is_factory_lapis, then immediately after first finish step (ask if BiT and mobility), add a step that asks if I've mobility tested with a lapis bin
+URGENT: if C9, and swap or order dock in a case, somehow make aware to swap with correct dock:
+URGENT: a cx states of "Bot does not turn on" should trigger a battery test to be required
 URGENT: if there's a swap due to sunken contacts, and they don't have a dock, then state that I'll provide them with  a dock, and make a step for it (order a new dock) -- actually, make the "order a new dock" step whether they have a dock or not, it's needed in both cases
 
+MINOR: in swap phase, combine "put the old bot in the box" step with the "unbox" step
+MINOR: Guess what type the dock is out of select options, instead of accepting any answer (levenstein dist?)
+MINOR: Make the MM buttons width expand
+MINOR: add a button in external notes to copy the extewrnal notes, and then all the other notes (via multi_paste())
+MINOR: add [done] to step "put labels on new bot"
+MINOR: add an external note that is just "recommend reprovisioning lapis bin on app" (without any factory reset needed)
+MINOR: if there's more serial numbers than there were before, and that number is >1, default the mobility menu dock box to "new ..." instead of "cx ..."
+MINOR: after whenever I change phase, focus on the input box
+MINOR: in battery test step, add something to express that health is optional
+MINOR: battery test step should allow a single number, and default health to 100
+MINOR: change the default for the MM where box to be floor
 MINOR: disable focus of menu_menu
 MINOR: if mobility menu attempted to open with no cases, it throws an error. Catch that
 MINOR: add the quick model number to the tab name
@@ -14,6 +28,7 @@ MINOR: make the mobility todo box an input box and give it a placeholder
 MINOR: in the comment in the texts.py that the steps have to be unique: they technically only have to be unique within each phase
 MINOR: maybe - in the mobility menu update function, in the if statement to reset the dock box, remove the or'ed statement if it's empty (don't reset if it's empty)
 
+HIGH: if is_factory_lapis and the robot was swapped (there's more than one serial), then in finish phase ask if the bot's been removed from the app
 HIGH: ctrl+end shortcut / fix all the shortcuts
 HIGH: add backup states, and be able to load them
 HIGH: focus on input box on MM close
@@ -26,6 +41,7 @@ HIGH: M6 still asking about blower motor
 HIGH: add a step in swap phase to put a tag on the new bot
 HIGH: on start of the program, load the currently saved state file
 HIGH: regex for extracting the dock from notes also captures the comma and space before it
+HIGH: add a routine check for M6 specifically to check that the pad button works -- also add a step that asks how the filter looks
 HIGH: mobility menu dock still using customer instead of cx (when using scraped dock info)
 HIGH: on close of mobility menu, focus the end of the notes
 HIGH: add a 2nd CopyText button for the other swap id, if there is one
@@ -71,8 +87,11 @@ MEDIUM: allow different serial numbers, if it follows the document (i.e. i5g5 in
 MEDIUM: J955 - 1st 5 means evac dock, 1 means base. 2nd 5, if 7, means lapis bin
 MEDIUM: Consider a "clear TODO" button (or at least make it select everything on focus)
 MEDIUM:  make the DCT card a single line
+MEDIUM: in external notes menu, disable certain options based on the bot's model
+MEDIUM: don't ask about the blower motor on R series bots
 MEDIUM: Add an indicator to the tabs when the case is finished
 MEDIUM: in mobility mission menu and combo (not can_mop), ask if tank is full
+MEDIUM: add a button to open the case in css
 MEDIUM: lose case from input box (may already work?)
 MEDIUM: copy serial button gets pushed off page if window too small
 MEDIUM: if replaced bot and dock, combine them in external notes
@@ -108,12 +127,16 @@ LOW: make it so it finds where it should put text, so lower down I can manually 
 LOW: add a switch to mobility menu to indicate testing a swapped bot
 LOW: instead of manually uppercasing strings, turn it into a function, and don't un-uppercase the string if the 2nd letter is uppercase (we don't want "cHM is...")
 LOW: consider refactoring all the private members into public properties, that return self._member or regex to find it if self._member is None
+LOW: a button to allow you to reset the name of the dock
 LOW: clean up all the comments and things
 LOW: disallow unfocusing new case input box when visible
 LOW: don't ask about sunken contacts on an S9 specifically
 LOW: strip all input box text
 LOW: confirm closing a case
 LOW: ctrl + t is toggle case
+LOW: add some way to specify no evac bag in claimed damage instead of in visible damage
+LOW: add some way to manually go to a specific step
+LOW: click at 420, 470 immediately before step "update css failure code"
 LOW: double click select word
 LOW: warn if the robot has an evac bin and/or dock, and I haven't mobility tested with evac bin, or with customers dock
 LOW: maybe have up and down keys put the previous lines in the input box to edit
@@ -170,16 +193,11 @@ retrun any *unused* parts
 EPIC: consider adding a bunch of read-only checkboxes immediately below the "copy notes button" (also, the copy notes button can be a lot smaller)
 EPIC: just make a menu somewhere that has all the buttons - and in that menu, have a collapsible which has a bunch of debug buttons for when stuff goes wrong (like update sidebar)
 
-MINOR: in swap phase, combine "put the old bot in the box" step with the "unbox" step
+EPIC: add settings menu, with the following settings:
+do double check (also maybe add a button that can turn this on manually later)
+parts are being run (determines if we should ask if the parts have been closed out yet or not)
 
-MEDIUM: in external notes menu, disable certain options based on the bot's model
+EPIC: add a function to auto-regex the add Step text, just like commands, but generalized regex ("MT" -> "Mobility test")
 
-MEDIUM: don't ask about the blower motor on R series bots
-
-LOW: a button to allow you to reset the name of the dock
-
-HIGH: add a routine check for M6 specifically to check that the pad button works -- also add a step that asks how the filter looks
-
-MINOR: Guess what type the dock is out of select options, instead of accepting any answer (levenstein dist?)
-
-MINOR: Make the MM buttons width expand
+c955 -> albany
+c975 -> aurora

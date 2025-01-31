@@ -6,7 +6,7 @@ from textual.containers import *
 from textual.widgets import *
 
 from HelperApp import HelperApp
-import hotkeys
+# import hotkeys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--debug', action='store_true')
@@ -20,4 +20,4 @@ if __name__ == "__main__":
         app.run()
     finally:
         app.action_save()
-        keyboard.remove_all_hotkeys()
+        # keyboard.remove_all_hotkeys()

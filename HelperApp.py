@@ -1,3 +1,4 @@
+import datetime
 import json
 import random
 from pathlib import Path
@@ -58,6 +59,7 @@ class HelperApp(App):
         """Create child widgets for the app."""
         yield self.tabs
         yield self.popup
+        yield Label(str(datetime.datetime.now().day), id='version')
         yield Footer()
 
     def action_open_mobility_menu(self):

@@ -1,5 +1,5 @@
 Screen {
-    layers: below hintButton ext mobility hints cmd menu ref;
+    layers: below hintButton ext mobility hints cmd menu version ref;
     # layers: below hintButton menus ref;
     # layers: ref mobility ext hintButton below hints;
 }
@@ -140,4 +140,15 @@ MenuMenu{
 
 #hints-tree{
     background: $surface-darken-1;
+}
+
+#version{
+    layer: version;
+    color: $surface-lighten-2;
+    # color: red;
+    background: transparent;
+    position: absolute;
+    dock: right;
+    offset-x: -30;
+    # x: -20;
 }

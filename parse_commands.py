@@ -1,4 +1,4 @@
-import re
+from numpy import mean, std
 
 def parse_command(self, input:str):
     args = input.strip().split(' ')
@@ -8,21 +8,44 @@ def parse_command(self, input:str):
         return
 
     try:
+        step = None
         match cmd:
             case 'b' | 'batt':
-                self.add_step(f'Battery test: {args[0]}%/{args[1] if len(args) > 1 else 100}%')
+                charge = args.pop(0)
+                health = args.pop(0) if args else '100'
+                self.add_step(f'Battery test: {charge}%/{health}%')
             case 'fr':
-                self.add_step('Factory reset')
+                step = 'Factory reset'
             case 's' | 'sr':
-                self.add_step('Swapped robot')
+                step = 'Swapped robot'
             case 'sd':
-                self.add_step('Swapped dock')
+                step = 'Swapped dock'
             # case 'ch' | 'charg' | 'charge':
-            #     self.add_step('')
+            #     step = ''
             case 'ar':
-                self.add_step('Aurora refill debug steps')
+                step = 'Aurora refill debug steps'
+            case 'hr':
+                step = 'Hard reset'
+            case 'hfr':
+                step = 'Hard factory reset'
+            case 'bit':
+                notes = args.pop(0) if args else 'pass'
+                step = f'BiT: {notes}'
+            case 'bbk':
+                notes = args.pop(0) if args else 'pass'
+                step = f'BBK: {notes}'
+            case 'ms' | 'meas':
+                side = args.pop(0)
+                # This is copied from step_algorithm
+                # TODO: abstract this into a method
+                measurements = list(map(float, args))
+                meas = mean(measurements)
+                meas = round(meas, 1 if 3.8 > meas > 3.74 else 2)
+                self.add_step(f'Measured {"right" if side.lower() == "r" else "left"} contact: {meas}mm +/- {max(std(measurements), .1):.1f}')
             case _:
                 raise
+        if step:
+            self.add_step(step + ' ' + ' '.join(args))
     except:
         r = input.strip()
         self.add_step(r[0].upper() + r[1:])
