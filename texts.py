@@ -58,6 +58,7 @@ class Steps:
 
     # FINISH
     ask_bit_mobility_done = "Pass mobility and attempted BiT [done]"
+    ask_lapis_mobility_done = "Pass mobility with a Lapis bin [done]"
     ask_final_cleaned = "Cleaned the robot [done]"
     ask_base_cleaned = "Cleaned the base and cord tied up [done]"
     ask_dock_has_bag = "Does the dock have a bag [done]"

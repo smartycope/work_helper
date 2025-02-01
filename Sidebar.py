@@ -92,26 +92,23 @@ class Sidebar(VerticalGroup):
 
     def compose(self):
         self.has_mounted = True
+
         yield self.color_switcher
+
         with HorizontalGroup(classes='align-center'):
             # Quick hack, cause CSS is stupid
             yield Label(' '*((SIDEBAR_WIDTH-7)//2))
             yield self.ref
             yield self.model
-        # yield self.ref_model
+
         with HorizontalGroup():
-            # yield Label(f'{"Phase":^{SIDEBAR_WIDTH}}\n')
             yield Label("\nPhase: ")
             yield self.phase_selector
-        yield Label('\n')
 
-        # yield Label(f'{" DCT ":-^{SIDEBAR_WIDTH}}')
+        yield Label('\n')
         yield self.dct
         yield Label(f'{" DCT Exceptions ":-^{SIDEBAR_WIDTH}}')
         yield self.dct_exp
-        # yield Label(f'{" Model ":-^{SIDEBAR_WIDTH}}')
-        # self.model = Label('', id=f'model-label-{self.case.ref}')
-        # yield self.model
         yield Label(f'{" Shipping Mode ":-^{SIDEBAR_WIDTH}}')
         yield self.sleep_mode
         yield Label(f'{" Factory Reset ":-^{SIDEBAR_WIDTH}}')
@@ -120,19 +117,12 @@ class Sidebar(VerticalGroup):
         yield self.notes
 
         with self.lower_sidebar:
-            yield Label('TODO:')
+            # yield Label('TODO:')
             yield self.todo
-            # yield Label('')
 
             with self.serial_buttons:
                 yield self.original_serial_label
-                # for i in self.serial_labels:
-                    # yield i
-                # yield self.serial_label
-                # yield self.
-                # yield self.id_button
 
-            # yield Label('')
             button = Button('Copy Notes', id='copy-button')
             button.can_focus = False
             yield button

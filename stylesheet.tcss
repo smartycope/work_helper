@@ -51,6 +51,7 @@ MenuMenu{
     min-width: 30;
     align: center top;
     color: black;
+    text-align: center;
 }
 
 .align-center{
@@ -65,17 +66,20 @@ MenuMenu{
 }
 
 #copy-button{
-    height: 3;
+    # height: 3;
     width: 100%;
-}
-
-#lower-sidebar{
-    height: 13;
     dock: bottom;
 }
 
+#lower-sidebar{
+    # height: 11;
+    min-height: 8;
+    # dock: bottom;
+    content-align: center bottom;
+}
+
 #todo-textarea{
-    height: 6;
+    height: 5;
 }
 
 #copy-serial-button{

@@ -3,9 +3,8 @@ from textual.widgets import *
 from Menu import Menu
 
 class HintsMenu(Menu):
-    # require_case = False
-
     def compose(self):
+        # Max length is 80 for any leaf node
         tree: Tree[str] = Tree("Hints", id='hints-tree')
         tree.root.expand()
         tree.show_root = False
@@ -18,7 +17,7 @@ class HintsMenu(Menu):
         branch.add_leaf('Blow out chirp sensors')
         branch.add_leaf('Check there\'s water in the bin')
         branch.add_leaf('Test pad/Test bin')
-        branch.add_leaf('If it fails with both a test pad and a test bin, and chirp sensors are blown out, it\'s a swap')
+        branch.add_leaf('If it fails with both a test pad and a test bin, \nand chirp sensors are blown out, it\'s a swap')
         branch.add_leaf('Factory reset')
 
         branch = tree.root.add('Evac Issues')

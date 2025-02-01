@@ -345,6 +345,13 @@ def execute_step(self, resp):
     elif self.phase == Phase.FINISH:
         match self.step:
             case Steps.ask_bit_mobility_done:
+                if self.has_lapis or self.is_factory_lapis or self.has_weird_i5g:
+                    self.step = Steps.ask_lapis_mobility_done
+                else:
+                    self.step = Steps.generate_external_notes
+                    self.external_notes_menu.action_open()
+
+            case Steps.ask_lapis_mobility_done:
                 self.step = Steps.generate_external_notes
                 self.external_notes_menu.action_open()
 

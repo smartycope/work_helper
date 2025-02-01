@@ -4,6 +4,8 @@ URGENT: if C9, and swap or order dock in a case, somehow make aware to swap with
 URGENT: a cx states of "Bot does not turn on" should trigger a battery test to be required
 URGENT: if there's a swap due to sunken contacts, and they don't have a dock, then state that I'll provide them with  a dock, and make a step for it (order a new dock) -- actually, make the "order a new dock" step whether they have a dock or not, it's needed in both cases
 
+Saturday mar 1 @ 12pm 20 min
+
 MINOR: in swap phase, combine "put the old bot in the box" step with the "unbox" step
 MINOR: Guess what type the dock is out of select options, instead of accepting any answer (levenstein dist?)
 MINOR: Make the MM buttons width expand

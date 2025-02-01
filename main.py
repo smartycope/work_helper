@@ -21,3 +21,5 @@ if __name__ == "__main__":
     finally:
         app.action_save()
         # keyboard.remove_all_hotkeys()
+
+# Target size is 115x44

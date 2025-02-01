@@ -319,7 +319,7 @@ class Case(VerticalGroup):
         if self.serial.startswith('c9'):
             notes += "Remember to remove battery before removing the CHM. Also, if the DCT card doesn't work, try a hard reset"
 
-        if self.serial.startswith('i') and not self.serial.startswith('i5g'):
+        if self.serial.startswith('i'):
             notes += 'If having weird trouble with DCT, try factory reset'
 
         if self.serial.startswith('r'):
@@ -331,7 +331,7 @@ class Case(VerticalGroup):
         if self.serial.startswith(('j7', 'j9')):
             notes += "If the blue DCT card doesn't work, try a hard reset"
 
-        if self.serial.startswith('i5g'):
+        if self.has_weird_i5g:
             notes += '\n        [on orange_red1]Possibly a factory provisioned lapis bin[/]'
         elif self.is_factory_lapis:
             notes += '\n        [on red]Factory provisioned lapis bin![/]'
@@ -409,3 +409,7 @@ class Case(VerticalGroup):
     @property
     def is_swap(self):
         return len(self.serials) > 1
+
+    @property
+    def has_weird_i5g(self):
+        return any(i.startswith('i5g') for i in self.serials)
