@@ -3,9 +3,18 @@ URGENT: if has_lapis OR is_factory_lapis, then immediately after first finish st
 URGENT: if C9, and swap or order dock in a case, somehow make aware to swap with correct dock:
 URGENT: a cx states of "Bot does not turn on" should trigger a battery test to be required
 URGENT: if there's a swap due to sunken contacts, and they don't have a dock, then state that I'll provide them with  a dock, and make a step for it (order a new dock) -- actually, make the "order a new dock" step whether they have a dock or not, it's needed in both cases
+URGENT: i3, i4, i5 DCT exception: all the bumper tests are allowed to fail
+URGENT: C9 is too large -- also, the lower_sidebar isn't down all the way (also, I can shorten the todo box) (it ends on if the DCT card doesn't work,)
+URGENT: if no dock indicated, in step "put robot and traveler on the shelf", add "and box"
+URGENT: make the multi-paste button in the external notes menu urgent
+URGENT: remove double checking from finish phase (but l?) - when removing it, put into shipping mode sometime BEFORE cleaning the robot
+URGENT: don't ask if the bot is modular anymore
+URGENT: remove the "put the new bot in the box" step
+URGENT: reorder the MM triswitches
 
 Saturday mar 1 @ 12pm 20 min
 
+MINOR: connect the MM dock box to submitting the menu, like the other one
 MINOR: in swap phase, combine "put the old bot in the box" step with the "unbox" step
 MINOR: Guess what type the dock is out of select options, instead of accepting any answer (levenstein dist?)
 MINOR: Make the MM buttons width expand
@@ -30,6 +39,9 @@ MINOR: make the mobility todo box an input box and give it a placeholder
 MINOR: in the comment in the texts.py that the steps have to be unique: they technically only have to be unique within each phase
 MINOR: maybe - in the mobility menu update function, in the if statement to reset the dock box, remove the or'ed statement if it's empty (don't reset if it's empty)
 
+
+HIGH: add a "log" in csv format to note when cases were started and finished, so I can find my average time
+HIGH: if it's the 2nd swap, skip some of the steps in the swap phase (like send swap email and unuse parts and the other one)
 HIGH: if is_factory_lapis and the robot was swapped (there's more than one serial), then in finish phase ask if the bot's been removed from the app
 HIGH: ctrl+end shortcut / fix all the shortcuts
 HIGH: add backup states, and be able to load them
@@ -156,6 +168,7 @@ LOW: only c9's can refill
 LOW: add a warning or something if characters exceed 4000
 LOW: make all characters after 4000 be tinged red in notes
 LOW: Adding proper versioning is a good idea
+LOW: make a simple script I can give to everyone else that just confirms the IDs, and prints all the relevant information for that model (the sidebar stuff)
 LOW: in the mobility menu, have the outline reflect whether the ultimate result is a pass or fail (with red/green)
 LOW: if no dock indicated on dock (in mobility menu), then auto-unselect dock and undock sliders
 LOW: in add_step(): if the previous line has "** Result: " in it, add an extra line -- maybe
