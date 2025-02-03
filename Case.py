@@ -346,7 +346,7 @@ class Case(VerticalGroup):
             # return 'If the last digit of the SPL SKU is 7, they have a Lapis bin at home! If the middle number is 1, it came with just a home base. In that case, don\'t test on a dock! Just a base.'
         notes = ''
         if self.serial.startswith('c9'):
-            notes += "Remember to remove battery before removing the CHM. Also, if the DCT card doesn't work, try a hard reset"
+            notes += "Remember to remove battery before removing the CHM. Also, if the DCT card doesn't work, try a hard reset\nc955 -> albany; c975 -> aurora"
 
         if self.serial.startswith('i'):
             notes += 'If having weird trouble with DCT, try factory reset'
