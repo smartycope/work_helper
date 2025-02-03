@@ -1,11 +1,13 @@
 import re
-from clipboard import copy
 from textual.containers import *
 from textual.widgets import *
 from Phase import Phase
 from texts import Steps
-from multi_paste import multi_paste
 from numpy import mean, std
+import settings
+import clipboard
+import settings
+from multi_paste import multi_paste
 
 
 def execute_step(self, resp):
@@ -27,6 +29,9 @@ def execute_step(self, resp):
             self.step = self._step_after_manual_serial
         return
 
+    #// These are only to decide the next state logic. Any logic that happens before a step (like
+    #// copying things to the clipboard) or after a step (like adding things to the notes) go below
+    #// in the before_step() and after_step() methods
     if self.phase == Phase.CONFIRM:
         match self.step:
             # Main path
@@ -36,12 +41,12 @@ def execute_step(self, resp):
                     self.step = Steps.turn_down_screwdriver if self.serial.startswith('m6') else Steps.ask_labels
                     return
 
-                ids=  resp.lower()
                 if not resp:
                     # If they don't put anything, assume we aren't comparing serial numbers, and we just want to input one
                     self.ensure_serial(Steps.ask_labels)
                     return
                 else:
+                    ids=  resp.lower()
                     if len(ids) % 2:
                         self.text_area.text = self.step = '!!! Serial numbers are different lengths !!!'
                         self.phase = Phase.FINISH
@@ -65,7 +70,6 @@ def execute_step(self, resp):
                 self.step = Steps.check_claimed_damage
 
             case Steps.check_claimed_damage:
-                copy(self.ref)
                 self.step = Steps.pick_up_case
 
             case Steps.pick_up_case:
@@ -95,6 +99,8 @@ def execute_step(self, resp):
                 if resp:
                     self.customer_states = resp[0].upper() + resp[1:]
                     self.text_area.text += 'Customer States: ' + self.customer_states + '\n\nRoutine Checks:\n'
+                    if not self.is_modular:
+                        self.add_step('Robot is non-modular')
                     self.step = Steps.update_css_failure
 
             case Steps.update_css_failure:
@@ -115,17 +121,6 @@ def execute_step(self, resp):
                 else:
                     self.add_step('Contacts don\'t feel sunken')
                     next_step = 'liquid damage'
-
-            case Steps.ask_modular:
-                if resp:
-                    self.add_step('Robot is non-modular')
-                    # self._modular = False
-                    # Update the sidebar, cause DCT is different for modular models
-                    self.sidebar.update()
-                    self.step = Steps.ask_cleaned
-                else:
-                    # We don't need to confirm that it's not a mopper here; there are no i-series moppers
-                    self.step = Steps.check_liquid_damage
 
             case Steps.check_liquid_damage:
                 if resp.lower() == 'na':
@@ -306,6 +301,7 @@ def execute_step(self, resp):
                     self.add_step('Sunken right contact')
                     self.add_step('Swap robot and ' + (f'customer {self.dock}' if self.dock else 'ordering a new dock'))
                     self._swap_after_battery_test = True
+                    self._swap_due_to_sunken_contacts = True
                     next_step = 'battery_test/charging'
                     # self.phase = Phase.SWAP
                 elif self._also_check_left:
@@ -329,6 +325,7 @@ def execute_step(self, resp):
                     self.add_step('Sunken left contact')
                     self.add_step('Swap robot' + (f' and customer {self.dock}' if self.dock else ''))
                     self._swap_after_battery_test = True
+                    self._swap_due_to_sunken_contacts = True
                     next_step = 'battery_test/charging'
                     # self.phase = Phase.SWAP
                 else:
@@ -353,23 +350,20 @@ def execute_step(self, resp):
 
             case Steps.ask_lapis_mobility_done:
                 self.step = Steps.generate_external_notes
-                self.external_notes_menu.action_open()
 
             case Steps.generate_external_notes:
-                self.external_notes_menu.action_close()
-                copy(self.text_area.text.strip())
-                self._finish_first_copy_notes = self.text_area.text.strip()
                 self.step = Steps.ask_copy_notes_1
 
             case Steps.ask_copy_notes_1:
-                multi_paste(
-                    'michelle.gonzalez@acer.com',
-                    f'Double Check: {self.ref}',
-                    self.text_area.text,
-                )
-                self.step = Steps.ask_double_check
+                if settings.DO_DOUBLE_CHECK:
+                    self.step = Steps.ask_double_check
+                else:
+                    self.step = Steps.ask_shipping_mode
 
             case Steps.ask_double_check:
+                self.step = Steps.ask_shipping_mode
+
+            case Steps.ask_shipping_mode:
                 self.step = Steps.ask_final_cleaned
 
             case Steps.ask_final_cleaned:
@@ -401,21 +395,15 @@ def execute_step(self, resp):
                 self.step = Steps.ask_does_not_have_pad if self.serial.startswith('m6') else Steps.ask_has_pad
 
             case Steps.ask_does_not_have_pad:
-                self.step = Steps.ask_debug_cover
+                self.step = Steps.ask_sidebrush_screws
 
             case Steps.ask_has_pad:
-                self.step = Steps.ask_debug_cover
-
-            case Steps.ask_debug_cover:
                 self.step = Steps.ask_sidebrush_screws
 
             case Steps.ask_sidebrush_screws:
-                self.step = Steps.double_check_confirmed
+                self.step = Steps.double_check_confirmed if settings.DO_DOUBLE_CHECK else Steps.ask_close_parts
 
             case Steps.double_check_confirmed:
-                self.step = Steps.ask_shipping_mode
-
-            case Steps.ask_shipping_mode:
                 self.step = Steps.ask_close_parts
 
             case Steps.ask_close_parts:
@@ -427,28 +415,19 @@ def execute_step(self, resp):
             case Steps.ask_put_bin_back:
                 # If the notes haven't changed since we last updated CSS, we don't need to update CSS again
                 if self._finish_first_copy_notes == self.text_area.text.strip():
-                    copy(self.ref)
-                    # multi_paste(
-                        # self.ref,
-                        # 'Repair Report',
-                    # )
                     self.step = Steps.wait_parts_closed
                 else:
-                    copy(self.text_area.text.strip())
                     self.step = Steps.ask_copy_notes_2
 
             case Steps.ask_copy_notes_2:
-                # multi_paste(
-                #     self.ref,
-                #     'Repair Report',
-                # )
-                copy(self.ref)
                 self.step = Steps.wait_parts_closed
 
             case Steps.wait_parts_closed:
                 self.step = Steps.ask_complete_case_CSS
 
             case Steps.ask_complete_case_CSS:
+                if not self.dock:
+                    self.step_formatter = ' and box'
                 self.step = Steps.ask_put_bot_on_shelf_mopping if self.can_mop else Steps.ask_put_bot_on_shelf
 
             case Steps.ask_put_bot_on_shelf | Steps.ask_put_bot_on_shelf_mopping:
@@ -461,32 +440,25 @@ def execute_step(self, resp):
     elif self.phase == Phase.SWAP:
         match self.step:
             case Steps.swap_unuse_parts:
-                copy(self.text_area.text.strip())
                 self.step = Steps.swap_update_css
 
             case Steps.swap_update_css:
-                multi_paste(
-                    'irobot.support@acer.com',
-                    self.ref + ' - ',
-                    self.text_area.text,
-                )
-                # copy(self.ref + ' - ')
                 self.step = Steps.swap_email
 
             case Steps.swap_email:
-                if self.serial.startswith('s9'):
-                    self.step = Steps.swap_order_S9
-                elif self.serial.startswith('m6'):
-                    self.step = Steps.swap_order_M6
+                if self._swap_due_to_sunken_contacts:
+                    self.step = Steps.swap_order_dock
                 else:
-                    copy(self.serial.upper())
-                    self.step = Steps.swap_order
+                    next_step = 'order swap'
+
+            case Steps.swap_order_dock:
+                next_step = 'order swap'
 
             case Steps.swap_order_S9:
-                self.step = Steps.swap_put_in_box
+                self.step = Steps.swap_add_labels
 
             case Steps.swap_order_M6:
-                self.step = Steps.swap_put_in_box
+                self.step = Steps.swap_add_labels
 
             case Steps.swap_order:
                 self.step = Steps.swap_move_bin
@@ -494,10 +466,10 @@ def execute_step(self, resp):
             case Steps.swap_move_bin:
                 if resp:
                     self.add_step('Moved bin to new robot')
-                self.step = Steps.swap_put_in_box
-
-            case Steps.swap_put_in_box:
                 self.step = Steps.swap_add_labels
+
+            # case Steps.swap_put_in_box:
+                # self.step = Steps.swap_add_labels
 
             case Steps.swap_add_labels:
                 self.step = Steps.swap_input_new_serial
@@ -505,7 +477,6 @@ def execute_step(self, resp):
             case Steps.swap_input_new_serial:
                 if resp:
                     self.add_serial(resp)
-                    copy(resp.upper())
                     self.step = Steps.swap_note_serial
 
             case Steps.swap_note_serial:
@@ -522,18 +493,35 @@ def execute_step(self, resp):
             next_step = 'battery_test/charging'
 
     if next_step == 'battery_test/charging':
-        if 'charg' in self.customer_states.lower() or 'batt' in self.customer_states.lower() or self._liquid_found:
+        if self.require_battery_test():
             self.step = Steps.battery_test
         elif self._swap_after_battery_test:
             self.phase = Phase.SWAP
         else:
             next_step = 'charging'
 
+    if next_step == 'order swap':
+        if self.serial.startswith('s9'):
+            self.step = Steps.swap_order_S9
+        elif self.serial.startswith('m6'):
+            self.step = Steps.swap_order_M6
+        else:
+            self.step = Steps.swap_order
+
     if next_step == 'charging':
         self.step = Steps.ask_charge_customer_dock if self.dock else Steps.ask_charge_test_dock
 
     if next_step == 'liquid check dock or bin':
         self.step = Steps.liquid_check_dock if self.dock else Steps.liquid_check_bin
+
+    if next_step == 'liquid damage':
+        if not self.is_modular:
+            self.step = Steps.ask_cleaned
+        else:
+            if self.can_mop:
+                next_step = 'ask blower play'
+            else:
+                self.step = Steps.check_liquid_damage
 
     if next_step == 'ask blower play':
         if self.can_vacuum:
@@ -555,12 +543,6 @@ def execute_step(self, resp):
         else:
             self.step = Steps.ask_cleaned
 
-    if next_step == 'liquid damage':
-        if self.serial.startswith('i'):
-            self.step = Steps.ask_modular
-        else:
-            self.step = Steps.check_liquid_damage if not self.can_mop else Steps.ask_blower_play
-
     if next_step == 'empty bin':
         if self.can_vacuum:
             self.step = Steps.ask_emptied_bin
@@ -568,6 +550,62 @@ def execute_step(self, resp):
             next_step = 'empty tank'
 
     if next_step == 'empty tank':
-        self.step = Steps.ask_emptied_tank if self.can_mop else Steps.ask_debug_cover
+        self.step = Steps.ask_emptied_tank if self.can_mop else Steps.ask_sidebrush_screws
 
     self.text_area.scroll_to(None, 1000, animate=False)
+
+
+# All the side effects of the execute_step
+
+def before_pick_up_case(self):
+    clipboard.copy(self.ref)
+
+def after_pick_up_case(self):
+    self.log(open=True)
+
+def after_ask_complete_case_CSS(self):
+    self.log(open=False)
+
+def before_generate_external_notes(self):
+    self.external_notes_menu.action_open()
+
+def after_generate_external_notes(self):
+    self.external_notes_menu.action_close()
+
+def before_ask_copy_notes_1(self):
+    clipboard.copy(self.text_area.text.strip())
+    self._finish_first_copy_notes = self.text_area.text.strip()
+
+def before_ask_double_check(self):
+    if settings.DO_DOUBLE_CHECK:
+        multi_paste(
+            'michelle.gonzalez@acer.com',
+            f'Double Check: {self.ref}',
+            self.text_area.text,
+        )
+
+def before_ask_copy_notes_2(self):
+    clipboard.copy(self.text_area.text.strip())
+
+def before_ask_complete_case_CSS(self):
+    # multi_paste(
+    #     self.ref,
+    #     'Repair Report',
+    # )
+    clipboard.copy(self.ref)
+
+def before_swap_update_css(self):
+    clipboard.copy(self.text_area.text.strip())
+
+def before_swap_email(self):
+    multi_paste(
+        'irobot.support@acer.com',
+        self.ref + ' - ',
+        self.text_area.text,
+    )
+
+def before_swap_order(self):
+    clipboard.copy(self.serial.upper())
+
+def before_swap_note_serial(self):
+    clipboard.copy(self.serial.upper())

@@ -50,8 +50,17 @@ MenuMenu{
     width: 30%;
     min-width: 30;
     align: center top;
+    content-align: center top;
     color: black;
     text-align: center;
+}
+
+.sidebar-label{
+    # text-align: center;
+    text-align: left;
+    width: 30%;
+    # TODO min-width: 30;
+    min-width: 35;
 }
 
 .align-center{
@@ -129,16 +138,17 @@ MenuMenu{
 #menu-select{
     layer: hintButton;
     dock: right;
+    position: absolute;
     # margin: 0;
     # padding: 0;
     width: 8;
+    height: 2;
+    # hatch: "☰" $success 100%;
     & > SelectOverlay {
-        # display: none;
+        width: 20;
+        offset-x: -10;
         constrain: none none;
-        width: 30;
     }
-    # height: 3;
-    # border: white;
     background: $surface-lighten-2;
 }
 
@@ -155,4 +165,12 @@ MenuMenu{
     dock: right;
     offset-x: -30;
     # x: -20;
+}
+
+#spacer{
+    height: 100%;
+}
+
+.mm-buttons{
+    width: 100%;
 }

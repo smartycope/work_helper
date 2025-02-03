@@ -1,7 +1,7 @@
 import re
 from HintsMenu import HintsMenu
 # from MenuMenu import MenuMenu
-from globals import COLORS
+from globals import COLORS, LOG_PATH, invert_dict
 import random
 from textual.containers import *
 from textual.reactive import reactive
@@ -14,10 +14,26 @@ from MobilityMenu import MobilityMenu
 from CommandsMenu import CommandsMenu
 from ExternalNotesMenu import ExternalNotesMenu
 from textual import on
+from datetime import datetime
 
 
 class Case(VerticalGroup):
     from step_algorithm import execute_step as _execute_step
+    from step_algorithm import (
+        before_pick_up_case,
+        before_generate_external_notes,
+        before_ask_copy_notes_1,
+        before_ask_double_check,
+        before_ask_copy_notes_2,
+        before_ask_complete_case_CSS,
+        before_swap_update_css,
+        before_swap_email,
+        before_swap_order,
+        before_swap_note_serial,
+        after_pick_up_case,
+        after_ask_complete_case_CSS,
+        after_generate_external_notes,
+    )
     from parse_commands import parse_command
 
     BINDINGS = (
@@ -52,6 +68,12 @@ class Case(VerticalGroup):
         self.color = color
         self.customer_states = ''
 
+        # The way this works, is it gets applied as "s" to the step when putting the current step into
+        # the Input box. That way, any step that needs formatting can use it without messing up the
+        # current step (as used by the step algorithm as states). It also gets reset to '' after
+        # being used in the step setter (so set this before setting self.step)
+        self.step_formatter = ''
+
         self.prev_step = None
 
         self._liquid_swap = None
@@ -67,15 +89,6 @@ class Case(VerticalGroup):
         self.external_notes_menu = ExternalNotesMenu(self)
         self.hints_menu = HintsMenu(self)
         self.cmd_menu = CommandsMenu()
-        # self.menu_menu = MenuMenu()
-        self.menu_menu = Select(((m, m) for m in (
-            'Hints',
-            'Commands',
-            'Update Sidebar'
-        )), id='menu-select', prompt='☰')
-        self.menu_menu.can_focus = False
-
-        # self.menu_button = Button('', id='menu-button')
 
         # Some internal values to make auto guessing external notes easier
         self._bin_screw_has_rust = False
@@ -86,18 +99,19 @@ class Case(VerticalGroup):
         self._finish_first_copy_notes = ''
         self._also_check_left = False
         self._swap_after_battery_test = False
+        self._swap_due_to_sunken_contacts = False
 
         # This gets run on mount of the color selector
         # self.set_color(color)
 
-    @on(Select.Changed, "#menu-select")
     def open_menu(self, event: Select.Changed):
         match event.value:
             case 'Hints': self.hints_menu.action_toggle()
             case 'Commands': self.cmd_menu.action_toggle()
             case 'Update Sidebar': self.sidebar.update()
 
-        self.menu_menu.clear()
+        event.control.clear()
+        # self.menu_menu.clear()
 
     @on(Select.Changed, "#color-selector")
     def set_color(self, event: Select.Changed):
@@ -116,17 +130,32 @@ class Case(VerticalGroup):
         yield self.external_notes_menu
         yield self.hints_menu
         yield self.cmd_menu
-        yield self.menu_menu
         yield self.input
         yield self.sidebar
 
         self.input.focus()
 
-    def watch_step(self, to):
+    def watch_step(self, old, new):
         # Because as a reactive attribute, it apparently runs before mounting (before compose is called)
         try:
-            self.prev_step = self.step
-            self.input.placeholder = to
+            self.prev_step = old
+
+            # If we have a method named `before_<step_name>`, then call it
+            method_name = 'after_' + invert_dict(Steps.__dict__)[old]
+            if hasattr(self, method_name):
+                getattr(self, method_name)()
+
+            # If we have a method named `after_<step_name>`, then call it
+            method_name = 'before_' + invert_dict(Steps.__dict__)[new]
+            if hasattr(self, method_name):
+                getattr(self, method_name)()
+
+            try:
+                self.input.placeholder = new.format(s=self.step_formatter)
+            except KeyError:
+                self.input.placeholder = new
+
+            self.step_formatter = ''
         except:
             pass
 
@@ -151,14 +180,12 @@ class Case(VerticalGroup):
     def on_phase_changed(self, event: Select.Changed) -> None:
         self.phase = Phase(event.value)
 
-        # if self.phase == Phase.FINISH:
-            # self.external_notes_menu.visible = True
-            # self.external_notes_menu.action_open()
-
         if self.phase == Phase.CONFIRM:
             self.step = self.first_steps[Phase.CONFIRM] if not self.serial else Steps.check_repeat
         else:
             self.ensure_serial(self.first_steps[self.phase])
+
+        self.input.focus()
 
     def action_open_mobility_menu(self):
         # Only allow the mobility menu to be opened if we have information about the bot
@@ -296,6 +323,8 @@ class Case(VerticalGroup):
         """
         if not self.is_modular:
             return 'DCT won\'t work, only BBK'
+        elif self.serial.startswith(('i3', 'i4', 'i5')):
+            return 'Any of the bumper tests can fail'
         elif self.serial.startswith('j9'):
             return 'If v2 (clip battery), can fail basically everything. Otherwise, second dock comms test, if FW == 24.29.x (ensure robot still evacs)'
         elif self.serial.startswith('j'):
@@ -332,11 +361,35 @@ class Case(VerticalGroup):
             notes += "If the blue DCT card doesn't work, try a hard reset"
 
         if self.has_weird_i5g:
-            notes += '\n        [on orange_red1]Possibly a factory provisioned lapis bin[/]'
+            notes += '\n [on orange_red1]Possibly a factory provisioned lapis bin[/]'
         elif self.is_factory_lapis:
-            notes += '\n        [on red]Factory provisioned lapis bin![/]'
+            notes += '\n [on red]Factory provisioned lapis bin![/]'
 
         return notes
+
+    def require_battery_test(self):
+        cx_states = self.customer_states.lower()
+        return (
+            'charg' in cx_states
+            or
+            'batt' in cx_states
+            or
+            # "doesn't turn on" or "does not turn on"
+            't turn on' in cx_states
+            or
+            self._liquid_found
+        )
+
+    def log(self, open):
+        with LOG_PATH.open('a') as f:
+            f.write('{action},{id},{color},{serial},{timestamp}\n'.format(
+                action='open' if open else 'close',
+                id=self.ref,
+                color=COLORS[self.color],
+                # Yes, the current one. This is intentional.
+                serial=self.serial,
+                timestamp=datetime.now(),
+            ))
 
     @property
     def can_mop(self):
@@ -399,12 +452,14 @@ class Case(VerticalGroup):
 
     @property
     def is_modular(self):
-        # If the 8th digit of the serial number, if N or Z, indicates it's non-modular -- or if the 16th digit is 7, but focus on the first one
         if self.serial.startswith(('e', 'r')):
-            return False
+            return True
 
+        # If the 8th digit of the serial number, if N or Z, indicates it's non-modular -- or if the 16th digit is 7, but focus on the first one
         if len(self.serial) > 7:
             return self.serial[7] not in ('n', 'z')
+        else:
+            return True
 
     @property
     def is_swap(self):

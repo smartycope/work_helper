@@ -7,6 +7,7 @@ from textual.events import Mount
 from clipboard import copy
 import textwrap
 from Menu import Menu
+from multi_paste import multi_paste
 
 class ExternalNotesMenu(Menu):
     # These are in the order they should be in in the final notes
@@ -51,6 +52,7 @@ class ExternalNotesMenu(Menu):
         with HorizontalGroup():
             yield Button('Close', id='close-external-notes')#, action='close')
             yield Button('Copy', id='copy-external-notes')#, action='copy')
+            yield Button('Copy, then notes', id='copy-external-notes-and-notes')#, action='copy')
         yield Static()
         yield self.cx_states
         self.set_default_selections()
@@ -101,12 +103,31 @@ class ExternalNotesMenu(Menu):
         self.cx_states.update('cx states:\n' + self.case.customer_states)
 
     def get_notes(self):
-        return '. '.join(list(self.notes.values())[i] for i in sorted(self.selection.selected)) + '.'
+        indexes = self.selection.selected
+        add_to_beginning = []
+        add_to_end = []
+
+        # Swapped both bot and dock
+        if 0 in indexes and 1 in indexes:
+            indexes.remove(0)
+            indexes.remove(1)
+            add_to_beginning.append("Replaced robot and dock with equivalent models")
+
+        sentences = [list(self.notes.values())[i] for i in sorted(indexes)]
+
+        return '. '.join(add_to_beginning + sentences + add_to_end) + '.'
 
     @on(Mount)
     @on(SelectionList.SelectedChanged)
     def update_selected_view(self) -> None:
         self.text.update(textwrap.fill(self.get_notes(), 60))
+
+    @on(Button.Pressed, '#copy-external-notes-and-notes')
+    def action_copy_both(self):
+        multi_paste(
+            self.get_notes(),
+            self.case.text_area.text,
+        )
 
     @on(Button.Pressed, '#copy-external-notes')
     def action_copy(self):
@@ -116,4 +137,3 @@ class ExternalNotesMenu(Menu):
     @on(Button.Pressed, '#close-external-notes')
     def close(self):
         self.action_close()
-    #     self.visible = False

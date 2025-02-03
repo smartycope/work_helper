@@ -51,16 +51,28 @@ class HelperApp(App):
         self.popup = Input(placeholder='Case ID', id='reference_popup')
         self.popup.visible = False
 
+        self.menu_menu = Select(((m, m) for m in (
+            'Hints',
+            'Commands',
+            'Update Sidebar'
+        )), id='menu-select', prompt='☰')
+        self.menu_menu.can_focus = False
+
     def on_mount(self):
         if self._debug:
             self.deserialize(DEBUG_STATE)
 
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
+        yield Label(str(datetime.datetime.now().day), id='version')
+        yield self.menu_menu
         yield self.tabs
         yield self.popup
-        yield Label(str(datetime.datetime.now().day), id='version')
         yield Footer()
+
+    @on(Select.Changed, "#menu-select")
+    def pass_along_open_menu_menu_event(self, event):
+        self.active_case.open_menu(event)
 
     def action_open_mobility_menu(self):
         self.active_case.action_open_mobility_menu()
@@ -72,6 +84,7 @@ class HelperApp(App):
         if self.popup.visible:
             self.popup.visible = False
 
+    # This actually creates the new case
     def on_input_submitted(self):
         # This should be the only way cases get deployed
         if self.popup.visible:

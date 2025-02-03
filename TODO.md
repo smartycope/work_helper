@@ -1,24 +1,12 @@
 URGENT: ya, the sidebars aren't update after deserialization
-URGENT: if has_lapis OR is_factory_lapis, then immediately after first finish step (ask if BiT and mobility), add a step that asks if I've mobility tested with a lapis bin
 URGENT: if C9, and swap or order dock in a case, somehow make aware to swap with correct dock:
-URGENT: a cx states of "Bot does not turn on" should trigger a battery test to be required
-URGENT: if there's a swap due to sunken contacts, and they don't have a dock, then state that I'll provide them with  a dock, and make a step for it (order a new dock) -- actually, make the "order a new dock" step whether they have a dock or not, it's needed in both cases
-URGENT: i3, i4, i5 DCT exception: all the bumper tests are allowed to fail
-URGENT: C9 is too large -- also, the lower_sidebar isn't down all the way (also, I can shorten the todo box) (it ends on if the DCT card doesn't work,)
-URGENT: if no dock indicated, in step "put robot and traveler on the shelf", add "and box"
-URGENT: make the multi-paste button in the external notes menu urgent
-URGENT: remove double checking from finish phase (but l?) - when removing it, put into shipping mode sometime BEFORE cleaning the robot
-URGENT: don't ask if the bot is modular anymore
-URGENT: remove the "put the new bot in the box" step
-URGENT: reorder the MM triswitches
+URGENT: the lower_sidebar isn't down all the way (also, I can shorten the todo box) (it ends on if the DCT card doesn't work,)
 
 Saturday mar 1 @ 12pm 20 min
 
-MINOR: connect the MM dock box to submitting the menu, like the other one
 MINOR: in swap phase, combine "put the old bot in the box" step with the "unbox" step
 MINOR: Guess what type the dock is out of select options, instead of accepting any answer (levenstein dist?)
 MINOR: Make the MM buttons width expand
-MINOR: add a button in external notes to copy the extewrnal notes, and then all the other notes (via multi_paste())
 MINOR: add [done] to step "put labels on new bot"
 MINOR: add an external note that is just "recommend reprovisioning lapis bin on app" (without any factory reset needed)
 MINOR: if there's more serial numbers than there were before, and that number is >1, default the mobility menu dock box to "new ..." instead of "cx ..."

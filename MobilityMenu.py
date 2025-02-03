@@ -34,7 +34,7 @@ class MobilityMenu(Menu):
         yield self.where
 
         yield Label('Dock:')
-        self.base = CustomInput(('cx ' + self.case.dock) if self.case.dock else 'test ', placeholder='no dock')
+        self.base = CustomInput(('cx ' + self.case.dock) if self.case.dock else 'test ', placeholder='no dock', id='dock-input')
         yield self.base
 
         yield Label('Parameters:')
@@ -47,17 +47,21 @@ class MobilityMenu(Menu):
         self.undock = TriSwitch(value=True)
         yield self.undock
 
-        yield Label('Num Lines:')
-        self.num_lines = MaskedInput(template="9", id='num-lines', disabled=self.case.is_combo is False)
-        yield self.num_lines
+        yield Label('Picks up Debris:')
+        self.picks_up_debris = TriSwitch(value=None)
+        yield self.picks_up_debris
+
+        yield Label('Dock:')
+        self.dock = TriSwitch(value=True)
+        yield self.dock
 
         yield Label('Refill:')
         self.refill = TriSwitch(value=None, disabled=self.case.is_combo is False)
         yield self.refill
 
-        yield Label('Dock:')
-        self.dock = TriSwitch(value=True)
-        yield self.dock
+        yield Label('Navigate:')
+        self.navigate = TriSwitch(value=True)
+        yield self.navigate
 
         yield Label('Deploy Pad:')
         self.deploy_pad = TriSwitch(value=None, disabled=self.case.is_combo is False)
@@ -67,17 +71,13 @@ class MobilityMenu(Menu):
         self.auto_evac = TriSwitch(value=None)
         yield self.auto_evac
 
-        yield Label('Navigate:')
-        self.navigate = TriSwitch(value=True)
-        yield self.navigate
+        yield Label('Num Lines:')
+        self.num_lines = MaskedInput(template="9", id='num-lines', disabled=self.case.is_combo is False)
+        yield self.num_lines
 
         yield Label('Manual Evac:')
         self.manual_evac = TriSwitch(value=None)
         yield self.manual_evac
-
-        yield Label('Picks up Debris:')
-        self.picks_up_debris = TriSwitch(value=None)
-        yield self.picks_up_debris
 
         yield Label('Spray:')
         self.spray = TriSwitch(value=None)
@@ -95,8 +95,8 @@ class MobilityMenu(Menu):
         self.todo = TextArea(classes='double extend')
         yield self.todo
 
-        yield Button('Close', id='cancel', classes='')
-        yield Button('Done', id='done', classes='')
+        yield Button('Close', id='cancel', classes='mm-buttons')
+        yield Button('Done', id='done', classes='mm-buttons')
 
     def update_values(self):
         """ Run whenever the menu gets closed """
@@ -118,6 +118,7 @@ class MobilityMenu(Menu):
     def cancel(self, event):
         self.visible = False
 
+    @on(Input.Submitted, '#dock-input')
     @on(Input.Submitted, '#notes')
     @on(Button.Pressed, '#done')
     def done(self):

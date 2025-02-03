@@ -1,5 +1,4 @@
 import json
-import textwrap
 
 from clipboard import copy
 from textual.containers import *
@@ -42,12 +41,12 @@ class Sidebar(VerticalGroup):
             value=self.case.color,
         )
         self.color_switcher.can_focus = False
-        self.sleep_mode = Label('', id=f'sleep-mode-label-{self.case.ref}')
-        self.factory_reset = Label('', id=f'factory-reset-label-{self.case.ref}')
-        self.dct = Label('', id=f'dct-label-{self.case.ref}')
-        self.dct_exp = Label('', id=f'dct-exp-label-{self.case.ref}')
-        self.notes_sep = Label('')
-        self.notes = Label('', id=f'notes-label-{self.case.ref}')
+        self.sleep_mode = Label('', id=f'sleep-mode-label-{self.case.ref}', classes='sidebar-label')
+        self.factory_reset = Label('', id=f'factory-reset-label-{self.case.ref}', classes='sidebar-label')
+        self.dct = Label('', id=f'dct-label-{self.case.ref}', classes='sidebar-label')
+        self.dct_exp = Label('', id=f'dct-exp-label-{self.case.ref}', classes='sidebar-label')
+        self.notes_sep = Label('', classes='sidebar-label')
+        self.notes = Label('', id=f'notes-label-{self.case.ref}', classes='sidebar-label')
         # self.serial_label = Label(' '*(SIDEBAR_WIDTH-COPY_SERIAL_BUTTON_WIDTH), id=f'serial-label-{self.case.ref}')
         self.serial_labels = []
             # CopyText(' '*(SIDEBAR_WIDTH), None, id=f'serial-label-{self.case.ref}', classes='serial-label')
@@ -63,18 +62,11 @@ class Sidebar(VerticalGroup):
         if not self.case.serial or not self.has_mounted:
             return
 
-        # self.ref_model.update(f'{self.case.ref+" • "+self.case.get_quick_model():^{SIDEBAR_WIDTH}}\n')
         self.model.update(f' • {self.case.get_quick_model()}')
-        # self.model.update(f'{{:^{SIDEBAR_WIDTH}}}'.format(self.case.get_quick_model() + '\n'))
-        self.sleep_mode.update(textwrap.fill(sleep_mode.get(self.serial[0], 'Unknown'), SIDEBAR_WIDTH) + '\n')
-        self.factory_reset.update(textwrap.fill(factory_reset.get(self.serial[0], 'Unknown'), SIDEBAR_WIDTH) + '\n')
-        # self.dct.update(f'DCT: {{:^{SIDEBAR_WIDTH-5}}}'.format(textwrap.fill(self.case.get_DCT(), SIDEBAR_WIDTH-5)) + '\n')
-        # self.dct.update(f'DCT: {{:^{SIDEBAR_WIDTH-5}}}'.format(self.case.get_DCT()) + '\n')
+        self.sleep_mode.update(sleep_mode.get(self.serial[0], 'Unknown') + '\n')
+        self.factory_reset.update(factory_reset.get(self.serial[0], 'Unknown') + '\n')
         self.dct.update(f'DCT: {self.case.get_DCT()}\n')
-        self.dct_exp.update(f'{{:^{SIDEBAR_WIDTH}}}'.format(textwrap.fill(self.case.get_DCT_exceptions(), SIDEBAR_WIDTH)) + '\n')
-        # self.serial_label.update(f'\n{self.serial.upper():^{SIDEBAR_WIDTH}}')
-        # self.serial_buttons.remove()
-        # serial_label_labels = ['O'] + ['S'+str(i) for i in range(len(self.case.serials)-1)]
+        self.dct_exp.update(f'{{:^{SIDEBAR_WIDTH}}}'.format(self.case.get_DCT_exceptions()) + '\n')
         self.original_serial_label.text = f'O: {self.case.serials[0]:^{SIDEBAR_WIDTH}}'
         # Helpful for debugging
         # self.dct.update(json.dumps(self.case.serials, indent=2))
@@ -84,8 +76,7 @@ class Sidebar(VerticalGroup):
             self.serial_buttons.mount(CopyText(f'S{self.num_swaps}: {serial:^{SIDEBAR_WIDTH}}', serial))
             self.num_swaps += 1
 
-        # self.serial_label.update(self.serial)
-        notes = textwrap.fill(self.case.get_notes(), SIDEBAR_WIDTH)
+        notes = self.case.get_notes()
         if notes:
             self.notes_sep.update(f'{" Notes ":-^{SIDEBAR_WIDTH}}')
             self.notes.update(notes)
@@ -107,14 +98,16 @@ class Sidebar(VerticalGroup):
 
         yield Label('\n')
         yield self.dct
-        yield Label(f'{" DCT Exceptions ":-^{SIDEBAR_WIDTH}}')
+        yield Label(f'{" DCT Exceptions ":-^{SIDEBAR_WIDTH}}', classes='sidebar-label')
         yield self.dct_exp
-        yield Label(f'{" Shipping Mode ":-^{SIDEBAR_WIDTH}}')
+        yield Label(f'{" Shipping Mode ":-^{SIDEBAR_WIDTH}}', classes='sidebar-label')
         yield self.sleep_mode
-        yield Label(f'{" Factory Reset ":-^{SIDEBAR_WIDTH}}')
+        yield Label(f'{" Factory Reset ":-^{SIDEBAR_WIDTH}}', classes='sidebar-label')
         yield self.factory_reset
         yield self.notes_sep
         yield self.notes
+
+        # yield Static(id='spacer')
 
         with self.lower_sidebar:
             # yield Label('TODO:')
