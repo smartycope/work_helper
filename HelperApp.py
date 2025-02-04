@@ -9,7 +9,7 @@ from textual.containers import *
 from textual.widgets import *
 from Phase import Phase
 from Case import Case
-from globals import COLORS
+from globals import COLORS, SAVE_CASE_PATH, SAVE_STATE_PATH
 from clipboard import copy, paste
 
 DEBUG_STATE = '''[{"notes": "19000IR\\n", "color": "#377a11", "ref": "19000IR", "serial": null, "phase": 0, "step": "Put labels on everything", "todo": ""}, {"notes": "19002IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: Waaaaaa\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n! Robot does not charge on test base @ ~0W\\n\\nProcess:\\n* Step\\n* Step\\n* Step\\n* Done\\n", "color": "#d1dd0b", "ref": "19002IR", "serial": "i3", "phase": 3, "step": "All screws are screwed in all the way [done]", "todo": ""}, {"notes": "19003IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: I want money back\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n* Robot charges on test base @ ~9W (battery is full)\\n\\nProcess:\\n* Tehe\\n* Swap\\n", "color": "#ea9daf", "ref": "19003IR", "serial": "j7", "phase": 4, "step": "Send swap email [confirmed]", "todo": ""}, {"notes": "19004IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: It broke\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No play in blower motor\\n* Tank float screw has no signs of rust\\n* Cleaned robot\\n* Robot charges on test base @ ~21W\\n\\nProcess:\\n* Step1\\n* Step2\\n", "color": "#799fad", "ref": "19004IR", "serial": "c9", "phase": 2, "step": "Add Step", "todo": ""}, {"notes": "new\\n", "color": "#ef9e16", "ref": "new", "serial": null, "phase": 0, "step": "Confirm IDs", "todo": ""}]'''
@@ -22,9 +22,6 @@ class HelperApp(App):
         Binding("ctrl+w", "close_case", "Close Case", show=False, system=True, priority=True),
         Binding("ctrl+s", "save", "Save", show=False, system=True, priority=True),
         # ('ctrl+e', 'open_external_notes_menu', 'Ext Notes'),
-        Binding("__", "remove_double_lines", "rm double lines", key_display=''),
-        Binding('_c', 'copy_all_cases', 'Copy Cases', key_display=''),
-        Binding('_v', 'add_cases_from_clipboard', 'Paste Cases', key_display=''),
         Binding('ctrl+1,ctrl+shift+1', 'goto_tab(1)', 'Tab 1', show=False, system=True, priority=True),
         Binding('ctrl+2,ctrl+shift+2', 'goto_tab(2)', 'Tab 2', show=False, system=True, priority=True),
         Binding('ctrl+3,ctrl+shift+3', 'goto_tab(3)', 'Tab 3', show=False, system=True, priority=True),
@@ -43,10 +40,6 @@ class HelperApp(App):
         super().__init__()
         self._debug = debug
         self.cases = []
-        self.dir = Path.home() / 'Documents' / 'Case_Notes'
-        self.save_state_path = Path.home() / 'Documents' / 'helper_state.json'
-        self.dir.mkdir(parents=True, exist_ok=True)
-
         self.tabs = TabbedContent(id='tabs')
         self.popup = Input(placeholder='Case ID', id='reference_popup')
         self.popup.visible = False
@@ -54,7 +47,11 @@ class HelperApp(App):
         self.menu_menu = Select(((m, m) for m in (
             'Hints',
             'Commands',
-            'Update Sidebar'
+            'Update Sidebar',
+            "Remove Double Lines",
+            "Copy Cases",
+            "Paste Cases",
+            "Load Saved State",
         )), id='menu-select', prompt='☰')
         self.menu_menu.can_focus = False
 
@@ -71,8 +68,18 @@ class HelperApp(App):
         yield Footer()
 
     @on(Select.Changed, "#menu-select")
-    def pass_along_open_menu_menu_event(self, event):
-        self.active_case.open_menu(event)
+    def menu_menu_option_pressed(self, event):
+        match event.value:
+            case "Copy Cases":
+                self.action_copy_all_cases()
+            case "Paste Cases":
+                self.action_add_cases_from_clipboard()
+            case "Load Saved State":
+                self.action_load_saved_state()
+            case _:
+                if self.active_case:
+                    self.active_case.open_menu(event)
+        event.control.clear()
 
     def action_open_mobility_menu(self):
         self.active_case.action_open_mobility_menu()
@@ -116,11 +123,15 @@ class HelperApp(App):
 
     @on(TabbedContent.TabActivated)
     def action_focus_input(self):
-        self.active_case.input.focus()
+        if self.active_case:
+            self.active_case.input.focus()
 
     @property
     def active_case(self):
-        return self.tabs.active_pane.children[0]
+        try:
+            return self.tabs.active_pane.children[0]
+        except AttributeError:
+            return
 
     def action_remove(self) -> None:
         """Remove active tab."""
@@ -135,6 +146,11 @@ class HelperApp(App):
 
     def action_add_cases_from_clipboard(self):
         self.deserialize(paste())
+
+    def action_load_saved_state(self):
+        with open(SAVE_STATE_PATH, 'r') as f:
+            # self.deserialize(json.load(f))
+            self.deserialize(f.read(), clear=True)
 
     # def next_tab(self):
         # # print('next tab called')
@@ -164,7 +180,7 @@ class HelperApp(App):
                 return
 
         if clear:
-            self.clear_panes()
+            self.tabs.clear_panes()
 
         for case in self.cases:
             self.tabs.add_pane(TabPane(case.ref, case))
@@ -178,13 +194,11 @@ class HelperApp(App):
 
     def action_save(self):
         for case in self.cases:
-            with open(self.dir / (case.ref + '.txt'), 'w') as f:
-                print('Saved cases to ', self.dir)
+            # with open(self.dir / (case.ref + '.txt'), 'w') as f:
+            with open(SAVE_CASE_PATH / (case.ref + '.txt'), 'w') as f:
+                print('Saved cases to ', SAVE_CASE_PATH)
                 f.write(case.text_area.text)
 
         # Save the current state, as a backup
-        with open(self.save_state_path, 'w') as f:
+        with open(SAVE_STATE_PATH, 'w') as f:
             f.write(self.serialize())
-
-    def action_remove_double_lines(self):
-        self.active_case.text_area.text = self.active_case.text_area.text.replace('\n\n', '\n')

@@ -106,12 +106,11 @@ class Case(VerticalGroup):
 
     def open_menu(self, event: Select.Changed):
         match event.value:
+            case "Remove Double Lines":
+                self.text_area.text = self.text_area.text.replace('\n\n', '\n')
             case 'Hints': self.hints_menu.action_toggle()
             case 'Commands': self.cmd_menu.action_toggle()
             case 'Update Sidebar': self.sidebar.update()
-
-        event.control.clear()
-        # self.menu_menu.clear()
 
     @on(Select.Changed, "#color-selector")
     def set_color(self, event: Select.Changed):
@@ -351,11 +350,11 @@ class Case(VerticalGroup):
         if self.serial.startswith('i'):
             notes += 'If having weird trouble with DCT, try factory reset'
 
-        if self.serial.startswith('r'):
-            notes += 'To BiT: lights have to be off (hold down clean to turn off), then hold home & clean and press spot 5x. Then press home to start the tests. Spot is next, home is prev. Hold clean when finished successfully, otherwise factory reset.'
+        if self.serial.startswith(('r', 'e')):
+            notes += 'To BiT: lights have to be off (hold down clean to turn off), then hold home & clean and press spot 5x. Then press home to start the tests. Spot is prev, home is next. Hold clean when finished successfully, otherwise factory reset.'
 
-        if self.serial.startswith('e'):
-            notes += 'To BiT: lights have to be off, then hold home & clean and press spot 5x. You also have to press clean to get it to connect to DCT'
+        # if self.serial.startswith('e'):
+        #     notes += 'To BiT: lights have to be off, then hold home & clean and press spot 5x. You also have to press clean to get it to connect to DCT'
 
         if self.serial.startswith(('j7', 'j9')):
             notes += "If the blue DCT card doesn't work, try a hard reset"

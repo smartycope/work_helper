@@ -21,7 +21,12 @@ class Menu(VerticalGroup):
         self.case = case
 
     def action_toggle(self):
-        self.visible = not self.visible
+        # self.visible = not self.visible
+        # So any side effects get run as well
+        if self.visible:
+            self.action_close()
+        else:
+            self.action_open()
 
     def action_open(self):
         self.visible = True

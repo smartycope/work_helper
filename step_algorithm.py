@@ -200,7 +200,7 @@ def execute_step(self, resp):
 
             case Steps.ask_rollers:
                 if resp.lower() != 'na':
-                    self.add_step('Extractors look ' + (resp if resp else 'good'), bullet='!' if resp else '*')
+                    self.add_step('Extractors look ' + (resp if resp else 'fine'), bullet='!' if resp else '*')
 
                 next_step = 'dock contacts/charging'
 

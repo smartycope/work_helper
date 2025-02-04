@@ -73,7 +73,7 @@ class Sidebar(VerticalGroup):
         self.original_serial_label.to_copy = self.case.serials[0]
         while self.num_swaps < len(self.case.serials) - 1:
             serial = self.case.serials[self.num_swaps+1]
-            self.serial_buttons.mount(CopyText(f'S{self.num_swaps}: {serial:^{SIDEBAR_WIDTH}}', serial))
+            self.serial_buttons.mount(CopyText(f'S{self.num_swaps}: {serial.upper():^{SIDEBAR_WIDTH}}', serial.upper()))
             self.num_swaps += 1
 
         notes = self.case.get_notes()

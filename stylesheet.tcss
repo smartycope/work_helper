@@ -127,7 +127,7 @@ MenuMenu{
 }
 
 #cx-states{
-    column-span: 3;
+    column-span: 2;
     content-align: right middle;
 }
 
@@ -135,6 +135,7 @@ MenuMenu{
     margin: 0 1;
 }
 
+# Menu Menu
 #menu-select{
     layer: hintButton;
     dock: right;
@@ -145,8 +146,8 @@ MenuMenu{
     height: 2;
     # hatch: "☰" $success 100%;
     & > SelectOverlay {
-        width: 20;
-        offset-x: -10;
+        width: 30;
+        offset-x: -20;
         constrain: none none;
     }
     background: $surface-lighten-2;

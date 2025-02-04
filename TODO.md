@@ -1,3 +1,18 @@
+
+MINOR: add external notes regex to find if "charging contacts on ... - cleaned" (in routine checks), and if found, recommend cleaning dock charging contacts
+
+
+
+EPIC: Instead of alt+b just going to the board, have it go to the board and auto-filter for the currently active case - but, when adding keyboard shortcuts, add a setting to disable/enable them
+
+HIGH: add another shortcut, just like alt+shift+k, but with 2 tabs instead of 3, and it pastes in the second box instead of "na"
+
+
+LOW: add "add new case" to the menu menu
+
+
+
+URGENT: refocus to the input box on MM close
 URGENT: ya, the sidebars aren't update after deserialization
 URGENT: if C9, and swap or order dock in a case, somehow make aware to swap with correct dock:
 URGENT: the lower_sidebar isn't down all the way (also, I can shorten the todo box) (it ends on if the DCT card doesn't work,)

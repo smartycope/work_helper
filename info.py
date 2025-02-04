@@ -64,4 +64,7 @@ are for speed and range, ignore DCT.
 
 
 Speaking of SKU's, Remember where I talked about the Costco SKU of the C9 that comes with a Zhuhai, well this is it.  If you didn't know, most C9's will come with an Aurora and the SKU is C975xxxx, but the Costco version is C955021.  As you can see, the 7 & the 5 denote the dock type.  If you get a Costco SKU, you can test it with an Albany or Zhuhai.  However, if the customer bought the Aurora separately, then you still need to test with the Aurora.  The same goes for a customer with a C7 and a stand alone Aurora purchase.
+
+
+v2 J9: j955020y240911n201927
 """

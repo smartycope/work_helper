@@ -26,7 +26,11 @@ class MobilityMenu(Menu):
 
     def compose(self):
         yield Label('[bold]Mobility Test[/]', id='mobility-title')
-        self.cx_states = Label('Customer States: ', id='cx-states')
+
+        self.cx_dock = Label('', id='cx-dock-label')
+        yield self.cx_dock
+
+        self.cx_states = Label('', id='cx-states')
         yield self.cx_states
 
         yield Label('Where:')
@@ -51,17 +55,17 @@ class MobilityMenu(Menu):
         self.picks_up_debris = TriSwitch(value=None)
         yield self.picks_up_debris
 
-        yield Label('Dock:')
-        self.dock = TriSwitch(value=True)
-        yield self.dock
+        yield Label('Navigate:')
+        self.navigate = TriSwitch(value=True)
+        yield self.navigate
 
         yield Label('Refill:')
         self.refill = TriSwitch(value=None, disabled=self.case.is_combo is False)
         yield self.refill
 
-        yield Label('Navigate:')
-        self.navigate = TriSwitch(value=True)
-        yield self.navigate
+        yield Label('Dock:')
+        self.dock = TriSwitch(value=True)
+        yield self.dock
 
         yield Label('Deploy Pad:')
         self.deploy_pad = TriSwitch(value=None, disabled=self.case.is_combo is False)
@@ -92,10 +96,10 @@ class MobilityMenu(Menu):
 
         # yield Static(classes='quadruple')
         # yield Static(classes='double')
-        self.todo = TextArea(classes='double extend')
+        self.todo = Input(placeholder='Temporary Notes', classes='double extend')
         yield self.todo
 
-        yield Button('Close', id='cancel', classes='mm-buttons')
+        yield Button('Close', id='cancel', classes='mm-buttons', action='close')
         yield Button('Done', id='done', classes='mm-buttons')
 
     def update_values(self):
@@ -104,7 +108,7 @@ class MobilityMenu(Menu):
         if self.case.dock and (not self.base.value or self.base.value == 'test '):
             self.base.value = 'cx ' + self.case.dock
         self.notes.value = ''
-        self.todo.text = ''
+        self.todo.value = ''
 
     def action_toggle(self):
         super().action_toggle()
@@ -112,20 +116,22 @@ class MobilityMenu(Menu):
         if not self._been_opened:
             self.update_values()
             self._been_opened = True
-            self.cx_states.update('| cx: ' + self.case.customer_states if self.case.customer_states else '')
+            self.cx_states.update(('| cx: ' + self.case.customer_states) if self.case.customer_states else '')
+            self.cx_dock.update('| dock: ' + self.case.dock if self.case.dock else 'No dock')
 
-    @on(Button.Pressed, '#cancel')
-    def cancel(self, event):
-        self.visible = False
+    def action_close(self):
+        self.case.input.focus()
+        return super().action_close()
 
     @on(Input.Submitted, '#dock-input')
     @on(Input.Submitted, '#notes')
     @on(Button.Pressed, '#done')
     def done(self):
-        self.visible = False
+        self.action_close()
         extra_line = '' if self.case.text_area.text.strip().endswith('Process:') else '\n'
         self.case.text_area.text = self.case.text_area.text.strip() + '\n' + extra_line + self.stringify() + '\n\n'
         self.update_values()
+        self.case.input.focus()
 
     def stringify(self):
         has_pass = any(getattr(self, i).value for i in self.switches)

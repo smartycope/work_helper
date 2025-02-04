@@ -24,7 +24,7 @@ class Steps:
     check_liquid_damage = "Signs of liquid damage [no]"
     ask_sunken_contacts = "Do the contacts feel sunken (R/L/B) [no]"
     ask_blower_play = "Play in blower motor, or doesn't spin freely [no]"
-    ask_rollers = "How do the extractors look [good]"
+    ask_rollers = "How do the extractors look [fine]"
     ask_s9_lid_pins = "Are the lid pins sunken [no]"
     ask_cleaned = 'Robot cleaned ["na" if not, notes or empty if so]'
     battery_test = "Battery test (don't forget the traveller) [current, health]"
