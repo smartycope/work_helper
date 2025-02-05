@@ -38,4 +38,16 @@ to goto board: hover over 150, 200 from top left, then delay like, half a second
 
 to search for case: go to board, shift+tabx7, paste case id, tab, enter
 -- then, to actually get into the pick it up, right click 500, 470, and then very slight delay, and then click without moving
+
+
+
+In the repair activities menu (the first step of alt+b):
+130, 333 is the pick up case button (then immediately type the case id, then enter)
+130, 370 is the return product button (shift+tab, then type case id, then enter)
+130, 400 is the ship product button (type case id, then tab x 11, then enter)
+
+388 × 205 is an empty space on the CSS window
+936 × 142 is the query box (then tab, then enter, OR just enter. Try just enter first)
+
+
  """

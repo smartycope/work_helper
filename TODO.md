@@ -1,24 +1,18 @@
-
-MINOR: add external notes regex to find if "charging contacts on ... - cleaned" (in routine checks), and if found, recommend cleaning dock charging contacts
-
+COMMAND: cleaned the inside and outside of the bumper (and just inside/just outside)
 
 
-EPIC: Instead of alt+b just going to the board, have it go to the board and auto-filter for the currently active case - but, when adding keyboard shortcuts, add a setting to disable/enable them
-
-HIGH: add another shortcut, just like alt+shift+k, but with 2 tabs instead of 3, and it pastes in the second box instead of "na"
-
-
-LOW: add "add new case" to the menu menu
-
-
-
-URGENT: refocus to the input box on MM close
-URGENT: ya, the sidebars aren't update after deserialization
+URGENT: ya, the sidebars aren't updating after deserialization
 URGENT: if C9, and swap or order dock in a case, somehow make aware to swap with correct dock:
 URGENT: the lower_sidebar isn't down all the way (also, I can shorten the todo box) (it ends on if the DCT card doesn't work,)
 
+URGENT: re-add hotkey shortcuts back into the main program, with a setting
+URGENTish: change the MM menu dock selector to 2 select boxes: 1 of new/test/cx/#2/#3, and one of all the types of docks
+
+
 Saturday mar 1 @ 12pm 20 min
 
+MINOR: move "parse info" binding to the menu menu
+MINOR: add external notes regex to find if "charging contacts on ... - cleaned" (in routine checks), and if found, recommend cleaning dock charging contacts
 MINOR: in swap phase, combine "put the old bot in the box" step with the "unbox" step
 MINOR: Guess what type the dock is out of select options, instead of accepting any answer (levenstein dist?)
 MINOR: Make the MM buttons width expand
@@ -42,8 +36,8 @@ MINOR: make the mobility todo box an input box and give it a placeholder
 MINOR: in the comment in the texts.py that the steps have to be unique: they technically only have to be unique within each phase
 MINOR: maybe - in the mobility menu update function, in the if statement to reset the dock box, remove the or'ed statement if it's empty (don't reset if it's empty)
 
-
-HIGH: add a "log" in csv format to note when cases were started and finished, so I can find my average time
+HIGH: add another shortcut, just like alt+shift+k, but with 2 tabs instead of 3, and it pastes in the second box instead of "na"
+HIGH: save case states, as well as plain files
 HIGH: if it's the 2nd swap, skip some of the steps in the swap phase (like send swap email and unuse parts and the other one)
 HIGH: if is_factory_lapis and the robot was swapped (there's more than one serial), then in finish phase ask if the bot's been removed from the app
 HIGH: ctrl+end shortcut / fix all the shortcuts
@@ -129,6 +123,8 @@ MEDIUM: if serial numbers are different, automatically go to a new step that off
 MEDIUM: if battery tests are needed, also measure contacts, even if they don't feel sunken, but allow na
 --- COME BACK TO THIS --- MEDIUM: add a row immediately above the "parameters" row that just adds 2 more disable-able parameters: is the tank full (full, empty, or 1/4) and something else
 
+LOW: fix dock display in MM when no dock indicated
+LOW: in the step "take tags off bin and dock", move the "and dock" into a conditional formatted step string if there is a dock
 LOW: add mobility test step to debugging phase
 LOW: make a new class, something like AttentionText, which blinks until you click on it, then it stops
 LOW: clean chirp sensor holes, if needed
@@ -173,6 +169,7 @@ LOW: make all characters after 4000 be tinged red in notes
 LOW: Adding proper versioning is a good idea
 LOW: make a simple script I can give to everyone else that just confirms the IDs, and prints all the relevant information for that model (the sidebar stuff)
 LOW: in the mobility menu, have the outline reflect whether the ultimate result is a pass or fail (with red/green)
+LOW: add "add new case" to the menu menu
 LOW: if no dock indicated on dock (in mobility menu), then auto-unselect dock and undock sliders
 LOW: in add_step(): if the previous line has "** Result: " in it, add an extra line -- maybe
 LOW: on double check, add "double checked by michelle" to the notes (and then recopy the notes into CSS)
@@ -181,6 +178,7 @@ LOW: if the text_area ends in "* ", remove it as well
 LOW: See if bot charges on customer dock BEFORE battery test (if both applicable)
 LOW: If a bot needs a battery test, ask about it immediately before cleaning
 LOW: change/check the shade of blue
+LOW: add detailed installation instructions on the README
 
 TEST: dct exceptions
 TEST: adding text manually
@@ -217,5 +215,6 @@ parts are being run (determines if we should ask if the parts have been closed o
 
 EPIC: add a function to auto-regex the add Step text, just like commands, but generalized regex ("MT" -> "Mobility test")
 
-c955 -> albany
-c975 -> aurora
+EPIC: make a new phase for holds, and save their states in a separate folder, and then create a menu to open them with
+
+EPIC: Instead of alt+b just going to the board, have it go to the board and auto-filter for the currently active case - but, when adding keyboard shortcuts, add a setting to disable/enable them

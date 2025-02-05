@@ -2,13 +2,13 @@ evac, visual, ir = 'evac', 'visual', 'ir'
 docks = { #        is dock
     'Albany': (True, evac, visual, ir),
     'Aurora': (True, evac, visual, ir),
-    'Bombay': (False, visual),
-    'Boulder': (True, evac, visual, ir),
-    'Fresno': (True, evac, ir),
-    'San Marino': (False, ir),
+    'Zhuhai': (True, evac, visual),
     'Tianjin': (True, evac, ir),
     'Torino': (False, ir),
-    'Zhuhai': (True, evac, visual),
+    'Fresno': (True, evac, ir),
+    'San Marino': (False, ir),
+    'Bombay': (False, visual),
+    'Boulder': (True, evac, visual, ir),
 }
 
 ten_sec = 'Hold home for 10 seconds. Indicators should turn off'
@@ -46,6 +46,8 @@ Make note that J5, J6 ,& J7, if it just boots (white light spins) indefinitely, 
 4624864
 This is caused by firmware version 24.29.1
 
+c955 -> albany
+c975 -> aurora
 
 DCT known failures:
 J-Series robots with FW version 24.29.x will fail test #2 dock comms.
@@ -67,4 +69,63 @@ Speaking of SKU's, Remember where I talked about the Costco SKU of the C9 that c
 
 
 v2 J9: j955020y240911n201927
+J9 v2: j955020y240911n202271
+
+This is the optimal process for debugging being unable to provision to app, add to hints:
+21386IR
+Parts in: Robot, Albany, cord, lapis bin, extra filter
+Claimed Damage: Minor scratches
+Visible Damage: Confirmed claimed damage
+Customer States: Bot won't turn on at all
+
+Routine Checks:
+* Contacts don't feel sunken
+! Found signs of liquid residue
+** No signs of liquid damage on the main board or connections
+** No signs of liquid residue found in the user Albany
+** No liquid residue found in customer bin
+* No play in the blower motor, and it spins freely
+* Extractors look good
+* Charging contacts on the customer's Albany look good
+* Tested battery: 7%/100%
+* Robot charges on customer Albany @ ~22W
+
+Process:
+* Mobility test - floor, cx Albany
+** Fail: undock
+** Result: Fail - bot only moves one wheel, and says "wheel problem"
+* Confirmed with Michelle: swapping bot, as the liquid damage is right up close to the board, if not technically on the board
+
+* Mobility test - floor, cx Albany, new bot
+** Pass: undock, dock, navigate, auto evac
+** Result: Pass
+* Provisioned robot to the app
+* Can't provision lapis bin to robot: Keeps thinking the bin is full, tried 3 times
+* Removed provisioning
+* Factory reset
+* Provisioned robot to the app
+* RDP reset
+* Unprovisioned and reprovisioned bot to app
+* Tried 2 more times to provision the lapis bin
+* Replacing CHM
+* Still didn't work, trying a different tablet
+* Swap is DOA, ordering non-referbished swap
+
+* Mobility test - floor, cx Albany, bot #2
+** Pass: undock, dock, navigate, manual evac
+** Result: Pass
+* Provisioned robot to the app
+* Provisioned the lapis bin, and it's having the same problem, it thinks the bin is full with the lapis bin in immediately after provisioning it
+* Tried a few more times
+* Replacing CHM on bot #2
+* Still thinking bin is full
+* Reboot, on boot it gave error 15
+* Factory reset
+* Updated app (apparently one was available)
+* Reprovisioned robot to the app
+* Recognizes regular bin
+* Same problem: thinks the bin is full with the lapis bin in
+* Tried a test lapis bin: same thing
+
+
 """

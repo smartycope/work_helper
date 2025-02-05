@@ -28,7 +28,7 @@ class Steps:
     ask_s9_lid_pins = "Are the lid pins sunken [no]"
     ask_cleaned = 'Robot cleaned ["na" if not, notes or empty if so]'
     battery_test = "Battery test (don't forget the traveller) [current, health]"
-    ask_user_base_contacts = "How do the charging contacts on the user base look [good]"
+    ask_user_base_contacts = "How do the charging contacts on the user base look [fine]"
     ask_charge_customer_dock = "What's the charging wattage on the customer's dock"
     ask_charge_test_dock = "What's the charging wattage on a test base"
     ask_bin_rust = "Amount of rust on the tank screw [empty: none, 1: a spot, 2: entirely]"
@@ -49,7 +49,7 @@ class Steps:
     swap_unuse_parts = "Unuse all parts and get out of the case [done]"
     swap_update_css = "Update CSS repair action and copy notes over {{notes}} [done]"
     swap_email = "Send swap email {{address, subject, notes}} [confirmed]"
-    swap_order_dock = "Order a  "
+    swap_order_dock = "Order a new dock [done]"
     swap_order = "Reload case and order swap {{original serial}} [done]"
     swap_order_S9 = "Order main board (not a whole bot!) [done]"
     swap_order_M6 = "Order the correctly colored swap [done]"
@@ -58,6 +58,12 @@ class Steps:
     swap_add_labels = 'Put labels on the new bot'
     swap_input_new_serial = "What's the serial number of the new bot"
     swap_note_serial = "Put the new serial number into CSS {{new serial}} [done]"
+
+    # HOLD
+    # hold_put_todo_in_notes = "Put any context directly into the notes {{TODO}} [done]"
+    hold_copy_notes_to_CSS = "Copy notes over to CSS {{notes + todo}}"
+    hold_put_on_shelf = "Put everything together, and put on the shelf with the traveler [done]"
+    hold_done = "Good to close case now!"
 
     # FINISH
     ask_bit_mobility_done = "Pass mobility and attempted BiT [done]"

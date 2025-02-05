@@ -206,7 +206,7 @@ def execute_step(self, resp):
 
             case Steps.ask_user_base_contacts:
                 if resp.lower() != 'na':
-                    self.add_step(f"Charging contacts on the customer's {self.dock} look {resp or 'good'}")
+                    self.add_step(f"Charging contacts on the customer's {self.dock} look {resp or 'fine'}")
 
                 next_step = 'battery_test/charging'
 
@@ -485,6 +485,18 @@ def execute_step(self, resp):
             case _:
                 pass
 
+    elif self.phase == Phase.HOLD:
+        match self.step:
+            case Steps.hold_copy_notes_to_CSS:
+                self.step = Steps.hold_put_on_shelf
+
+            case Steps.hold_put_on_shelf:
+                self.step = Steps.hold_done
+
+            case Steps.hold_done:
+                # Don't change the step
+                pass
+
     # To simplify repeated next step logic
     if next_step == 'dock contacts/charging':
         if self.dock:
@@ -609,3 +621,6 @@ def before_swap_order(self):
 
 def before_swap_note_serial(self):
     clipboard.copy(self.serial.upper())
+
+def before_hold_copy_notes_to_CSS(self):
+    clipboard.copy(self.text_area.text.strip() + '\n\nCONTEXT:\n' + self.sidebar.todo.text)

@@ -29,3 +29,13 @@ def capitolize(s:str) -> str:
         return s[0].upper() + s[1:]
     except IndexError:
         return s
+
+def darken_color(hex_color, factor=0.7):
+    """Darken a hex color by multiplying each channel by the given factor."""
+    hex_color = hex_color.lstrip("#")  # Remove '#' if present
+    r, g, b = int(hex_color[:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
+
+    # Apply darkening factor and clamp values to 0-255
+    r, g, b = [max(0, int(c * factor)) for c in (r, g, b)]
+
+    return f"#{r:02x}{g:02x}{b:02x}"  # Convert back to hex format

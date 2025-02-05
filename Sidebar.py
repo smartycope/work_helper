@@ -67,10 +67,10 @@ class Sidebar(VerticalGroup):
         self.factory_reset.update(factory_reset.get(self.serial[0], 'Unknown') + '\n')
         self.dct.update(f'DCT: {self.case.get_DCT()}\n')
         self.dct_exp.update(f'{{:^{SIDEBAR_WIDTH}}}'.format(self.case.get_DCT_exceptions()) + '\n')
-        self.original_serial_label.text = f'O: {self.case.serials[0]:^{SIDEBAR_WIDTH}}'
+        self.original_serial_label.text = f'O: {self.case.serials[0].upper():^{SIDEBAR_WIDTH}}'
         # Helpful for debugging
         # self.dct.update(json.dumps(self.case.serials, indent=2))
-        self.original_serial_label.to_copy = self.case.serials[0]
+        self.original_serial_label.to_copy = self.case.serials[0].upper()
         while self.num_swaps < len(self.case.serials) - 1:
             serial = self.case.serials[self.num_swaps+1]
             self.serial_buttons.mount(CopyText(f'S{self.num_swaps}: {serial.upper():^{SIDEBAR_WIDTH}}', serial.upper()))

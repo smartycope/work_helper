@@ -16,8 +16,8 @@ DEBUG_STATE = '''[{"notes": "19000IR\\n", "color": "#377a11", "ref": "19000IR", 
 
 class HelperApp(App):
     BINDINGS = [
-        Binding('ctrl+m', 'open_mobility_menu', 'Mobility', priority=True, system=True),
         Binding('ctrl+e', 'open_external_notes_menu', 'Ext notes', priority=True, system=True),
+        Binding('ctrl+m', 'open_mobility_menu', 'Mobility', priority=True, system=True),
         Binding("ctrl+n", "new_case", "New Case", show=False, system=True, priority=True),
         Binding("ctrl+w", "close_case", "Close Case", show=False, system=True, priority=True),
         Binding("ctrl+s", "save", "Save", show=False, system=True, priority=True),
@@ -41,6 +41,7 @@ class HelperApp(App):
         self._debug = debug
         self.cases = []
         self.tabs = TabbedContent(id='tabs')
+        self.tabs.can_focus = False
         self.popup = Input(placeholder='Case ID', id='reference_popup')
         self.popup.visible = False
 
@@ -107,7 +108,8 @@ class HelperApp(App):
                 self.cases.append(case)
                 # They're automatically id'd as tab-1, tab-2, ...
                 # self.tabs.add_pane(TabPane(ref, case, id='pane-'+str(unused_color)))
-                self.tabs.add_pane(TabPane(ref, case))
+                # self.tabs.add_pane(TabPane(case.tab_label, case, id=f'tab-pane-{ref}'))
+                self.tabs.add_pane(TabPane('', case, id=f'tab-pane-{ref}'))
 
     def action_new_case(self):
         """Add a new tab."""
@@ -116,8 +118,8 @@ class HelperApp(App):
 
     def action_close_case(self):
         self.action_save()
-        # Only close the case if we're in the final phase
-        if self.active_case.phase == Phase.FINISH:
+        # Only close the case if we're in the final phase or the hold phase
+        if self.active_case.phase in (Phase.FINISH, Phase.HOLD):
             self.cases.remove(self.active_case)
             self.tabs.remove_pane(self.tabs.active_pane.id)
 
@@ -184,9 +186,6 @@ class HelperApp(App):
 
         for case in self.cases:
             self.tabs.add_pane(TabPane(case.ref, case))
-
-    # def action_focus_input(self):
-        # self.active_case.input.focus()
 
     def action_goto_tab(self, index):
         self.bell()

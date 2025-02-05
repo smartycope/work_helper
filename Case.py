@@ -1,7 +1,7 @@
 import re
 from HintsMenu import HintsMenu
 # from MenuMenu import MenuMenu
-from globals import COLORS, LOG_PATH, invert_dict
+from globals import COLORS, LOG_PATH, darken_color, invert_dict
 import random
 from textual.containers import *
 from textual.reactive import reactive
@@ -39,7 +39,7 @@ class Case(VerticalGroup):
     BINDINGS = (
         # TODO: reenable this eventually. Somehow.
         # ('_s', 'change_serial', 'Set Serial'),
-        ('ctrl+l', 'parse_for_info', 'Parse Info'),
+        # ('ctrl+l', 'parse_for_info', 'Parse Info'),
         # TODO: This doesn't work
         Binding('ctrl+i', 'focus_input', 'Focus Input', show=False, priority=True),
     )
@@ -54,6 +54,16 @@ class Case(VerticalGroup):
         Phase.DEBUGGING: Steps.add_step,
         Phase.FINISH: Steps.ask_bit_mobility_done,
         Phase.SWAP: Steps.swap_unuse_parts,
+        Phase.HOLD: Steps.hold_copy_notes_to_CSS,
+    }
+
+    phase_icons = {
+        Phase.CONFIRM: "📋",
+        Phase.ROUTINE_CHECKS: "📋",
+        Phase.DEBUGGING: "🔧",
+        Phase.SWAP: "🔃",
+        Phase.FINISH: "✅",
+        Phase.HOLD: "⏸️",
     }
 
     def __init__(self, id, color):
@@ -115,12 +125,11 @@ class Case(VerticalGroup):
     @on(Select.Changed, "#color-selector")
     def set_color(self, event: Select.Changed):
         to_color = event.value
-        # old_color = self.color
         self.color = to_color
         self.sidebar.styles.background = to_color
-        self.parent.parent.parent.get_tab(self.parent.id).styles.background = to_color
+        self._tab.styles.background = to_color
         # Easier to just set it here rather than try to figure out how to reference them all via stylesheet
-        self.parent.parent.parent.get_tab(self.parent.id).styles.color = 'black'
+        self._tab.styles.color = 'black'
 
     def compose(self):
         yield self.text_area
@@ -131,6 +140,9 @@ class Case(VerticalGroup):
         yield self.cmd_menu
         yield self.input
         yield self.sidebar
+
+        # We're doing this here, because it needs to be mounted before we can change the tab label
+        self._tab.label = self.tab_label
 
         self.input.focus()
 
@@ -158,17 +170,19 @@ class Case(VerticalGroup):
         except:
             pass
 
-    def watch_phase(self, to):
-        # No idea why I need to cast it to Phase here
-        # self.query_one('#phase-select').value = Phase(to).value
-        # self.sidebar.phase_selector.value = Phase(to).value
-        new_phase = Phase(to)
+    def watch_phase(self, old, new):
+        new_phase = Phase(new)
         # When switching to DEBUGGING phase from anywhere, ensure that Process: exists
         if new_phase == Phase.DEBUGGING:
             self.ensure_process()
             # I tried this and determined I didn't like it
+            # TODO: add this as a setting
             # self.mobility_menu.visible = True
         self.sidebar.phase_selector.value = new_phase.value
+        if self._tab:
+            self._tab.label = self.tab_label
+        # self.query_one(f'#tab-pane-{self.ref}').title = self.ref + ' ' + self.phase_icons[new_phase]
+
 
     def add_step(self, step, bullet='*'):
         # For consistency
@@ -366,6 +380,25 @@ class Case(VerticalGroup):
 
         return notes
 
+    def get_docks(self):
+        """ Get a sorted list of the docks this model can use, the first element being the preferred one """
+
+        camera = ['Albany', 'Zhuhai', 'Bombay']
+        ir = ['Albany', 'Tianjin', 'Torino']
+
+        if self.serial.startswith('m6'):
+            return ['San Marino']
+        elif self.serial.startswith('s9'):
+            return ['Fresno']
+        elif self.serial.startswith(('c10', 'x')):
+            return ['Boulder', 'Aurora'] + camera
+        elif self.serial.startswith('c9'):
+            return ['Aurora'] + camera
+        elif self.serial.startswith('j'):
+            return camera
+        else:
+            return ir
+
     def require_battery_test(self):
         cx_states = self.customer_states.lower()
         return (
@@ -389,6 +422,17 @@ class Case(VerticalGroup):
                 serial=self.serial,
                 timestamp=datetime.now(),
             ))
+
+    @property
+    def _tab(self):
+        try:
+            return self.parent.parent.parent.get_tab(self.parent.id)
+        except AttributeError:
+            return
+
+    @property
+    def tab_label(self):
+        return self.ref + f' [on {darken_color(self.color, .6)}]' + self.phase_icons[self.phase]
 
     @property
     def can_mop(self):

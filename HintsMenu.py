@@ -35,6 +35,9 @@ class HintsMenu(Menu):
         branch.add_leaf("Try manually provisioning it via the app")
         branch.add_leaf("Ask michelle to RDP reset")
 
+        branch = tree.root.add("Bad dock, but dock wasn't shipped")
+        branch.add_leaf('Provide a new dock')
+
         tree.focus()
         yield tree
         yield Button('Close', action='close')
