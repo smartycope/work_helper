@@ -34,12 +34,16 @@ class MobilityMenu(Menu):
         yield self.cx_states
 
         yield Label('Where:')
-        self.where = Select.from_values(('top bench', 'floor', 'bottom bench'), allow_blank=False, value='top bench')
+        self.where = Select.from_values(('top bench', 'floor', 'bottom bench'), allow_blank=False, value='floor')
         yield self.where
 
-        yield Label('Dock:')
-        self.base = CustomInput(('cx ' + self.case.dock) if self.case.dock else 'test ', placeholder='no dock', id='dock-input')
-        yield self.base
+        # yield Label('Dock:')
+        # self.base = CustomInput(('cx ' + self.case.dock) if self.case.dock else 'test ', placeholder='no dock', id='dock-input')
+        # yield self.base
+        self.base1 = Select(((i, i) for i in ('cx', 'test', 'new', '#2', '#3')), allow_blank=False)
+        self.base2 = Select([], prompt='No Dock')
+        yield self.base1
+        yield self.base2
 
         yield Label('Parameters:')
         self.params = CustomInput(classes='triple', placeholder='Additional parameters')
@@ -102,14 +106,8 @@ class MobilityMenu(Menu):
         yield Button('Close', id='cancel', classes='mm-buttons', action='close')
         yield Button('Done', id='done', classes='mm-buttons')
 
-    def update_values(self):
+    def reset(self):
         """ Run whenever the menu gets closed """
-        # If we have a dock, always assume we're using it
-        if self.base.value == 'test ':
-            if self.case.dock:
-                self.base.value = 'cx ' + self.case.dock
-            else:
-                self.base.value = 'test ' + self.case.get_docks()[0]
         self.notes.value = ''
         self.todo.value = ''
 
@@ -117,10 +115,17 @@ class MobilityMenu(Menu):
         super().action_toggle()
         # The first time, we need to update everything. After that, update only after we insert one
         if not self._been_opened:
-            self.update_values()
+            self.reset()
             self._been_opened = True
             self.cx_states.update(('| cx: ' + self.case.customer_states) if self.case.customer_states else '')
             self.cx_dock.update('| dock: ' + self.case.dock if self.case.dock else 'No dock')
+            self.base1.value = 'cx' if self.case.dock else 'test'
+            self.base2.set_options((i, i) for i in self.case.get_docks())
+            self.base2.value = (
+                self.case.dock
+                if self.case.dock in self.case.get_docks()
+                else self.case.get_docks()[0]
+            )
 
     def action_close(self):
         self.case.input.focus()
@@ -133,7 +138,7 @@ class MobilityMenu(Menu):
         self.action_close()
         extra_line = '' if self.case.text_area.text.strip().endswith('Process:') else '\n'
         self.case.text_area.text = self.case.text_area.text.strip() + '\n' + extra_line + self.stringify() + '\n\n'
-        self.update_values()
+        self.reset()
         self.case.input.focus()
 
     def stringify(self):
@@ -154,7 +159,7 @@ class MobilityMenu(Menu):
 
         l1 = "* Mobility test - {where}, {base}".format(
             where=self.where.value,
-            base=self.base.value or 'no dock',
+            base=(self.base1.value + ' ' + self.base2.value if type(self.base2.value) is str else 'no dock'),
         )
         if self.params.value:
             l1 += ', ' + self.params.value

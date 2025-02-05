@@ -43,10 +43,6 @@ class Case(VerticalGroup):
         # TODO: This doesn't work
         Binding('ctrl+i', 'focus_input', 'Focus Input', show=False, priority=True),
     )
-
-    step = reactive(Steps.ask_labels)
-    phase = reactive(Phase.CONFIRM)
-
     # The step that gets switched to when switched to that phase (the first step of each phase)
     first_steps = {
         Phase.CONFIRM: Steps.confirm_id,
@@ -65,6 +61,9 @@ class Case(VerticalGroup):
         Phase.FINISH: "✅",
         Phase.HOLD: "⏸️",
     }
+
+    phase = reactive(Phase.CONFIRM)
+    step = reactive(first_steps[Phase.CONFIRM])
 
     def __init__(self, id, color):
         # If the id has spaces, this will raise an error that gets caught by when we instantiate it
