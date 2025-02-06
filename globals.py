@@ -3,12 +3,13 @@ from pathlib import Path
 
 Documents = Path.home() / 'Documents'
 LOG_PATH = Documents / 'helper_log.csv'
-SAVE_CASE_PATH = Documents / 'Case_Notes'
+SAVE_CASE_PATH = Documents / 'Saved_Cases'
+SAVE_NOTES_PATH = Documents / 'Case_Notes'
 SAVE_STATE_PATH = Documents / 'helper_state.json'
 
 # TODO:
-# for path in (SAVE_CASE_PATH, SAVE_STATE_PATH):
-#     path.mkdir(parents=True, exist_ok=True)
+for path in (SAVE_CASE_PATH, SAVE_CASE_PATH):
+    path.mkdir(parents=True, exist_ok=True)
 
 SIDEBAR_WIDTH = 30
 COPY_SERIAL_BUTTON_WIDTH = 8

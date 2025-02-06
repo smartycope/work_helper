@@ -5,5 +5,5 @@ class Phase(Enum):
     ROUTINE_CHECKS = 1
     DEBUGGING = 2
     SWAP = 4
-    FINISH = 3
-    HOLD = 5
+    HOLD = 3
+    FINISH = 5

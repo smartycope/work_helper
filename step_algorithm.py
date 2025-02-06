@@ -269,6 +269,20 @@ def execute_step(self, resp):
                         self.add_step('Liquid residue found in customer bin: probably sucked up liquid', bullet='**')
                     else:
                         self.add_step('No liquid residue found in customer bin', bullet='**')
+                if self.dock:
+                    self.step_formatter = '2.8' if self.is_dock else '3.2'
+                    self.step = Steps.liquid_check_voltage
+                else:
+                    self.step = Steps.liquid_take_pictures
+
+            case Steps.liquid_check_voltage:
+                if resp.lower() != 'na':
+                    try:
+                        volts = float(resp)
+                    except ValueError: return
+
+                    self.add_step(f'Measured voltage across cx {self.dock}: {volts}V')
+
                 self.step = Steps.liquid_take_pictures
 
             case Steps.liquid_take_pictures:
@@ -352,9 +366,8 @@ def execute_step(self, resp):
                 self.step = Steps.generate_external_notes
 
             case Steps.generate_external_notes:
-                self.step = Steps.ask_copy_notes_1
-
-            case Steps.ask_copy_notes_1:
+                # self.step = Steps.ask_copy_notes_1
+            # case Steps.ask_copy_notes_1:
                 if settings.DO_DOUBLE_CHECK:
                     self.step = Steps.ask_double_check
                 else:
@@ -426,7 +439,7 @@ def execute_step(self, resp):
                 self.step = Steps.ask_complete_case_CSS
 
             case Steps.ask_complete_case_CSS:
-                if not self.dock:
+                if not self.is_dock:
                     self.step_formatter = ' and box'
                 self.step = Steps.ask_put_bot_on_shelf_mopping if self.can_mop else Steps.ask_put_bot_on_shelf
 
@@ -573,20 +586,18 @@ def before_pick_up_case(self):
     clipboard.copy(self.ref)
 
 def after_pick_up_case(self):
-    self.log(open=True)
+    self.log('open')
 
 def after_ask_complete_case_CSS(self):
-    self.log(open=False)
+    self.log('close')
 
 def before_generate_external_notes(self):
     self.external_notes_menu.action_open()
+    clipboard.copy(self.text_area.text.strip())
+    self._finish_first_copy_notes = self.text_area.text.strip()
 
 def after_generate_external_notes(self):
     self.external_notes_menu.action_close()
-
-def before_ask_copy_notes_1(self):
-    clipboard.copy(self.text_area.text.strip())
-    self._finish_first_copy_notes = self.text_area.text.strip()
 
 def before_ask_double_check(self):
     if settings.DO_DOUBLE_CHECK:
@@ -624,3 +635,6 @@ def before_swap_note_serial(self):
 
 def before_hold_copy_notes_to_CSS(self):
     clipboard.copy(self.text_area.text.strip() + '\n\nCONTEXT:\n' + self.sidebar.todo.text)
+
+def before_wait_parts_closed(self):
+    self.log('finish')

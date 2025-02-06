@@ -127,5 +127,8 @@ Process:
 * Same problem: thinks the bin is full with the lapis bin in
 * Tried a test lapis bin: same thing
 
+target window size is approx. 1103 × 988 pixels
+
+standby voltage is 2.8V for a dock, 3.2 for a base, and once it detects a bot, it should jump up to 20, and then down to whatever the bot needs (teens). Checking the standby voltage is sufficient
 
 """

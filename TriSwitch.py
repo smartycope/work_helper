@@ -80,9 +80,9 @@ class TriSwitch(Switch):
         elif value is None:
             self._slider_position = 0.5
             self.set_reactive(Switch.value, value)
-        # self._should_animate = animate
-        # if tooltip is not None:
-        #     self.tooltip = tooltip
+
+        # Specific to my purposes
+        self.can_focus = False
 
     def toggle(self):
         match self.value:

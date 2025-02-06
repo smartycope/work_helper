@@ -20,7 +20,7 @@ class ExternalNotesMenu(Menu):
         ("Use correct bags", "Recommend using only OEM replacement bags"),
         # auto-change this to exclude Bona if robot is a C10 (C10's can't use Bona)
         ("Rusty bin screw", "Recommend only using water, Bona, or iRobot cleaning solution, as other products can rust components"),
-        ("Liquid spill", "Robot is not rated for liquid cleanup"),
+        ("Liquid spill", "Robots are not rated for liquid cleanup"),
         ("Broken mop pad", "Recommend hand washing mop pads, as machine wash can break them"),
         ("The Glitch", "If issues persist, factory reset as necessary"),
         ("Factory reset", "Factory reset performed, recommend re-provisioning robot on app"),
@@ -52,7 +52,7 @@ class ExternalNotesMenu(Menu):
         with HorizontalGroup():
             yield Button('Close', id='close-external-notes')#, action='close')
             yield Button('Copy', id='copy-external-notes')#, action='copy')
-            yield Button('Copy, then notes', id='copy-external-notes-and-notes')#, action='copy')
+            yield Button('Copy notes, then this', id='copy-external-notes-and-notes')#, action='copy')
         yield Static()
         yield self.cx_states
         self.set_default_selections()
@@ -125,8 +125,8 @@ class ExternalNotesMenu(Menu):
     @on(Button.Pressed, '#copy-external-notes-and-notes')
     def action_copy_both(self):
         multi_paste(
-            self.get_notes(),
             self.case.text_area.text,
+            self.get_notes(),
         )
 
     @on(Button.Pressed, '#copy-external-notes')

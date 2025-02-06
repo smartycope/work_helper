@@ -1,16 +1,18 @@
-COMMAND: cleaned the inside and outside of the bumper (and just inside/just outside)
-
+LOW PRIORITY URGENT: fix updating disabling which switches based on the model
 
 URGENT: ya, the sidebars aren't updating after deserialization
-URGENT: if C9, and swap or order dock in a case, somehow make aware to swap with correct dock:
-URGENT: the lower_sidebar isn't down all the way (also, I can shorten the todo box) (it ends on if the DCT card doesn't work,)
-
 URGENT: re-add hotkey shortcuts back into the main program, with a setting
-URGENTish: change the MM menu dock selector to 2 select boxes: 1 of new/test/cx/#2/#3, and one of all the types of docks
 
+COMMAND: cleaned the inside and outside of the bumper (and just inside/just outside)
 
 Saturday mar 1 @ 12pm 20 min
 
+MINOR: make all the triswitches unable to focus by default -- and the num_lines box
+MINOR: capitalize the dock names in the C9 notes at the end
+MINOR: don't separate claimed damage and visible damage anymore, just combine them
+MINOR: explicitly disallow "factory reset with lapis bin" in ewxternal notes menu to activate when it's a factory provisioned lapis (even if has_lapis is true)
+
+MINOR: serialize all the other members, like cx states, and dock and such. Either that, or fix the regexs
 MINOR: move "parse info" binding to the menu menu
 MINOR: add external notes regex to find if "charging contacts on ... - cleaned" (in routine checks), and if found, recommend cleaning dock charging contacts
 MINOR: in swap phase, combine "put the old bot in the box" step with the "unbox" step
@@ -73,6 +75,8 @@ HIGH: when doing a mobility test, if the dock specified is a base, not a dock, a
 HIGH: add ctrl+A to *all* input boxes
 HIGH: J1-6 don't have DCT cards specified
 
+MEDIUM: if C9, and swap or order dock in a case, somehow make aware to swap with correct dock:
+MEDIUM: I think multi paste fails when they try to interrupt each other - have multipaste remove any calls or anything before running
 MEDIUM: Make "is there liquid damage" step allow for explanations, or just 'y' if simply "yes". Also, update the text to reflect this
 MEDIUM: remove todo box can focus
 MEDIUM: Auto-guess which test dock the mobility test will use
@@ -123,6 +127,8 @@ MEDIUM: if serial numbers are different, automatically go to a new step that off
 MEDIUM: if battery tests are needed, also measure contacts, even if they don't feel sunken, but allow na
 --- COME BACK TO THIS --- MEDIUM: add a row immediately above the "parameters" row that just adds 2 more disable-able parameters: is the tank full (full, empty, or 1/4) and something else
 
+LOW: add another measure to log, which is how long each case is actually open for
+LOW: figure out how to darken the last space of the tabs
 LOW: fix dock display in MM when no dock indicated
 LOW: in the step "take tags off bin and dock", move the "and dock" into a conditional formatted step string if there is a dock
 LOW: add mobility test step to debugging phase
@@ -138,6 +144,7 @@ LOW: clean up the flowchart
 LOW: make a 2nd shortcut for 1 tab vs 2 in the order part shortcut
 LOW: make it so it finds where it should put text, so lower down I can manually add notes and it won't keep just adding to the end
 LOW: add a switch to mobility menu to indicate testing a swapped bot
+LOW: add a requirements.txt file
 LOW: instead of manually uppercasing strings, turn it into a function, and don't un-uppercase the string if the 2nd letter is uppercase (we don't want "cHM is...")
 LOW: consider refactoring all the private members into public properties, that return self._member or regex to find it if self._member is None
 LOW: a button to allow you to reset the name of the dock
@@ -218,3 +225,7 @@ EPIC: add a function to auto-regex the add Step text, just like commands, but ge
 EPIC: make a new phase for holds, and save their states in a separate folder, and then create a menu to open them with
 
 EPIC: Instead of alt+b just going to the board, have it go to the board and auto-filter for the currently active case - but, when adding keyboard shortcuts, add a setting to disable/enable them
+
+EPIC: instead of an "open case" menu, instead when a new case is created, if the case id entered already exists in the save folder (preferably in the saved state folder, as opposed to just the saved notes folder), then automatically open a dialog asking if I would like to reopen the saved case state (this shouldn't run when deserializing, only when opening a new case)
+
+EPIC: make a simple version of the side bar stuff, but instead of a python script, make it a JS script and host it on a GitHub page so it's easier to access and update

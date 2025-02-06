@@ -128,6 +128,7 @@ class MobilityMenu(Menu):
             )
 
     def action_close(self):
+        self.case.text_area.scroll_to(None, 1000, animate=False)
         self.case.input.focus()
         return super().action_close()
 
@@ -135,11 +136,11 @@ class MobilityMenu(Menu):
     @on(Input.Submitted, '#notes')
     @on(Button.Pressed, '#done')
     def done(self):
-        self.action_close()
         extra_line = '' if self.case.text_area.text.strip().endswith('Process:') else '\n'
         self.case.text_area.text = self.case.text_area.text.strip() + '\n' + extra_line + self.stringify() + '\n\n'
         self.reset()
-        self.case.input.focus()
+        # self.case.input.focus()
+        self.action_close()
 
     def stringify(self):
         has_pass = any(getattr(self, i).value for i in self.switches)

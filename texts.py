@@ -36,6 +36,7 @@ class Steps:
     liquid_check_corrosion = "Is there corrosion on the board or connections (specify or empty for no)"
     liquid_check_dock = "Is there liquid residue in the user dock [no]"
     liquid_check_bin = "Is there liquid residue in the robot bin [no]"
+    liquid_check_voltage = "What's the voltage on the cx dock (it should be {s}) [swapping dock]"
     liquid_take_pictures = "Take pictures of liquid residue"
 
     # sunken_ask_measurement = "Contact measurement"
@@ -68,6 +69,9 @@ class Steps:
     # FINISH
     ask_bit_mobility_done = "Pass mobility and attempted BiT [done]"
     ask_lapis_mobility_done = "Pass mobility with a Lapis bin [done]"
+    # generate_external_notes = "Move notes over and add external notes and a repair action {{notes}} [done]"
+    generate_external_notes = "Fill in CSS {{notes}} [done]"
+    # ask_copy_notes_1 = "Copy notes over to CSS and add a repair action {{notes}} [done]"
     ask_final_cleaned = "Cleaned the robot [done]"
     ask_base_cleaned = "Cleaned the base and cord tied up [done]"
     ask_dock_has_bag = "Does the dock have a bag [done]"
@@ -86,12 +90,10 @@ class Steps:
     ask_close_parts = "Close out all parts and get out of case [done]"
     ask_tags_off = "All the tags are off, including the bin and dock, and grab the traveler [done]"
     ask_put_bin_back = "Put the bin back [done]"
-    ask_copy_notes_1 = "Copy notes over to CSS and add a repair action {{notes}} [done]"
     ask_copy_notes_2 = "Copy notes over to CSS {{notes}} [done]"
     wait_parts_closed = 'Wait for parts to get closed out [done]'
     ask_complete_case_CSS = "Finish the case on CSS {{case ID}} [done]"
     ask_put_bot_on_shelf = "Put the robot and traveler{s} on the shelf [done]"
     ask_put_bot_on_shelf_mopping = "Put the robot and traveler{s} on the shelf, and put the tank[s] on top [done]"
-    generate_external_notes = "Create and copy external notes [done]"
     # finish_case = 'All done! [close case]'
     finish_case = "All done! Good to close case now"

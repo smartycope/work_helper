@@ -4,6 +4,7 @@ from textual.containers import *
 from textual.widgets import *
 from textual import on
 from textual.events import Focus
+from textual.message import Message
 
 class CustomTextArea(TextArea):
     # Modified from https://textual.textualize.io/widgets/text_area/#textual.widgets._text_area.TextArea.BINDINGS
@@ -44,11 +45,15 @@ class CustomTextArea(TextArea):
         Binding("shift+backspace,ctrl+backspace", "delete_word_left", "Delete left to start of word", show=False),
         Binding("delete", "delete_right", "Delete character right", show=False),
         Binding("ctrl+delete,ctrl+shift+backspace", "delete_word_right", "Delete right to start of word", show=False),
+        # Binding('ctrl+m', 'open_mobility_menu', 'Open Mobility Menu'),
     ]
 
     def __init__(self, ref):
         super().__init__(ref + '\n', id='textarea_' + ref)
         self.cursor_blink = False
+
+    def action_open_mobility_menu(self):
+        self.post_message(self.OpenMobilityMenu())
 
     def cursor_document_start(self):
         self.move_cursor((0, 0), select=False)
@@ -59,14 +64,3 @@ class CustomTextArea(TextArea):
     @on(Focus)
     def on_focus(self):
         self.move_cursor(self.document.end, select=False)
-
-    def on_text_area_changed(self, event):
-        return
-        # Always keep a single newline at the end of notes
-        # Only run if there's multiple newlines at the end of the text (otherwise, infinte recursion)
-        if re.match(r'(?:(?:.|\n))+(?:\s){2}\Z', self.text):
-        # If there's *not* exactly one newline at the end of the text, then make sure there is one
-        # This doesn't work, because it has to run while you're typing the middle of a word
-        # if not re.match(r'(?:(?:.|\n))+(?:\S)+\n\Z', self.text):
-            self.text = self.text.strip() + '\n'
-            self.move_cursor(self.document.end, select=False)

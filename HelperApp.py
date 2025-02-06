@@ -7,17 +7,27 @@ from textual.app import App, ComposeResult
 from textual import on
 from textual.containers import *
 from textual.widgets import *
+from CustomTextArea import CustomTextArea
 from Phase import Phase
 from Case import Case
 from globals import COLORS, SAVE_CASE_PATH, SAVE_STATE_PATH
 from clipboard import copy, paste
 
+from hotkeys import open_board, open_return_product, open_ship_product, query_case
+
 DEBUG_STATE = '''[{"notes": "19000IR\\n", "color": "#377a11", "ref": "19000IR", "serial": null, "phase": 0, "step": "Put labels on everything", "todo": ""}, {"notes": "19002IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: Waaaaaa\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n! Robot does not charge on test base @ ~0W\\n\\nProcess:\\n* Step\\n* Step\\n* Step\\n* Done\\n", "color": "#d1dd0b", "ref": "19002IR", "serial": "i3", "phase": 3, "step": "All screws are screwed in all the way [done]", "todo": ""}, {"notes": "19003IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: I want money back\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n* Robot charges on test base @ ~9W (battery is full)\\n\\nProcess:\\n* Tehe\\n* Swap\\n", "color": "#ea9daf", "ref": "19003IR", "serial": "j7", "phase": 4, "step": "Send swap email [confirmed]", "todo": ""}, {"notes": "19004IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: It broke\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No play in blower motor\\n* Tank float screw has no signs of rust\\n* Cleaned robot\\n* Robot charges on test base @ ~21W\\n\\nProcess:\\n* Step1\\n* Step2\\n", "color": "#799fad", "ref": "19004IR", "serial": "c9", "phase": 2, "step": "Add Step", "todo": ""}, {"notes": "new\\n", "color": "#ef9e16", "ref": "new", "serial": null, "phase": 0, "step": "Confirm IDs", "todo": ""}]'''
 
 class HelperApp(App):
     BINDINGS = [
-        Binding('ctrl+e', 'open_external_notes_menu', 'Ext notes', priority=True, system=True),
-        Binding('ctrl+m', 'open_mobility_menu', 'Mobility', priority=True, system=True),
+        # The visible ones
+        Binding('ctrl+e', 'open_external_notes_menu', 'External notes', priority=True, system=True),
+        Binding('ctrl+t', 'open_mobility_menu', 'Mobility Test', priority=True, system=True),
+
+        Binding('ctrl+b', 'open_board', 'Board', priority=True, system=True),
+        Binding('ctrl+p', 'query_case', 'Pickup', priority=True, system=True),
+        Binding('ctrl+r', 'open_return_product', 'Return', priority=True, system=True),
+        Binding('ctrl+f', 'open_ship_product', 'Ship', priority=True, system=True),
+
         Binding("ctrl+n", "new_case", "New Case", show=False, system=True, priority=True),
         Binding("ctrl+w", "close_case", "Close Case", show=False, system=True, priority=True),
         Binding("ctrl+s", "save", "Save", show=False, system=True, priority=True),
@@ -193,11 +203,20 @@ class HelperApp(App):
 
     def action_save(self):
         for case in self.cases:
-            # with open(self.dir / (case.ref + '.txt'), 'w') as f:
-            with open(SAVE_CASE_PATH / (case.ref + '.txt'), 'w') as f:
-                print('Saved cases to ', SAVE_CASE_PATH)
-                f.write(case.text_area.text)
+            case.save()
 
         # Save the current state, as a backup
         with open(SAVE_STATE_PATH, 'w') as f:
             f.write(self.serialize())
+
+    def action_open_board(self):
+        open_board(self.active_case.ref)
+
+    def action_open_ship_product(self):
+        open_ship_product(self.active_case.ref)
+
+    def action_open_return_product(self):
+        open_return_product(self.active_case.ref)
+
+    def action_query_case(self):
+        query_case(self.active_case.ref)

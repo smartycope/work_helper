@@ -1,7 +1,8 @@
+import json
 import re
 from HintsMenu import HintsMenu
 # from MenuMenu import MenuMenu
-from globals import COLORS, LOG_PATH, darken_color, invert_dict
+from globals import COLORS, LOG_PATH, SAVE_CASE_PATH, SAVE_NOTES_PATH, darken_color, invert_dict
 import random
 from textual.containers import *
 from textual.reactive import reactive
@@ -21,8 +22,11 @@ class Case(VerticalGroup):
     from step_algorithm import execute_step as _execute_step
     from step_algorithm import (
         before_pick_up_case,
+        after_pick_up_case,
+        after_ask_complete_case_CSS,
         before_generate_external_notes,
-        before_ask_copy_notes_1,
+        after_generate_external_notes,
+        # before_ask_copy_notes_1,
         before_ask_double_check,
         before_ask_copy_notes_2,
         before_ask_complete_case_CSS,
@@ -30,9 +34,8 @@ class Case(VerticalGroup):
         before_swap_email,
         before_swap_order,
         before_swap_note_serial,
-        after_pick_up_case,
-        after_ask_complete_case_CSS,
-        after_generate_external_notes,
+        before_hold_copy_notes_to_CSS,
+        before_wait_parts_closed,
     )
     from parse_commands import parse_command
 
@@ -278,6 +281,13 @@ class Case(VerticalGroup):
     def action_focus_input(self):
         self.input.focus()
 
+    def save(self):
+        with open(SAVE_NOTES_PATH / (self.ref + '.txt'), 'w') as f:
+            f.write(self.text_area.text)
+
+        with open(SAVE_CASE_PATH / (self.ref + '.json'), 'w') as f:
+            json.dump(self.serialize(), f)
+
     # TODO
     def snap_to_dock(self, name):
         """ Make the dock one of the allowed docks """
@@ -358,7 +368,7 @@ class Case(VerticalGroup):
             # return 'If the last digit of the SPL SKU is 7, they have a Lapis bin at home! If the middle number is 1, it came with just a home base. In that case, don\'t test on a dock! Just a base.'
         notes = ''
         if self.serial.startswith('c9'):
-            notes += "Remember to remove battery before removing the CHM. Also, if the DCT card doesn't work, try a hard reset\nc955 -> albany; c975 -> aurora"
+            notes += "[on orange_red1]Remember to remove battery before removing the CHM[/]. Also, if the DCT card doesn't work, try a hard reset\nc955 -> albany; c975 -> aurora"
 
         if self.serial.startswith('i'):
             notes += 'If having weird trouble with DCT, try factory reset'
@@ -411,10 +421,10 @@ class Case(VerticalGroup):
             self._liquid_found
         )
 
-    def log(self, open):
+    def log(self, action):
         with LOG_PATH.open('a') as f:
             f.write('{action},{id},{color},{serial},{timestamp}\n'.format(
-                action='open' if open else 'close',
+                action=action,
                 id=self.ref,
                 color=COLORS[self.color],
                 # Yes, the current one. This is intentional.
@@ -510,3 +520,7 @@ class Case(VerticalGroup):
     @property
     def has_weird_i5g(self):
         return any(i.startswith('i5g') for i in self.serials)
+
+    # @on(CustomTextArea.OpenMobilityMenu)
+    # def deleteme(self):
+        # self.text_area.text += 'IT WORKED'

@@ -17,7 +17,8 @@ class HintsMenu(Menu):
         branch.add_leaf('Blow out chirp sensors')
         branch.add_leaf('Check there\'s water in the bin')
         branch.add_leaf('Test pad/Test bin')
-        branch.add_leaf('If it fails with both a test pad and a test bin, \nand chirp sensors are blown out, it\'s a swap')
+        branch.add_leaf('If it fails with both a test pad and a test bin,')
+        branch.add_leaf('\tand chirp sensors are blown out, it\'s a swap')
         branch.add_leaf('Factory reset')
 
         branch = tree.root.add('Evac Issues')
@@ -37,6 +38,10 @@ class HintsMenu(Menu):
 
         branch = tree.root.add("Bad dock, but dock wasn't shipped")
         branch.add_leaf('Provide a new dock')
+
+        branch = tree.root.add("Bot came with a non-OEM battery")
+        branch.add_leaf('Battery test, and if unrecognized, order an official battery')
+        branch.add_leaf('\tand ship both batteries')
 
         tree.focus()
         yield tree
