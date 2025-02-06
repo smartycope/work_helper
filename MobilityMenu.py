@@ -51,43 +51,53 @@ class MobilityMenu(Menu):
 
         yield Rule(line_style='heavy', classes='quadruple')
 
-        yield Label('Undock:')
+        self.undock_label = Label('Undock:')
+        yield self.undock_label
         self.undock = TriSwitch(value=True)
         yield self.undock
 
-        yield Label('Picks up Debris:')
+        self.picks_up_debris_label = Label('Picks up Debris:')
+        yield self.picks_up_debris_label
         self.picks_up_debris = TriSwitch(value=None)
         yield self.picks_up_debris
 
-        yield Label('Navigate:')
+        self.navigate_label = Label('Navigate:')
+        yield self.navigate_label
         self.navigate = TriSwitch(value=True)
         yield self.navigate
 
-        yield Label('Refill:')
+        self.refill_label = Label('Refill:')
+        yield self.refill_label
         self.refill = TriSwitch(value=None, disabled=self.case.is_combo is False)
         yield self.refill
 
-        yield Label('Dock:')
+        self.dock_label = Label('Dock:')
+        yield self.dock_label
         self.dock = TriSwitch(value=True)
         yield self.dock
 
-        yield Label('Deploy Pad:')
+        self.deploy_pad_label = Label('Deploy Pad:')
+        yield self.deploy_pad_label
         self.deploy_pad = TriSwitch(value=None, disabled=self.case.is_combo is False)
         yield self.deploy_pad
 
-        yield Label('Auto Evac:')
+        self.auto_evac_label = Label('Auto Evac:')
+        yield self.auto_evac_label
         self.auto_evac = TriSwitch(value=None)
         yield self.auto_evac
 
-        yield Label('Num Lines:')
+        self.num_lines_label = Label('Num Lines:')
+        yield self.num_lines_label
         self.num_lines = MaskedInput(template="9", id='num-lines', disabled=self.case.is_combo is False)
         yield self.num_lines
 
-        yield Label('Manual Evac:')
+        self.manual_evac_label = Label('Manual Evac:')
+        yield self.manual_evac_label
         self.manual_evac = TriSwitch(value=None)
         yield self.manual_evac
 
-        yield Label('Spray:')
+        self.spray_label = Label('Spray:')
+        yield self.spray_label
         self.spray = TriSwitch(value=None)
         yield self.spray
 
@@ -111,21 +121,52 @@ class MobilityMenu(Menu):
         self.notes.value = ''
         self.todo.value = ''
 
+    def setup(self):
+        """ Run at the very beginning, but after everything is mounted """
+        self.reset()
+        self.cx_states.update(('| cx: ' + self.case.customer_states) if self.case.customer_states else '')
+        self.cx_dock.update('| dock: ' + self.case.dock if self.case.dock else 'No dock')
+        self.base1.value = 'cx' if self.case.dock else 'test'
+        self.base2.set_options((i, i) for i in self.case.get_docks())
+        self.base2.value = (
+            self.case.dock
+            if self.case.dock in self.case.get_docks()
+            else self.case.get_docks()[0]
+        )
+        # Disable the non-relevant tests
+        disabled_text = '#666666'
+        if self.case.serial.startswith('m6'):
+            self.auto_evac.disabled = True
+            self.auto_evac_label.styles.color = disabled_text
+            self.manual_evac.disabled = True
+            self.manual_evac_label.styles.color = disabled_text
+            self.picks_up_debris.disabled = True
+            self.picks_up_debris_label.styles.color = disabled_text
+            self.refill.disabled = True
+            self.refill_label.styles.color = disabled_text
+            self.deploy_pad.disabled = True
+            self.deploy_pad_label.styles.color = disabled_text
+            self.num_lines.disabled = True
+            self.num_lines_label.styles.color = disabled_text
+        elif not self.case.can_mop:
+            self.refill.disabled = True
+            self.refill_label.styles.color = disabled_text
+            self.deploy_pad.disabled = True
+            self.deploy_pad_label.styles.color = disabled_text
+            self.num_lines.disabled = True
+            self.num_lines_label.styles.color = disabled_text
+            self.spray.disabled = True
+            self.spray_label.styles.color = disabled_text
+        else:
+            self.spray.disabled = True
+            self.spray_label.styles.color = disabled_text
+
     def action_toggle(self):
         super().action_toggle()
         # The first time, we need to update everything. After that, update only after we insert one
         if not self._been_opened:
-            self.reset()
             self._been_opened = True
-            self.cx_states.update(('| cx: ' + self.case.customer_states) if self.case.customer_states else '')
-            self.cx_dock.update('| dock: ' + self.case.dock if self.case.dock else 'No dock')
-            self.base1.value = 'cx' if self.case.dock else 'test'
-            self.base2.set_options((i, i) for i in self.case.get_docks())
-            self.base2.value = (
-                self.case.dock
-                if self.case.dock in self.case.get_docks()
-                else self.case.get_docks()[0]
-            )
+            self.setup()
 
     def action_close(self):
         self.case.text_area.scroll_to(None, 1000, animate=False)

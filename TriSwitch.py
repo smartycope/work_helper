@@ -59,6 +59,18 @@ class TriSwitch(Switch):
                 }
             }
         }
+        &:disabled{
+            background: $surface-darken-1;
+            & > .switch--slider {
+                color: $primary 15%;
+            }
+            &.-on > .switch--slider {
+                color: $success;
+            }
+            &.-off > .switch--slider {
+                color: $error;
+            }
+        }
     }
     """
 
