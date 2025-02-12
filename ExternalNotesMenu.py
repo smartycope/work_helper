@@ -14,10 +14,12 @@ class ExternalNotesMenu(Menu):
     notes = OrderedDict((
         ("Replaced robot", "Replaced robot with equivalent model"),
         ("Replaced dock", "Replaced dock with equivalent model"),
+        ("Alex-Albany ship with sealing error", "The dock may occasionally generate false error messages. It has been thoroughly tested to ensure optimal compatibility with your Roomba. iRobot is aware of this issue and is actively working on a software update for resolution. For any further inquiries, please reach out to iRobot support."),
         ("Recommend cleaning", "Recommend regular cleaning and maintenance"),
         ("Recommend cleaning dock charging contacts", "Recommend regular cleaning of dock charging contacts"),
         ("Recommend cleaning filter", "Recommend regular cleaning of the bin filter"),
         ("Use correct bags", "Recommend using only OEM replacement bags"),
+        ("Place dock away from obstacles", "Recommend placing dock at least 1.5 feet away from obstacles on either side, and at least 4 feet away from stairs and any obstacles in front of the dock"),
         # auto-change this to exclude Bona if robot is a C10 (C10's can't use Bona)
         ("Rusty bin screw", "Recommend only using water, Bona, or iRobot cleaning solution, as other products can rust components"),
         ("Liquid spill", "Robots are not rated for liquid cleanup"),

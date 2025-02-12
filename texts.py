@@ -62,13 +62,15 @@ class Steps:
 
     # HOLD
     # hold_put_todo_in_notes = "Put any context directly into the notes {{TODO}} [done]"
-    hold_copy_notes_to_CSS = "Copy notes over to CSS {{notes + todo}}"
+    hold_copy_notes_to_CSS = "Copy notes over to CSS {{notes}}"
+    hold_add_context = "Add any context about the case [done]"
     hold_put_on_shelf = "Put everything together, and put on the shelf with the traveler [done]"
     hold_done = "Good to close case now!"
 
     # FINISH
     ask_bit_mobility_done = "Pass mobility and attempted BiT [done]"
     ask_lapis_mobility_done = "Pass mobility with a Lapis bin [done]"
+    ask_m6_dry_mobility = "Pass mobility with a dry pad [done]"
     # generate_external_notes = "Move notes over and add external notes and a repair action {{notes}} [done]"
     generate_external_notes = "Fill in CSS {{notes}} [done]"
     # ask_copy_notes_1 = "Copy notes over to CSS and add a repair action {{notes}} [done]"

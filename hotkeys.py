@@ -104,4 +104,17 @@ In the repair activities menu (the first step of alt+b):
 
 388 × 205 is an empty space on the CSS window
 936 × 142 is the query box (then tab, then enter, OR just enter. Try just enter first)
+
+Previous loaded menu color invalid! New is #272b30 @ 316 × 309
+
+after entering ship menu, tab x7, then (enter, down) x3
+
+Menu loading background color: #131518
+
+Default background CSS color is #272b30
+CSS loaded board has #272b30 @ 100, 860 and #3e444c @ 50, 782
+CSS all the loaded menus should have #272b30 @ 100, 860
+
+! the quick search box location is unreliable!
+
 """

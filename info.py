@@ -131,4 +131,6 @@ target window size is approx. 1103 × 988 pixels
 
 standby voltage is 2.8V for a dock, 3.2 for a base, and once it detects a bot, it should jump up to 20, and then down to whatever the bot needs (teens). Checking the standby voltage is sufficient
 
+
+
 """

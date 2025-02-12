@@ -129,7 +129,8 @@ class HelperApp(App):
     def action_close_case(self):
         self.action_save()
         # Only close the case if we're in the final phase or the hold phase
-        if self.active_case.phase in (Phase.FINISH, Phase.HOLD):
+        # The extra clause here is in some weird deserializing situations
+        if self.active_case.phase in (Phase.FINISH, Phase.HOLD) and self.active_case in self.cases:
             self.cases.remove(self.active_case)
             self.tabs.remove_pane(self.tabs.active_pane.id)
 

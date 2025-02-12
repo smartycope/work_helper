@@ -258,9 +258,9 @@ def execute_step(self, resp):
             case Steps.liquid_check_dock:
                 if resp.lower() != 'na':
                     if resp:
-                        self.add_step(f'Liquid residue found in the user {self.dock}', bullet='**')
+                        self.add_step(f'Liquid residue found in the cx {self.dock}', bullet='**')
                     else:
-                        self.add_step(f'No signs of liquid residue found in the user {self.dock}', bullet='**')
+                        self.add_step(f'No signs of liquid residue found in the cx {self.dock}', bullet='**')
                 self.step = Steps.liquid_check_bin
 
             case Steps.liquid_check_bin:
@@ -276,12 +276,15 @@ def execute_step(self, resp):
                     self.step = Steps.liquid_take_pictures
 
             case Steps.liquid_check_voltage:
-                if resp.lower() != 'na':
+                if resp and resp.lower() != 'na':
                     try:
                         volts = float(resp)
                     except ValueError: return
 
-                    self.add_step(f'Measured voltage across cx {self.dock}: {volts}V')
+                    self.add_step(f'Measured voltage across cx {self.dock}: {volts}V', '**')
+                # TODO:
+                elif not resp:
+                    pass
 
                 self.step = Steps.liquid_take_pictures
 
@@ -356,18 +359,22 @@ def execute_step(self, resp):
     elif self.phase == Phase.FINISH:
         match self.step:
             case Steps.ask_bit_mobility_done:
+                # lapis and m6 are mutually exclusive
                 if self.has_lapis or self.is_factory_lapis or self.has_weird_i5g:
                     self.step = Steps.ask_lapis_mobility_done
+                elif self.serial.startswith('m6'):
+                    self.step = Steps.ask_m6_dry_mobility
                 else:
                     self.step = Steps.generate_external_notes
                     self.external_notes_menu.action_open()
 
-            case Steps.ask_lapis_mobility_done:
+            case Steps.ask_lapis_mobility_done | Steps.ask_m6_dry_mobility:
                 self.step = Steps.generate_external_notes
 
             case Steps.generate_external_notes:
-                # self.step = Steps.ask_copy_notes_1
-            # case Steps.ask_copy_notes_1:
+                self.step = Steps.ask_close_parts
+
+            case Steps.ask_close_parts:
                 if settings.DO_DOUBLE_CHECK:
                     self.step = Steps.ask_double_check
                 else:
@@ -414,18 +421,15 @@ def execute_step(self, resp):
                 self.step = Steps.ask_sidebrush_screws
 
             case Steps.ask_sidebrush_screws:
-                self.step = Steps.double_check_confirmed if settings.DO_DOUBLE_CHECK else Steps.ask_close_parts
+                self.step = Steps.double_check_confirmed if settings.DO_DOUBLE_CHECK else Steps.ask_tags_off
 
             case Steps.double_check_confirmed:
-                self.step = Steps.ask_close_parts
-
-            case Steps.ask_close_parts:
                 self.step = Steps.ask_tags_off
 
             case Steps.ask_tags_off:
-                self.step = Steps.ask_put_bin_back
+                # self.step = Steps.ask_put_bin_back
 
-            case Steps.ask_put_bin_back:
+            # case Steps.ask_put_bin_back:
                 # If the notes haven't changed since we last updated CSS, we don't need to update CSS again
                 if self._finish_first_copy_notes == self.text_area.text.strip():
                     self.step = Steps.wait_parts_closed
@@ -500,6 +504,9 @@ def execute_step(self, resp):
 
     elif self.phase == Phase.HOLD:
         match self.step:
+            case Steps.hold_add_context:
+                self.step = Steps.hold_copy_notes_to_CSS
+
             case Steps.hold_copy_notes_to_CSS:
                 self.step = Steps.hold_put_on_shelf
 
@@ -634,7 +641,12 @@ def before_swap_note_serial(self):
     clipboard.copy(self.serial.upper())
 
 def before_hold_copy_notes_to_CSS(self):
-    clipboard.copy(self.text_area.text.strip() + '\n\nCONTEXT:\n' + self.sidebar.todo.text)
+    clipboard.copy(self.text_area.text.strip())
 
 def before_wait_parts_closed(self):
     self.log('finish')
+
+def before_hold_add_context(self):
+    self.ensure_context()
+    self.text_area.text += self.sidebar.todo.text
+    self.sidebar.todo.text = ''

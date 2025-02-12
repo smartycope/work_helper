@@ -36,6 +36,7 @@ class Case(VerticalGroup):
         before_swap_note_serial,
         before_hold_copy_notes_to_CSS,
         before_wait_parts_closed,
+        before_hold_add_context,
     )
     from parse_commands import parse_command
 
@@ -53,7 +54,7 @@ class Case(VerticalGroup):
         Phase.DEBUGGING: Steps.add_step,
         Phase.FINISH: Steps.ask_bit_mobility_done,
         Phase.SWAP: Steps.swap_unuse_parts,
-        Phase.HOLD: Steps.hold_copy_notes_to_CSS,
+        Phase.HOLD: Steps.hold_add_context,
     }
 
     phase_icons = {
@@ -151,6 +152,8 @@ class Case(VerticalGroup):
     def watch_step(self, old, new):
         # Because as a reactive attribute, it apparently runs before mounting (before compose is called)
         try:
+            self.save()
+
             self.prev_step = old
 
             # If we have a method named `before_<step_name>`, then call it
@@ -256,6 +259,10 @@ class Case(VerticalGroup):
     def ensure_process(self):
         if 'Process:' not in self.text_area.text:
             self.text_area.text = self.text_area.text.strip() + '\n\nProcess:\n'
+
+    def ensure_context(self):
+        if 'CONTEXT:' not in self.text_area.text:
+            self.text_area.text = self.text_area.text.strip() + '\n\nCONTEXT:\n'
 
     def on_input_submitted(self, event):
         if event.input.id == f'input_{self.ref}':
