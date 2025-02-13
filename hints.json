@@ -1,0 +1,53 @@
+{
+    "No/Low audio, or J series not evacing (the glitch)": [
+        "Factory reset",
+        "Ask Michelle or Penny before sending swap request because of it"
+    ],
+    "Pad won't deploy": [
+        "Hard factory reset",
+        "Blow out chirp sensors",
+        "Check there's water in the bin",
+        "Test pad/Test bin",
+        "If it fails with both a test pad and a test bin,",
+        "\tand chirp sensors are blown out, it's a swap"
+    ],
+    "Evac Issues": [
+        "Factory Reset",
+        "Clean IR sensors for the bot and bin",
+        "Try swapping the CHM",
+        "Check for a clog",
+        "Try on test dock",
+        "Try a new bin",
+        "Try a new filter"
+    ],
+    "Factory provisioned lapis combo not recognizing lapis bin": [
+        "Factory reset",
+        "Hard reset",
+        "Try manually provisioning it via the app",
+        "Ask michelle to RDP reset"
+    ],
+    "Bad dock, but dock wasn't shipped": [
+        "Provide a new dock"
+    ],
+    "Bot came with a non-OEM battery": [
+        "Battery test, and if unrecognized, order an official battery",
+        "\tand ship both batteries"
+    ],
+    "Won't refill": [
+        "Try a test dock",
+        "Try a test bin",
+        "Hard factory reset",
+        "Aurora refill debug steps",
+        "The test dock can be unreliable",
+        "If none of those work, ask Michelle before swapping"
+    ],
+    "To remove child/pet lock": [
+        "remove the bin",
+        "raise one wheel off the ground",
+        "press clean 3 times",
+        "Lights should illuminate, and it should make a sound for 3 seconds"
+    ],
+    "j series sits and thinks after cleaning": [
+        "Hard factory reset"
+    ]
+}

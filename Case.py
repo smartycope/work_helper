@@ -410,7 +410,7 @@ class Case(VerticalGroup):
             return ['Boulder', 'Aurora'] + camera
         elif self.serial.startswith('c9'):
             return ['Aurora'] + camera
-        elif self.serial.startswith('j'):
+        elif self.serial.startswith(('j', 'c')):
             return camera
         else:
             return ir

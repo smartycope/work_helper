@@ -59,13 +59,33 @@ def parse_command(self, input:str):
             case 'cdc' | 'cln':
                 step = 'Cleaned dock charging contacts'
             case 'prov':
-                step = 'Provisioned robot to the app'
+                if not args:
+                    step = 'Provisioned robot to the app'
+                else:
+                    match args.pop(0):
+                        case 'app': step = 'Provisioned robot to the app'
+                        case 'lapis': step = 'Provisioned lapis bin on app'
+                        # Don't allow notes here, where would they go?
+                        case 'both':
+                            self.add_step('Provisioned robot to the app')
+                            self.add_step('Provisioned lapis bin on app')
+            case 'reprov':
+                step = 'Reprovisioned robot to the app'
             case 'fb':
                 step = 'Freebee'
-            case '2xm':
+            case '2m':
                 step = 'Double checked with Michelle'
             case 'cm':
                 step = 'Confirmed with Michelle'
+            case 'rm':
+                step = 'Removed provisioning'
+            case 'rp':
+                step = 'Replaced'
+            case 'bump':
+                side = args.pop(0) if args else 'inside and out'
+                step = f'Cleaned {side}side of the bumper'
+            case 'am':
+                step = 'Attempted mobility test:'
 
             # COMMAND: ch doc is wrong - also ch just sucks, I need a new way to do it ("new Torino" has a space in it)
 

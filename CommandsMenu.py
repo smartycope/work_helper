@@ -23,12 +23,16 @@ All commands are case insensitive
 'ms|meas` -> Measured both contacts: >4mm
 `blew|chirp` -> Blew out chirp sensors
 `cdc|cln` -> Cleaned dock charging contacts
-`prov` -> Provisioned robot to the app
+`prov <app/lapis/both>` -> Provisioned robot to the app/Provisioned lapis bin on app
+`reprov` -> Reprovisioned robot to the app
 `fb` -> Freebee
-`2xm` -> Double checked with Michelle
+`2m` -> Double checked with Michelle
 `cm` -> Confirmed with Michelle
+`rm` -> Removed provisioning
+`bump \[in/out\]` -> Cleaned <in/out> side of the bumper
+`rp` -> Replaced
+`am` -> Attempted mobility test:
+ `diag` -> Diagnosis:
         """)
 # `ch|charge \[watts] (dock) (bot)` -> \[bot(Robot)] charges on \[dock (dock)] @ ~\[watts]W
         yield Button('Close', action='close')
-
-# `diag` -> Diagnosis:
