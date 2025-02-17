@@ -1,7 +1,7 @@
 from time import sleep
 import keyboard, mouse, clipboard
 
-LONG = 2
+LONG = 1
 SHORT = .05
 START_DELAY = .2
 
@@ -56,7 +56,9 @@ def open_ship_product(case:str=None):
     sleep(LONG)
     if case:
         keyboard.write(case)
-        press_seq(*('tab',)*11, 'enter')
+    else:
+        press_seq('ctrl+v')
+    press_seq(*('tab',)*11, 'enter')
 
 def open_return_product(case:str=None):
     x, y = mouse.get_position()
@@ -69,10 +71,12 @@ def open_return_product(case:str=None):
     sleep(SHORT)
     mouse.move(x, y)
     sleep(LONG)
+    keyboard.press_and_release('shift+tab')
+    sleep(SHORT)
     if case:
-        keyboard.press_and_release('shift+tab')
-        sleep(SHORT)
         keyboard.write(case)
+    else:
+        press_seq('ctrl+v')
         sleep(SHORT)
         keyboard.press_and_release('enter')
 
@@ -81,7 +85,9 @@ def query_case(case):
     sleep(SHORT)
     mouse.click(button='left')
     sleep(SHORT)
-    mouse.click(936, 142) # Query box
+    mouse.move(936, 142) # Query box
+    sleep(SHORT)
+    mouse.click(button='left')
     sleep(SHORT)
     keyboard.write(case)
     sleep(SHORT)
