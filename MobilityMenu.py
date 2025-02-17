@@ -6,6 +6,8 @@ from CustomInput import CustomInput
 from Menu import Menu
 from TriSwitch import TriSwitch
 
+from parse_commands import parse_acronym
+
 class MobilityMenu(Menu):
     switches = (
             'undock',
@@ -204,7 +206,7 @@ class MobilityMenu(Menu):
             base=(self.base1.value + ' ' + self.base2.value if type(self.base2.value) is str else 'no dock'),
         )
         if self.params.value:
-            l1 += ', ' + self.params.value
+            l1 += ', ' + parse_acronym(self.params.value)
 
         l2 = "** "
         if has_pass or lines_pass is True:
@@ -235,6 +237,6 @@ class MobilityMenu(Menu):
 
         l3 = '** Result: ' + ("Fail" if has_fail or lines_pass is False else 'Pass')
         if self.notes.value:
-            l3 += ' - ' + self.notes.value
+            l3 += ' - ' + parse_acronym(self.notes.value)
 
         return '\n'.join((l1, l2, l3))
