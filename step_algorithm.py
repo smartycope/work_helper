@@ -2,6 +2,7 @@ import re
 from textual.containers import *
 from textual.widgets import *
 from Phase import Phase
+from globals import capitolize
 from texts import Steps
 from numpy import mean, std
 import settings
@@ -13,6 +14,7 @@ from multi_paste import multi_paste
 def execute_step(self, resp):
     # To simplify some of the redundant next step logic
     next_step = None
+    resp = resp.strip()
 
     # TODO: I think back isn't working
     if resp.lower() == 'back' and self.step != Steps.confirm_id:
@@ -67,6 +69,7 @@ def execute_step(self, resp):
                 self.step = Steps.check_repeat
 
             case Steps.check_repeat:
+                self.repeat = bool(resp)
                 self.step = Steps.check_claimed_damage
 
             case Steps.check_claimed_damage:
@@ -76,28 +79,36 @@ def execute_step(self, resp):
                 self.step = Steps.ask_dock
 
             case Steps.ask_dock:
-                self.dock = self.snap_to_dock(resp)
-                self.text_area.text += 'Parts in: Robot'
+                self._dock = self.snap_to_dock(resp)
+                self.text_area.text += 'Parts in: ' + self.serial.upper()
                 if resp:
                     self.text_area.text += ', ' + resp + ', cord'
                 self.text_area.text += '\n'
                 self.step = Steps.ask_damage
 
             case Steps.ask_damage:
-                self.text_area.text += 'Claimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage'
+                self.text_area.text += 'Damage: Minor scratches'
                 if resp:
-                    self.text_area.text += ', ' + resp[0].lower() + resp[1:]
+                    self.text_area.text += ', ' + capitolize(resp)
                 self.text_area.text += '\n'
-                self.step = Steps.ask_came_with_bag if self.is_dock else Steps.customer_states
+                if self.is_dock:
+                    self.step = Steps.ask_came_with_bag
+                else:
+                    next_step = "ask pad"
 
             case Steps.ask_came_with_bag:
                 if resp and resp != 'na':
                     self.text_area.text = self.text_area.text.strip() + ', no evac bag\n'
+                next_step = 'ask pad'
+
+            case Steps.ask_came_with_pad:
+                if resp and resp != 'na':
+                    self.text_area.text = self.text_area.text.strip() + ', no pad\n'
                 self.step = Steps.customer_states
 
             case Steps.customer_states:
                 if resp:
-                    self.customer_states = resp[0].upper() + resp[1:]
+                    self._customer_states = capitolize(resp)
                     self.text_area.text += 'Customer States: ' + self.customer_states + '\n\nRoutine Checks:\n'
                     if not self.is_modular:
                         self.add_step('Robot is non-modular')
@@ -180,7 +191,13 @@ def execute_step(self, resp):
                 else:
                     self.step = Steps.ask_cleaned
 
-            # TODO: extend this in the future to go into swap
+            case Steps.ask_quiet_audio:
+                if resp:
+                    self.add_step('Audio is noticeably quiet - suspect The Glitch', '!')
+                else:
+                    self.add_step('Audio does not seem quiet')
+                self.phase = Phase.DEBUGGING
+
             case Steps.ask_s9_lid_pins:
                 if resp:
                     self.add_step('Lid pins are sunken', bullet='!')
@@ -230,7 +247,7 @@ def execute_step(self, resp):
                     except ValueError:
                         if resp:
                             self.add_step(resp)
-                            self.phase = Phase.DEBUGGING
+                            next_step = 'quiet audio'
                         return
 
                     dock = f'customer {self.dock}' if self.dock else 'test base'
@@ -242,13 +259,13 @@ def execute_step(self, resp):
                     else:
                         self.add_step(f"Robot charges on {dock} @ ~{watts}W")
 
-                self.phase = Phase.DEBUGGING
+                next_step = 'quiet audio'
 
             # Liquid damage path
             case Steps.liquid_check_corrosion:
                 if resp.lower() != 'na':
                     if resp:
-                        self.add_step(f'Found signs of liquid corrosion on the {resp}', bullet='**')
+                        self.add_step(f'Found signs of liquid corrosion on the {"main board" if resp.lower() in ('y', 'yes') else resp}', bullet='**')
                         self._liquid_swap = True
                     else:
                         self.add_step('No signs of liquid damage on the main board or connections', bullet='**')
@@ -443,9 +460,13 @@ def execute_step(self, resp):
                 self.step = Steps.ask_complete_case_CSS
 
             case Steps.ask_complete_case_CSS:
-                if not self.is_dock:
-                    self.step_formatter = ' and box'
-                self.step = Steps.ask_put_bot_on_shelf_mopping if self.can_mop else Steps.ask_put_bot_on_shelf
+                if self.repeat:
+                    self.step = Steps.ask_submit_adj
+                else:
+                    next_step = 'put on shelf'
+
+            case Steps.ask_submit_adj:
+                next_step = 'put on shelf'
 
             case Steps.ask_put_bot_on_shelf | Steps.ask_put_bot_on_shelf_mopping:
                 self.step = Steps.finish_case
@@ -494,6 +515,7 @@ def execute_step(self, resp):
             case Steps.swap_input_new_serial:
                 if resp:
                     self.add_serial(resp)
+                    self.text_area.text = self.text_area.text.strip() + f' ({resp})'
                     self.step = Steps.swap_note_serial
 
             case Steps.swap_note_serial:
@@ -508,6 +530,9 @@ def execute_step(self, resp):
                 self.step = Steps.hold_copy_notes_to_CSS
 
             case Steps.hold_copy_notes_to_CSS:
+                self.step = Steps.hold_unuse_parts
+
+            case Steps.hold_unuse_parts:
                 self.step = Steps.hold_put_on_shelf
 
             case Steps.hold_put_on_shelf:
@@ -518,6 +543,20 @@ def execute_step(self, resp):
                 pass
 
     # To simplify repeated next step logic
+    if next_step == "ask pad":
+        self.step = Steps.ask_came_with_pad if self.is_combo else Steps.customer_states
+
+    if next_step == 'quiet audio':
+        if self.serial.startswith(('c', 'j')) and "evac" in self.customer_states.lower():
+            self.step = Steps.ask_quiet_audio
+        else:
+            self.phase = Phase.DEBUGGING
+
+    if next_step == 'put on shelf':
+        if not self.is_dock:
+            self.step_formatter = ' and box'
+        self.step = Steps.ask_put_bot_on_shelf_mopping if self.can_mop else Steps.ask_put_bot_on_shelf
+
     if next_step == 'dock contacts/charging':
         if self.dock:
             self.step = Steps.ask_user_base_contacts
@@ -588,7 +627,7 @@ def execute_step(self, resp):
 
 
 # All the side effects of the execute_step
-
+# Remember to import these in Case if you add a new one!
 def before_pick_up_case(self):
     clipboard.copy(self.ref)
 
@@ -650,3 +689,10 @@ def before_hold_add_context(self):
     self.ensure_context()
     self.text_area.text += self.sidebar.todo.text
     self.sidebar.todo.text = ''
+
+def before_ask_submit_adj(self):
+    multi_paste(
+        'michelle.gonzalez@acer.com',
+        f'Adjustment: {self.ref}',
+        f"{self.ref}: minutes"
+    )

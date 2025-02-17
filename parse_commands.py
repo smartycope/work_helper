@@ -1,14 +1,69 @@
+import re
 from numpy import mean, std
 
+from Phase import Phase
 from globals import capitolize
 
+""" Auto Acronyms:
+d -> cx <dock>
+r -> robot
+nr -> new robot
+nd -> new dock
+rp -> replaced
+fb -> freebee
+sb -> sidebrush
+doa -> DOA
+exp -> expected
+ACRONYM: chm -> CHM
+ACRONYM: opt -> optical bin failures <100 out of range.
+ACRONYM: dc -> expected dock comms failure.
+ACRONYM: batt -> battery
+ACRONYM: md -> module
+ACRONYM: fw -> firmware
+ACRONYM: sw -> software
+ACRONYM: hw -> hardware
+"""
+
+ACRONYMS = {
+    'fw': "firmware",
+    'sw': "software",
+    'hw': "hardware",
+    'md': "module",
+    'batt': "battery",
+    'comms': "Dock comms failure.",
+    'opt': "optical bin failure[s] <100 out of range.",
+    'chm': "CHM",
+    'exp': 'expected',
+    'doa': 'DOA',
+    'sb': 'sidebrush',
+    'fb': 'freebee',
+    'rp': 'replaced',
+    'nd': 'new dock',
+    'nr': 'new robot',
+    'r': 'robot',
+    'd': 'dock',
+    'ch': 'charges on',
+    'n': 'new',
+    't': 'test',
+    'p': 'Pass',
+}
+
+def parse_acronym(input:str):
+    for acronym, full in ACRONYMS.items():
+        regex = fr'(?i)\b{acronym}\b'
+        input = re.sub(regex, full, input)
+    return input
+
 def parse_command(self, input:str):
+    """ Parses all input from the "Add Step" step """
+
     args = input.strip().split(' ')
     cmd = args.pop(0).lower()
 
     if not cmd:
         return
-
+# COMMAND: cleaned bot charging contacts
+# COMMAND/ACRONYM: BiT: skip, non-refurb swap
     try:
         step = None
         match cmd:
@@ -18,10 +73,11 @@ def parse_command(self, input:str):
                 self.add_step(f'Battery test: {charge}%/{health}%')
             case 'fr':
                 step = 'Factory reset'
-            case 's' | 'sr':
-                step = 'Swapped robot'
+            case 's' | 'sr' | 'sw':
+                self.phase = Phase.SWAP
+                step = 'Swap robot'
             case 'sd':
-                step = 'Swapped dock'
+                step = 'Swap dock'
             case 'ar':
                 step = 'Aurora refill debug steps'
             case 'hr':
@@ -57,7 +113,12 @@ def parse_command(self, input:str):
                 step = 'Diagnosis:'
                 args[0] = capitolize(args[0])
             case 'cdc' | 'cln':
-                step = 'Cleaned dock charging contacts'
+                if args:
+                    if args[0].lower() == 'b':
+                        args.pop(0)
+                    step = 'Cleaned bot charging contacts'
+                else:
+                    step = 'Cleaned dock charging contacts'
             case 'prov':
                 if not args:
                     step = 'Provisioned robot to the app'
@@ -92,7 +153,6 @@ def parse_command(self, input:str):
             case _:
                 raise
         if step:
-            self.add_step(step + ' ' + ' '.join(args))
+            self.add_step(step + ' ' + parse_acronym(' '.join(args)))
     except:
-        r = input.strip()
-        self.add_step(r[0].upper() + r[1:])
+        self.add_step(capitolize(parse_acronym(input)).strip())

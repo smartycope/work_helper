@@ -14,8 +14,11 @@ from globals import COLORS, SAVE_CASE_PATH, SAVE_STATE_PATH
 from clipboard import copy, paste
 
 from hotkeys import open_board, open_return_product, open_ship_product, query_case
+from texts import Steps
 
 DEBUG_STATE = '''[{"notes": "19000IR\\n", "color": "#377a11", "ref": "19000IR", "serial": null, "phase": 0, "step": "Put labels on everything", "todo": ""}, {"notes": "19002IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: Waaaaaa\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n! Robot does not charge on test base @ ~0W\\n\\nProcess:\\n* Step\\n* Step\\n* Step\\n* Done\\n", "color": "#d1dd0b", "ref": "19002IR", "serial": "i3", "phase": 3, "step": "All screws are screwed in all the way [done]", "todo": ""}, {"notes": "19003IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: I want money back\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n* Robot charges on test base @ ~9W (battery is full)\\n\\nProcess:\\n* Tehe\\n* Swap\\n", "color": "#ea9daf", "ref": "19003IR", "serial": "j7", "phase": 4, "step": "Send swap email [confirmed]", "todo": ""}, {"notes": "19004IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: It broke\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No play in blower motor\\n* Tank float screw has no signs of rust\\n* Cleaned robot\\n* Robot charges on test base @ ~21W\\n\\nProcess:\\n* Step1\\n* Step2\\n", "color": "#799fad", "ref": "19004IR", "serial": "c9", "phase": 2, "step": "Add Step", "todo": ""}, {"notes": "new\\n", "color": "#ef9e16", "ref": "new", "serial": null, "phase": 0, "step": "Confirm IDs", "todo": ""}]'''
+
+EXISTING_CASES = {path.name.split('.')[0]: path for path in SAVE_CASE_PATH.iterdir()}
 
 class HelperApp(App):
     BINDINGS = [
@@ -23,24 +26,26 @@ class HelperApp(App):
         Binding('ctrl+e', 'open_external_notes_menu', 'External notes', priority=True, system=True),
         Binding('ctrl+t', 'open_mobility_menu', 'Mobility Test', priority=True, system=True),
 
-        Binding('ctrl+b', 'open_board', 'Board', priority=True, system=True),
-        Binding('ctrl+p', 'query_case', 'Pickup', priority=True, system=True),
-        Binding('ctrl+r', 'open_return_product', 'Return', priority=True, system=True),
-        Binding('ctrl+f', 'open_ship_product', 'Ship', priority=True, system=True),
+        # TODO
+        # Binding('ctrl+b', 'open_board', 'Board', priority=True, system=True),
+        # Binding('ctrl+p', 'query_case', 'Pickup', priority=True, system=True),
+        # Binding('ctrl+r', 'open_return_product', 'Return', priority=True, system=True),
+        # Binding('ctrl+f', 'open_ship_product', 'Ship', priority=True, system=True),
 
         Binding("ctrl+n", "new_case", "New Case", show=False, system=True, priority=True),
         Binding("ctrl+w", "close_case", "Close Case", show=False, system=True, priority=True),
         Binding("ctrl+s", "save", "Save", show=False, system=True, priority=True),
+
+        Binding("ctrl+`,ctrl+g", "focus_input", "Focus Input", show=False, system=True, priority=True),
         # ('ctrl+e', 'open_external_notes_menu', 'Ext Notes'),
-        Binding('ctrl+1,ctrl+shift+1', 'goto_tab(1)', 'Tab 1', show=False, system=True, priority=True),
-        Binding('ctrl+2,ctrl+shift+2', 'goto_tab(2)', 'Tab 2', show=False, system=True, priority=True),
-        Binding('ctrl+3,ctrl+shift+3', 'goto_tab(3)', 'Tab 3', show=False, system=True, priority=True),
-        Binding('ctrl+4,ctrl+shift+4', 'goto_tab(4)', 'Tab 4', show=False, system=True, priority=True),
-        Binding('ctrl+5,ctrl+shift+5', 'goto_tab(5)', 'Tab 5', show=False, system=True, priority=True),
+        # Binding('ctrl+1,ctrl+shift+1', 'goto_tab(1)', 'Tab 1', show=False, system=True, priority=True),
+        # Binding('ctrl+2,ctrl+shift+2', 'goto_tab(2)', 'Tab 2', show=False, system=True, priority=True),
+        # Binding('ctrl+3,ctrl+shift+3', 'goto_tab(3)', 'Tab 3', show=False, system=True, priority=True),
+        # Binding('ctrl+4,ctrl+shift+4', 'goto_tab(4)', 'Tab 4', show=False, system=True, priority=True),
+        # Binding('ctrl+5,ctrl+shift+5', 'goto_tab(5)', 'Tab 5', show=False, system=True, priority=True),
 
-
-        # Binding('ctrl+tab', 'next_tab', 'Next Tab', show=True, priority=True),
-        # Binding('ctrl+shift+tab', 'prev_tab', 'Previous Tab', show=True, priority=True),
+        Binding('ctrl+j', 'increment_tab', 'Next Tab', show=True, priority=True, system=True),
+        Binding('ctrl+f', 'increment_tab(-1)', 'Previous Tab', show=True, priority=True, system=True),
     ]
     CSS_PATH = "stylesheet.tcss"
     COMMAND_PALETTE_DISPLAY = False
@@ -58,8 +63,11 @@ class HelperApp(App):
         self.menu_menu = Select(((m, m) for m in (
             'Hints',
             'Commands',
+            'Acronyms',
+            '----------------------',
             'Update Sidebar',
             "Remove Double Lines",
+            '----------------------',
             "Copy Cases",
             "Paste Cases",
             "Load Saved State",
@@ -110,16 +118,27 @@ class HelperApp(App):
             ref = self.popup.value
             self.popup.value = ''
             if len(self.cases) < 5:
-                unused_color = random.choice(list(set(COLORS.keys()) - {i.color for i in self.cases}))
-                # If we can't create a case (like, if there's a space in the ID somehow or something), just don't make one
+                # Load an existing case
                 try:
-                    case = Case(ref, unused_color)
-                except: return
-                self.cases.append(case)
-                # They're automatically id'd as tab-1, tab-2, ...
-                # self.tabs.add_pane(TabPane(ref, case, id='pane-'+str(unused_color)))
-                # self.tabs.add_pane(TabPane(case.tab_label, case, id=f'tab-pane-{ref}'))
-                self.tabs.add_pane(TabPane('', case, id=f'tab-pane-{ref}'))
+                    if ref in EXISTING_CASES:
+                        with open(EXISTING_CASES[ref], 'r') as f:
+                            case = Case.deserialize(json.load(f))
+                            case.phase = Phase.SWAP
+                            # TODO: this doesn't work, don't know why
+                            case.step = Steps.swap_move_bin
+
+                    # Create a new case
+                    else:
+                        unused_color = random.choice(list(set(COLORS.keys()) - {i.color for i in self.cases}))
+                        # If we can't create a case (like, if there's a space in the ID somehow or something), just don't make one
+                        case = Case(ref, unused_color)
+                    self.cases.append(case)
+                    self.tabs.add_pane(TabPane('', case, id=f'tab-pane-{ref}'))
+                except Exception as err:
+                    if self._debug:
+                        raise err
+                    return
+
 
     def action_new_case(self):
         """Add a new tab."""
@@ -165,19 +184,10 @@ class HelperApp(App):
             # self.deserialize(json.load(f))
             self.deserialize(f.read(), clear=True)
 
-    # def next_tab(self):
-        # # print('next tab called')
-        # # print(f'active case:', self.active_case.ref)
-        # idx = self.cases.index(self.active_case)
-        # next = self.cases[(idx+1)%len(self.cases)]
-        # print(f'next case:', next.ref)
-        # self.tabs.active = f'pane-{next.color}'
-
-    # def prev_tab(self):
-        # # print('prev tab called')
-        # idx = self.cases.index(self.active_case)
-        # prev = self.cases[idx-1]
-        # self.tabs.active = f'pane-{prev.color}'
+    def action_increment_tab(self, inc=1):
+        idx = self.cases.index(self.active_case)
+        next = self.cases[(idx + inc)%len(self.cases)]
+        self.tabs.active = f'tab-pane-{next.ref}'
 
     def serialize(self):
         return json.dumps([case.serialize() for case in self.cases])
@@ -196,7 +206,7 @@ class HelperApp(App):
             self.tabs.clear_panes()
 
         for case in self.cases:
-            self.tabs.add_pane(TabPane(case.ref, case))
+            self.tabs.add_pane(TabPane('', case, id=f'tab-pane-{case.ref}'))
 
     def action_goto_tab(self, index):
         self.bell()

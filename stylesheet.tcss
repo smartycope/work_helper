@@ -1,5 +1,5 @@
 Screen {
-    layers: below hintButton ext mobility hints cmd menu version ref;
+    layers: below hintButton ext mobility hints cmd acronym menu version ref;
     # layers: below hintButton menus ref;
     # layers: ref mobility ext hintButton below hints;
 }
@@ -12,7 +12,7 @@ Menu{
 }
 
 ExternalNotesMenu{
-    height: 90%;
+    # height: 100%;
     layer: ext;
 }
 
@@ -33,6 +33,11 @@ HintsMenu{
 
 CommandsMenu{
     layer: cmd;
+    content-align: center middle;
+}
+
+AcronymMenu{
+    layer: acronym;
     content-align: center middle;
 }
 
@@ -145,12 +150,15 @@ MenuMenu{
     width: 8;
     height: 2;
     # hatch: "☰" $success 100%;
+    background: $surface-lighten-2;
     & > SelectOverlay {
+        # height: ;
+        max-height: 30;
+        # min-height: 15;
         width: 30;
         offset-x: -20;
         constrain: none none;
     }
-    background: $surface-lighten-2;
 }
 
 #hints-tree{

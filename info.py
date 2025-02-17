@@ -133,4 +133,10 @@ standby voltage is 2.8V for a dock, 3.2 for a base, and once it detects a bot, i
 
 
 
+All v1s
+O:     J755920C230814R101633
+S0:     J710020C220321N100473
+S1:     J710020C210908N111709
+
+
 """

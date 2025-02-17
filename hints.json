@@ -49,5 +49,11 @@
     ],
     "j series sits and thinks after cleaning": [
         "Hard factory reset"
+    ],
+    "Won't connect to app": [
+        "[hard] factory reset",
+        "Take it away from any interferance",
+        "Try a different tablet",
+        "If none of those work, swap"
     ]
 }

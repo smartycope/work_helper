@@ -2,7 +2,7 @@ import json
 import re
 from HintsMenu import HintsMenu
 # from MenuMenu import MenuMenu
-from globals import COLORS, LOG_PATH, SAVE_CASE_PATH, SAVE_NOTES_PATH, darken_color, invert_dict
+from globals import COLORS, LOG_PATH, SAVE_CASE_PATH, SAVE_NOTES_PATH, capitolize, darken_color, invert_dict
 import random
 from textual.containers import *
 from textual.reactive import reactive
@@ -13,6 +13,7 @@ from CustomTextArea import CustomTextArea
 from Sidebar import Sidebar
 from MobilityMenu import MobilityMenu
 from CommandsMenu import CommandsMenu
+from AcronymMenu import AcronymMenu
 from ExternalNotesMenu import ExternalNotesMenu
 from textual import on
 from datetime import datetime
@@ -37,6 +38,7 @@ class Case(VerticalGroup):
         before_hold_copy_notes_to_CSS,
         before_wait_parts_closed,
         before_hold_add_context,
+        before_ask_submit_adj,
     )
     from parse_commands import parse_command
 
@@ -58,7 +60,7 @@ class Case(VerticalGroup):
     }
 
     phase_icons = {
-        Phase.CONFIRM: "📋",
+        Phase.CONFIRM: "🪫",
         Phase.ROUTINE_CHECKS: "📋",
         Phase.DEBUGGING: "🔧",
         Phase.SWAP: "🔃",
@@ -76,10 +78,11 @@ class Case(VerticalGroup):
         # The serial numbers: first is the original, last is the current swap (or the original), and
         # anythinng in the middle is a DOA swap
         self.serials = []
-        self.dock = None
+        self._dock = ''
         # Set in set_color()
         self.color = color
-        self.customer_states = ''
+        self._customer_states = ''
+        self.repeat = False
 
         # The way this works, is it gets applied as "s" to the step when putting the current step into
         # the Input box. That way, any step that needs formatting can use it without messing up the
@@ -102,6 +105,7 @@ class Case(VerticalGroup):
         self.external_notes_menu = ExternalNotesMenu(self)
         self.hints_menu = HintsMenu(self)
         self.cmd_menu = CommandsMenu()
+        self.acronym_menu = AcronymMenu()
 
         # Some internal values to make auto guessing external notes easier
         self._bin_screw_has_rust = False
@@ -123,6 +127,7 @@ class Case(VerticalGroup):
                 self.text_area.text = self.text_area.text.replace('\n\n', '\n')
             case 'Hints': self.hints_menu.action_toggle()
             case 'Commands': self.cmd_menu.action_toggle()
+            case 'Acronyms': self.acronym_menu.action_toggle()
             case 'Update Sidebar': self.sidebar.update()
 
     @on(Select.Changed, "#color-selector")
@@ -141,6 +146,7 @@ class Case(VerticalGroup):
         yield self.external_notes_menu
         yield self.hints_menu
         yield self.cmd_menu
+        yield self.acronym_menu
         yield self.input
         yield self.sidebar
 
@@ -186,8 +192,23 @@ class Case(VerticalGroup):
         self.sidebar.phase_selector.value = new_phase.value
         if self._tab:
             self._tab.label = self.tab_label
-        # self.query_one(f'#tab-pane-{self.ref}').title = self.ref + ' ' + self.phase_icons[new_phase]
 
+        if self.phase == Phase.CONFIRM:
+            self.step = self.first_steps[Phase.CONFIRM] if not self.serial else Steps.check_repeat
+        elif self.phase == Phase.SWAP:
+            # If the first+ swap is DOA
+            if len(self.serials) >= 2:
+                # This is copied from next_step == 'order swap'
+                if self.serial.startswith('s9'):
+                    self.ensure_serial(Steps.swap_order_S9)
+                elif self.serial.startswith('m6'):
+                    self.ensure_serial(Steps.swap_order_M6)
+                else:
+                    self.ensure_serial(Steps.swap_order)
+            else:
+                self.ensure_serial(self.first_steps[self.phase])
+        else:
+            self.ensure_serial(self.first_steps[self.phase])
 
     def add_step(self, step, bullet='*'):
         # For consistency
@@ -197,12 +218,6 @@ class Case(VerticalGroup):
     @on(Select.Changed, "#phase-select")
     def on_phase_changed(self, event: Select.Changed) -> None:
         self.phase = Phase(event.value)
-
-        if self.phase == Phase.CONFIRM:
-            self.step = self.first_steps[Phase.CONFIRM] if not self.serial else Steps.check_repeat
-        else:
-            self.ensure_serial(self.first_steps[self.phase])
-
         self.input.focus()
 
     def action_open_mobility_menu(self):
@@ -253,7 +268,7 @@ class Case(VerticalGroup):
         case.phase = Phase(data.get('phase', Phase.DEBUGGING))
         case.step = data.get('step', Steps.add_step)
         case.sidebar.phase_selector.value = case.phase.value
-        case.action_parse_for_info()
+        # case.action_parse_for_info()
         return case
 
     def ensure_process(self):
@@ -269,21 +284,21 @@ class Case(VerticalGroup):
             self._execute_step(event.value)
             self.input.value = ''
 
-    def action_parse_for_info(self):
-        """ Parse the currently set text for things like the dock, customer states, things like that """
-        # "Parts in: Robot" + group(optional(', ' + word))
-        if (found := re.search(r'Parts\ in:\ Robot((?:,\ \w+)?)', self.text_area.text)):
-            self.dock = found.group(1)
+    # def action_parse_for_info(self):
+    #     """ Parse the currently set text for things like the dock, customer states, things like that """
+    #     # "Parts in: Robot" + group(optional(', ' + word))
+    #     if (found := re.search(r'Parts\ in:\ Robot((?:,\ \w+)?)', self.text_area.text)):
+    #         self.dock = found.group(1)
 
-        # "Customer States: " + group(+anything)
-        if (found := re.search(r'Customer\ States:\ ((?:.)+)', self.text_area.text)):
-            self.customer_states = found.group(1)
+    #     # "Customer States: " + group(+anything)
+    #     if (found := re.search(r'Customer\ States:\ ((?:.)+)', self.text_area.text)):
+    #         self.customer_states = found.group(1)
 
-        # 'Routine Checks' + match_max(literallyAnything) + '* ' + chunk + ... + match_max(literallyAnything) + 'Process:'
-        # self._modular = not bool(re.search(r'Routine\ Checks(?:(?:.|\n))+\*\ .+is\ non\-modular(?:(?:.|\n))+Process:', self.text_area.text))
-        self._bin_screw_has_rust = bool(re.search(r'Routine\ Checks(?:(?:.|\n))+\*\ (?:Tank\ float\ screw\ has\ a\ spot\ of\ rust\ on\ it|Tank\ float\ screw\ is\ entirely\ rusted)(?:(?:.|\n))+Process:', self.text_area.text))
-        self._dock_tank_screw_has_rust = bool(re.search(r'Routine\ Checks(?:(?:.|\n))+\*\ (?:Dock tank\ float\ screw\ has\ a\ spot\ of\ rust\ on\ it|Dock tank\ float\ screw\ is\ entirely\ rusted)(?:(?:.|\n))+Process:', self.text_area.text))
-        self._liquid_found = bool(re.search(r'Routine\ Checks(?:(?:.|\n))+\*\ Found\ signs\ of\ liquid\ (?:(?:.|\n))+Process:', self.text_area.text))
+    #     # 'Routine Checks' + match_max(literallyAnything) + '* ' + chunk + ... + match_max(literallyAnything) + 'Process:'
+    #     # self._modular = not bool(re.search(r'Routine\ Checks(?:(?:.|\n))+\*\ .+is\ non\-modular(?:(?:.|\n))+Process:', self.text_area.text))
+    #     self._bin_screw_has_rust = bool(re.search(r'Routine\ Checks(?:(?:.|\n))+\*\ (?:Tank\ float\ screw\ has\ a\ spot\ of\ rust\ on\ it|Tank\ float\ screw\ is\ entirely\ rusted)(?:(?:.|\n))+Process:', self.text_area.text))
+    #     self._dock_tank_screw_has_rust = bool(re.search(r'Routine\ Checks(?:(?:.|\n))+\*\ (?:Dock tank\ float\ screw\ has\ a\ spot\ of\ rust\ on\ it|Dock tank\ float\ screw\ is\ entirely\ rusted)(?:(?:.|\n))+Process:', self.text_area.text))
+    #     self._liquid_found = bool(re.search(r'Routine\ Checks(?:(?:.|\n))+\*\ Found\ signs\ of\ liquid\ (?:(?:.|\n))+Process:', self.text_area.text))
 
     def action_focus_input(self):
         self.input.focus()
@@ -297,8 +312,10 @@ class Case(VerticalGroup):
 
     # TODO
     def snap_to_dock(self, name):
-        """ Make the dock one of the allowed docks """
-        return name
+        """ Make the dock one of the allowed docks
+            this parses input given from the ask for dock step, parses it, and returns the dock
+        """
+        return capitolize(name.split(',')[0].strip())
 
     # Helper methods
     def get_quick_model(self):
@@ -381,7 +398,12 @@ class Case(VerticalGroup):
             notes += 'If having weird trouble with DCT, try factory reset'
 
         if self.serial.startswith(('r', 'e')):
-            notes += 'To BiT: lights have to be off (hold down clean to turn off), then hold home & clean and press spot 5x. Then press home to start the tests. Spot is prev, home is next. Hold clean when finished successfully, otherwise factory reset.'
+            # R989
+            if self.serial.startswith('r98'):
+                buttons = 'Spot is next, home is prev.'
+            else:
+                buttons = 'Spot is prev, home is next.'
+            notes += f'To BiT: lights have to be off (hold down clean to turn off), then hold home & clean and press spot 5x. Then press home to start the tests. {buttons} Hold clean when finished successfully, otherwise reset.'
 
         # if self.serial.startswith('e'):
         #     notes += 'To BiT: lights have to be off, then hold home & clean and press spot 5x. You also have to press clean to get it to connect to DCT'
@@ -460,11 +482,11 @@ class Case(VerticalGroup):
 
     @property
     def is_dock(self) -> bool:
-        return self.dock.lower() not in ('bombay', 'san marino', 'torino') and bool(self.dock)
+        return bool(self.dock) and self.dock.lower() not in ('bombay', 'san marino', 'torino')
 
     @property
     def dock_can_refill(self):
-        return self.dock.lower() in ('aurora', 'boulder')
+        return bool(self.dock) and self.dock.lower() in ('aurora', 'boulder')
 
     @property
     def is_combo(self):
@@ -528,6 +550,45 @@ class Case(VerticalGroup):
     def has_weird_i5g(self):
         return any(i.startswith('i5g') for i in self.serials)
 
-    # @on(CustomTextArea.OpenMobilityMenu)
-    # def deleteme(self):
-        # self.text_area.text += 'IT WORKED'
+    @property
+    def bin_screw_has_rust(self):
+        if self._bin_screw_has_rust is None :
+            self._bin_screw_has_rust = bool(re.search(
+                r'Routine\ Checks(?:(?:.|\n))+\*\ (?:Tank\ float\ screw\ has\ a\ spot\ of\ rust\ on\ it|Tank\ float\ screw\ is\ entirely\ rusted)(?:(?:.|\n))+Process:',
+                self.text_area.text
+            ))
+        return self._bin_screw_has_rust
+
+    @property
+    def dock_tank_screw_has_rust(self):
+        if self._dock_tank_screw_has_rust is None:
+            self._dock_tank_screw_has_rust = bool(re.search(
+                r'Routine\ Checks(?:(?:.|\n))+\*\ (?:Dock tank\ float\ screw\ has\ a\ spot\ of\ rust\ on\ it|Dock tank\ float\ screw\ is\ entirely\ rusted)(?:(?:.|\n))+Process:',
+                self.text_area.text
+            ))
+        return self._dock_tank_screw_has_rust
+
+    @property
+    def liquid_found(self):
+        if self._liquid_found is None:
+            self._liquid_found = bool(re.search(
+                r'Routine\ Checks(?:(?:.|\n))+\*\ Found\ signs\ of\ liquid\ (?:(?:.|\n))+Process:',
+                self.text_area.text
+            ))
+        return self._liquid_found
+
+    @property
+    def customer_states(self):
+        if not self._customer_states:
+            # "Customer States: " + group(+anything)
+            if (found := re.search(r'Customer\ States:\ ((?:.)+)', self.text_area.text)):
+                self._customer_states = found.group(1)
+        return self._customer_states
+
+    @property
+    def dock(self):
+        if not self._dock:
+            # "Parts in: " + either(+either(digit, letter), "Robot") + optional(', ' + group(word))
+            if (found := re.search(r'Parts\ in:\ (?:(?:(?:\d|[A-Za-z]))+|Robot)(?:,\ (\w+))?', self.text_area.text)):
+                self._dock = found.group(1)
+        return self._dock or ''

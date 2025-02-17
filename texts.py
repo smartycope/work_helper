@@ -10,12 +10,13 @@ class Steps:
     ask_labels = "Put labels on everything [done]"
     turn_down_screwdriver = 'Turn down the power setting on the screwdriver [done]'
     confirm_id = "Confirm IDs"
-    check_repeat = "Check if case is a repeat [not a repeat]"
+    check_repeat = "Is the case a repeat [no]"
     check_claimed_damage = "Check the claimed damage"
     pick_up_case = "Go pick up the case on CSS {{case ID}} [done]"
-    ask_dock = "Additional dock [no dock]"
+    ask_dock = "Additional dock, and any other parts (comma seperated) [no dock]"
     ask_damage = "Additional damage [no damage]"
     ask_came_with_bag = "Is there a bag in the dock [yes]"
+    ask_came_with_pad = "Is there a pad on the bot [yes]"
     customer_states = "Customer States"
     update_css_failure = "Update the CSS failure box [done]"
 
@@ -33,6 +34,7 @@ class Steps:
     ask_charge_test_dock = "What's the charging wattage on a test base"
     ask_bin_rust = "Amount of rust on the tank screw [empty: none, 1: a spot, 2: entirely]"
     ask_dock_tank_rust ="Amount of rust on the dock's tank screw [empty: none, 1: a spot, 2: entirely]"
+    ask_quiet_audio = 'Is the audio quiet? (It may be "The Glitch") [no]'
     liquid_check_corrosion = "Is there corrosion on the board or connections (specify or empty for no)"
     liquid_check_dock = "Is there liquid residue in the user dock [no]"
     liquid_check_bin = "Is there liquid residue in the robot bin [no]"
@@ -64,6 +66,7 @@ class Steps:
     # hold_put_todo_in_notes = "Put any context directly into the notes {{TODO}} [done]"
     hold_copy_notes_to_CSS = "Copy notes over to CSS {{notes}}"
     hold_add_context = "Add any context about the case [done]"
+    hold_unuse_parts = "Unuse any parts [done]"
     hold_put_on_shelf = "Put everything together, and put on the shelf with the traveler [done]"
     hold_done = "Good to close case now!"
 
@@ -95,6 +98,7 @@ class Steps:
     ask_copy_notes_2 = "Copy notes over to CSS {{notes}} [done]"
     wait_parts_closed = 'Wait for parts to get closed out [done]'
     ask_complete_case_CSS = "Finish the case on CSS {{case ID}} [done]"
+    ask_submit_adj = "Send adjustment {{address, subject, adjustment}}"
     ask_put_bot_on_shelf = "Put the robot and traveler{s} on the shelf [done]"
     ask_put_bot_on_shelf_mopping = "Put the robot and traveler{s} on the shelf, and put the tank[s] on top [done]"
     # finish_case = 'All done! [close case]'

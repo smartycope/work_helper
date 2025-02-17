@@ -23,6 +23,7 @@ All commands are case insensitive
 'ms|meas` -> Measured both contacts: >4mm
 `blew|chirp` -> Blew out chirp sensors
 `cdc|cln` -> Cleaned dock charging contacts
+`cdc|cln b` -> Cleaned robot charging contacts
 `prov <app/lapis/both>` -> Provisioned robot to the app/Provisioned lapis bin on app
 `reprov` -> Reprovisioned robot to the app
 `fb` -> Freebee
