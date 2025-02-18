@@ -3,6 +3,7 @@ from textual.containers import *
 from textual.widgets import *
 from Phase import Phase
 from globals import capitolize
+from parse_commands import parse_acronym
 from texts import Steps
 from numpy import mean, std
 import settings
@@ -15,6 +16,10 @@ def execute_step(self, resp):
     # To simplify some of the redundant next step logic
     next_step = None
     resp = resp.strip()
+
+    # This step specifically does parses them itself later, after it parses the commands
+    if self.step != Steps.add_step:
+        resp = parse_acronym(resp)
 
     # TODO: I think back isn't working
     if resp.lower() == 'back' and self.step != Steps.confirm_id:
@@ -31,9 +36,7 @@ def execute_step(self, resp):
             self.step = self._step_after_manual_serial
         return
 
-    #// These are only to decide the next state logic. Any logic that happens before a step (like
-    #// copying things to the clipboard) or after a step (like adding things to the notes) go below
-    #// in the before_step() and after_step() methods
+
     if self.phase == Phase.CONFIRM:
         match self.step:
             # Main path
@@ -99,11 +102,13 @@ def execute_step(self, resp):
             case Steps.ask_came_with_bag:
                 if resp and resp != 'na':
                     self.text_area.text = self.text_area.text.strip() + ', no evac bag\n'
+                    self.sidebar.todo.text += '\norder evac bag'
                 next_step = 'ask pad'
 
             case Steps.ask_came_with_pad:
                 if resp and resp != 'na':
                     self.text_area.text = self.text_area.text.strip() + ', no pad\n'
+                    self.sidebar.todo.text += '\norder pad'
                 self.step = Steps.customer_states
 
             case Steps.customer_states:
@@ -223,7 +228,7 @@ def execute_step(self, resp):
 
             case Steps.ask_user_base_contacts:
                 if resp.lower() != 'na':
-                    self.add_step(f"Charging contacts on the customer's {self.dock} look {resp or 'fine'}")
+                    self.add_step(f"Charging contacts on the customer's {self.dock} look {resp or 'fine'}", '!' if resp else '*')
 
                 next_step = 'battery_test/charging'
 
@@ -250,7 +255,7 @@ def execute_step(self, resp):
                             next_step = 'quiet audio'
                         return
 
-                    dock = f'customer {self.dock}' if self.dock else 'test base'
+                    dock = f'cx {self.dock}' if self.dock else 'test base'
 
                     if watts < 3:
                         self.add_step(f"Robot does not charge on {dock} @ ~{watts}W", bullet='!')
@@ -283,9 +288,9 @@ def execute_step(self, resp):
             case Steps.liquid_check_bin:
                 if resp.lower() != 'na':
                     if resp:
-                        self.add_step('Liquid residue found in customer bin: probably sucked up liquid', bullet='**')
+                        self.add_step('Liquid residue found in cx bin: probably sucked up liquid', bullet='**')
                     else:
-                        self.add_step('No liquid residue found in customer bin', bullet='**')
+                        self.add_step('No liquid residue found in cx bin', bullet='**')
                 if self.dock:
                     self.step_formatter = '2.8' if self.is_dock else '3.2'
                     self.step = Steps.liquid_check_voltage
@@ -333,7 +338,7 @@ def execute_step(self, resp):
                 if mean(measurements) < 3.8:
                     self.ensure_process()
                     self.add_step('Sunken right contact')
-                    self.add_step('Swap robot and ' + (f'customer {self.dock}' if self.dock else 'ordering a new dock'))
+                    self.add_step('Swap robot and ' + (f'cx {self.dock}' if self.dock else 'ordering a new dock'))
                     self._swap_after_battery_test = True
                     self._swap_due_to_sunken_contacts = True
                     next_step = 'battery_test/charging'
@@ -357,7 +362,7 @@ def execute_step(self, resp):
                 if mean(measurements) < 3.8:
                     self.ensure_process()
                     self.add_step('Sunken left contact')
-                    self.add_step('Swap robot' + (f' and customer {self.dock}' if self.dock else ''))
+                    self.add_step('Swap robot' + (f' and cx {self.dock}' if self.dock else ''))
                     self._swap_after_battery_test = True
                     self._swap_due_to_sunken_contacts = True
                     next_step = 'battery_test/charging'
@@ -490,13 +495,20 @@ def execute_step(self, resp):
                     next_step = 'order swap'
 
             case Steps.swap_order_dock:
+                if resp.lower() == 'out':
+                    self.phase = Phase.HOLD
+
                 next_step = 'order swap'
 
             case Steps.swap_order_S9:
-                self.step = Steps.swap_add_labels
+                if resp.lower() == 'out':
+                    self.phase = Phase.HOLD
+                self.step = Steps.swap_ask_refurb
 
             case Steps.swap_order_M6:
-                self.step = Steps.swap_add_labels
+                if resp.lower() == 'out':
+                    self.phase = Phase.HOLD
+                self.step = Steps.swap_ask_refurb
 
             case Steps.swap_order:
                 self.step = Steps.swap_move_bin
@@ -504,10 +516,13 @@ def execute_step(self, resp):
             case Steps.swap_move_bin:
                 if resp:
                     self.add_step('Moved bin to new robot')
-                self.step = Steps.swap_add_labels
+                self.step = Steps.swap_ask_refurb
 
-            # case Steps.swap_put_in_box:
-                # self.step = Steps.swap_add_labels
+            case Steps.swap_ask_refurb:
+                self._is_current_swap_refurb = not bool(resp)
+                if not self._is_current_swap_refurb:
+                    self.add_step('BiT: skipping, as the swapped bot is a non-refurb')
+                self.step = Steps.swap_add_labels
 
             case Steps.swap_add_labels:
                 self.step = Steps.swap_input_new_serial
@@ -515,7 +530,10 @@ def execute_step(self, resp):
             case Steps.swap_input_new_serial:
                 if resp:
                     self.add_serial(resp)
-                    self.text_area.text = self.text_area.text.strip() + f' ({resp})'
+                    # '*' + at_most(2, anything) + IGNORECASE + 'swap' + at_most(8, anything) + 'bot' + optional(chunk)
+                    last: re.Match = list(re.finditer(r'(?i)\*.{0,2}swap.{0,8}bot(?:.+)?', self.text_area.text))[-1]
+                    t = self.text_area.text.strip()
+                    self.text_area.text = t[:last.end()] + f' -> {resp} ({"" if self._is_current_swap_refurb else "non-"}refurb)' + t[last.end():]
                     self.step = Steps.swap_note_serial
 
             case Steps.swap_note_serial:
@@ -541,6 +559,13 @@ def execute_step(self, resp):
             case Steps.hold_done:
                 # Don't change the step
                 pass
+
+    elif self.phase == Phase.CHARGING:
+        self.phase = Phase.DEBUGGING
+
+    elif self.phase == Phase.UPDATING:
+        self.phase = Phase.DEBUGGING
+
 
     # To simplify repeated next step logic
     if next_step == "ask pad":
@@ -683,12 +708,14 @@ def before_hold_copy_notes_to_CSS(self):
     clipboard.copy(self.text_area.text.strip())
 
 def before_wait_parts_closed(self):
+    clipboard.copy(self.ref)
     self.log('finish')
 
 def before_hold_add_context(self):
     self.ensure_context()
     self.text_area.text += self.sidebar.todo.text
-    self.sidebar.todo.text = ''
+    # I decided against this
+    # self.sidebar.todo.text = ''
 
 def before_ask_submit_adj(self):
     multi_paste(

@@ -102,6 +102,9 @@ class ExternalNotesMenu(Menu):
         if self.case._liquid_found:
             self.select("Liquid spill")
 
+        if 'glitch' in notes:
+            self.select("The Glitch")
+
         self.cx_states.update('cx states:\n' + self.case.customer_states)
 
     def get_notes(self):

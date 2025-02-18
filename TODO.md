@@ -1,17 +1,48 @@
-LOW PRIORITY URGENT: fix updating disabling which switches based on the model
 
+URGENT: if the case is a repeat, add a button that acts as a stopwatch that only adds. After the case is finished, add a step to remind to send an email with the adjusted time. Also log the time.
+URGENT: add DCT exception: if v2 J7 (uses blue card), DCT doesn't work (for now)
+URGENT: for j series bots that use the green/blue card DCT, add DCT exceptions that it can fail entirely (for now)
+URGENT: the ctrl+b LONG delay is way too long, try half a second - jk, it needs that long sometimes. Figure out a different approach. Look into reading the color of a specific pixel
+URGENT: try a different keyboard shortcut for focusing on input box
+URGENT: add to C9 OR C7 notes: CHM stingray: 4 wires, Pearl: 3 wires
 URGENT: ya, the sidebars aren't updating after deserialization
 URGENT: re-add hotkey shortcuts back into the main program, with a setting
+URGENT ish: if M6, don't ask if it's been cleaned
+LOW PRIORITY URGENT: fix updating disabling which switches based on the model
 
-COMMAND: cleaned the inside and outside of the bumper (and just inside/just outside)
 
 Saturday mar 1 @ 12pm 20 min
+HINTS: add a sub-branch for evac problems: if it's evacing, and bin *actually* isn't getting cleared, then:
+HOTKEY: search for alternate bot model in stock: alt+f, maybe: ctrl+a, backspace, tab x2, down x2, enter, tab, space, tab x2, enter
+HOTKEY: alternate finish case add attachement shortcut: starting from the description box, "repair report", shift+tab, enter, wait, case id, ".pdf", enter, wait short, shift+tab, down x2, enter, tab x3, enter, done
+DCT: if it's an R series and >=880, then specify that it's USB in the top side corner
 
+MINOR: ctrl+shift+alt+k needs a longer start delay
+MINOR: add m6 color step formatting in the M6 swap order step:
+M610020 is white (M611020B230621N208362 is also white)
+M610220 is black
+M610320 is black & graphite
+MINOR: both alternate swaps should copy the original seria
+MINOR: darken the disabled text in the MM just a little more -- or maybe keep as is and add strikethrough
+MINOR: decrease the width of the dock box 1 (the cx/new Select box), and have it stay to the right
+MINOR: urgent submit event should trigger mobility submit like the other boxes
+MINOR: if there's any mention of turn.+on in cx states, then offer a battery test
+MINOR: add MM param: started via app (checkbox)
+MINOR: Change DCT's in sidebar to BiT
+MINOR: if there's only one line, it should be "1 line" not "1 lines"
+MINOR: the "refill" MM disable should be and'd with if the current dock can refill or not (a C7 with an Albany shouldn't have it be enabled)
+MINOR: don't add a newline to lapis bin warning if there's no other notes
+MINOR: if "cleaned bot" step has a non-default resp, make the bullet a !
+MINOR: move asking for additional damage to be immediately before asking for the dock
+MINOR: in ext notes, add regex for "the glitch"
+MINOR: readd ! as the default if non-empty resp for step "how do the customers base charging contacts look"
 MINOR: make all the triswitches unable to focus by default -- and the num_lines box
 MINOR: capitalize the dock names in the C9 notes at the end
 MINOR: don't separate claimed damage and visible damage anymore, just combine them
 MINOR: explicitly disallow "factory reset with lapis bin" in ewxternal notes menu to activate when it's a factory provisioned lapis (even if has_lapis is true)
-
+MINOR: after doing the command for swap robot, automatically set the phase to "swap"
+MINOR: the measured voltage step should be ** not *
+MINOR: don't min() the measurement uncertainty anymore
 MINOR: serialize all the other members, like cx states, and dock and such. Either that, or fix the regexs
 MINOR: move "parse info" binding to the menu menu
 MINOR: add external notes regex to find if "charging contacts on ... - cleaned" (in routine checks), and if found, recommend cleaning dock charging contacts
@@ -19,6 +50,7 @@ MINOR: in swap phase, combine "put the old bot in the box" step with the "unbox"
 MINOR: Guess what type the dock is out of select options, instead of accepting any answer (levenstein dist?)
 MINOR: Make the MM buttons width expand
 MINOR: add [done] to step "put labels on new bot"
+MINOR: on changing of the color, update the phase icon (the background gets desynced)
 MINOR: add an external note that is just "recommend reprovisioning lapis bin on app" (without any factory reset needed)
 MINOR: if there's more serial numbers than there were before, and that number is >1, default the mobility menu dock box to "new ..." instead of "cx ..."
 MINOR: after whenever I change phase, focus on the input box
@@ -38,6 +70,34 @@ MINOR: make the mobility todo box an input box and give it a placeholder
 MINOR: in the comment in the texts.py that the steps have to be unique: they technically only have to be unique within each phase
 MINOR: maybe - in the mobility menu update function, in the if statement to reset the dock box, remove the or'ed statement if it's empty (don't reset if it's empty)
 
+HIGH: on opening the MM, focus on the first "where" select box
+HIGH: if theres not a bag in the dock when asked (and do the same for the pad when I get around to it), then set a variable and auto-add it once I get to debug phase to order/freebee a bag/pad
+HIGH: do this order: claimed damage -> pickup & update failure box
+HIGH: when opening a case, it should auto-set the step to "unbox" step, and the phase to "swap" -- also, auto-parse the "context" and add it to the todo box
+HIGH: add a is_repeat member (not a property), and serialize it. Have it set by the "is teh case a repeat" step
+HIGH: make the sidebar scrollable, and then drastically increase the size of the TODO box if the case is a repeat
+HIGH: figure out some way to include whether the swap is a refurb or not
+HIGH: Allow acronyms to specify the docks
+HIGH: combine "close out parts and get out of case" with "fill in css" step
+HIGH: copy case id for step "wait for parts to get closed out"
+HIGH: add a step to color the box (if applicable) -- or just add onto a step
+HIGH: merge "all done" last step into the "put on shelf" step
+HIGH: remove or nullify all the phase if statements. They needlessly interrupt using "back" to go back to the previous step in a different phase
+HIGH: in the new check voltage on the dock step, empty resp does not trigger a dock swap. Also, consider clarifying the text
+HIGH: serials: the 6th digit from the end (the | in C755020B220912N|02026)
+C7/J7: 0, 1, 2: Stingray (v1) | 3: Pearl (v2) | 4: Topaz (v3)
+J9/C9: 0-3: Pearl max (v1) | 4: Topaz (v2)
+C10: 4: Topaz (v1)
+HIGH: if the contact measurement is less than 3.8, round to 2 decimals instead
+HIGH: move "order dock" to be immediately after instead of before step "reload case and order swap", and then also allow "reload case" to accept "hold" as a response, which automatically goes to the HOLD phase, and if a dock would have been asked about, auto add it to the HOLD context
+HIGH: ensure_process() on changing phase to SWAP
+HIGH: step "are the lid pins sunken" should accept na
+HIGH: in external notes, if selected "rusty bin screw" (change the name first), then if M6, say "...can clog components" instead of rust
+HIGH: figure out some way to accept entirely custom input to "how do the dock charging contacts look" step
+HIGH: if bin screw is entirely rusted, automatically add the step under Process: Replaced bin -- maybe add a TODO I have to delete?
+HIGH: just remove the "check for repeat" step entirely
+HIGH: After I've switched to just adding CONTEXT after holding, auto-move the TODO text under context
+HIGH: order dock *after* ordering a new bot (but if we do need to order a new dock, and it's a swap, then note that under CONTEXT)
 HIGH: add another shortcut, just like alt+shift+k, but with 2 tabs instead of 3, and it pastes in the second box instead of "na"
 HIGH: save case states, as well as plain files
 HIGH: if it's the 2nd swap, skip some of the steps in the swap phase (like send swap email and unuse parts and the other one)
@@ -69,12 +129,24 @@ HIGH: in M6 bot, with no dock specified, it's asking if there's a bag in the doc
 HIGH: if the case has a lapis bin, *in the serial number*, it should *not* suggest in external notes to reprovision bot to the lapis bin (and should even prevent it if it is checked, just disable it). But if the bot does *not* have a 7 in the serial, but *does* have one in the notes, (add a regex for it), then it *should* recommend reprovisioning, if a factory reset OR a swap
 HIGH: phase deserialize doesn't load correctly
 HIGH: add periodic saving
-HIGH: add a global shortcut to jump focus to input box
+
 HIGH: in checking the user dock charging contacts, add the ability to include notes
 HIGH: when doing a mobility test, if the dock specified is a base, not a dock, ask to confirm the bin does not have ad evac port, and if it should
 HIGH: add ctrl+A to *all* input boxes
-HIGH: J1-6 don't have DCT cards specified
 
+MEDIUM: try disallowing num_lines can_focus
+MEDIUM: add a "clear" or "reset" all button to MM
+MEDIUM: if M6, in confirm, ask if there's a pad, and if there is, add it to the parts in
+MEDIUM: in ext notes, if both "j7 and a swap" and "wake from shipping mode", then combine them together nicely
+MEDIUM: if the name of one of the phases is entered exactly into the input box, switch to that phase (except swap, which adds "swap robot" and *then* switches)
+MEDIUM: In routine checks, if the dock tank screw is entirely rusted, have the immediate next step be "order a new bin" (accepting na), and then add " - replaced" to the notes
+MEDIUM: don't ask to clean an M6
+MEDIUM: have MM auto-disable evac boxes based on selected dock
+MEDIUM: add a history of previous steps, so multiple "back"s works
+MEDIUM: Pickup throws an error
+MEDIUM: if a S9 is a swap due to liquid, don't say to just order a new chassis. Order a whole new bot.
+MEDIUM: when ext indicates remove battery strip, it still is selecting wake from shipping mode
+MEDIUM: change the external notes previews to be more descriptive, instead of describing the symptoms (i.e. don't say rusty bin screw, say recommend correct soap)
 MEDIUM: if C9, and swap or order dock in a case, somehow make aware to swap with correct dock:
 MEDIUM: I think multi paste fails when they try to interrupt each other - have multipaste remove any calls or anything before running
 MEDIUM: Make "is there liquid damage" step allow for explanations, or just 'y' if simply "yes". Also, update the text to reflect this
@@ -127,6 +199,19 @@ MEDIUM: if serial numbers are different, automatically go to a new step that off
 MEDIUM: if battery tests are needed, also measure contacts, even if they don't feel sunken, but allow na
 --- COME BACK TO THIS --- MEDIUM: add a row immediately above the "parameters" row that just adds 2 more disable-able parameters: is the tank full (full, empty, or 1/4) and something else
 
+LOW: in the MM, disable the cx box if the dock box is set to "no dock"
+LOW: strip MM notes
+LOW: if a repeat, add a 2nd ref CopyText
+LOW: move external notes to the menu menu, instead of as a binding, it doesn't need a shortcut anymore
+LOW: add after_ and before_ method lookups for phases just like I have for steps (to automate adding headers like Process: and CONTEXT: and Routine Checks:)
+LOW: if the serial numbers are different lengths, add to the text area, in addition to what's already there: "did you forget to scan both serial numbers one after another?"
+LOW: remove all useless comments and clean up code
+LOW: add a setting to default to either the floor or the top bench (or the bottom bench) in the MM
+LOW: figure out how to remove the ^p shortcut on the right side of the footer
+LOW: for the step "sidebrush is on and screws are tight" make the "sidebrush is on" part be a formatted portion dependant on if it's not an M6
+LOW: don't ask to put the bin pack for M6 -- might not be relevant by time I get to this
+LOW: when measuring contacts, if the measurement is close (say, within .15 mm), then state how many measurements were taken
+LOW: a different background/main color for the hold emoji would be nice (blue is already for swap)
 LOW: add another measure to log, which is how long each case is actually open for
 LOW: figure out how to darken the last space of the tabs
 LOW: fix dock display in MM when no dock indicated
@@ -202,30 +287,11 @@ EPIC: add a double check phase, after finish, that regexes everything. Include: 
 EPIC: combine step "clean dock" and "clean base" -- this will actually take a rewrite to enable dynamic steps
 EPIC: make the serial and ref labels into a new class that is a "CopyText" or something like that: a button that when clicked gets copied
 
-EPIC: common phrases:
-Attempting Aurora refill debug steps
-Robot charges on <dock> @ ~nW
-Battery test: n%/n%
-Swapping bot
-Swapping dock
-
-EPIC: Put on hold phase:
-copy notes over step
-retrun any *unused* parts
-
 EPIC: consider adding a bunch of read-only checkboxes immediately below the "copy notes button" (also, the copy notes button can be a lot smaller)
 EPIC: just make a menu somewhere that has all the buttons - and in that menu, have a collapsible which has a bunch of debug buttons for when stuff goes wrong (like update sidebar)
 
 EPIC: add settings menu, with the following settings:
 do double check (also maybe add a button that can turn this on manually later)
 parts are being run (determines if we should ask if the parts have been closed out yet or not)
-
-EPIC: add a function to auto-regex the add Step text, just like commands, but generalized regex ("MT" -> "Mobility test")
-
-EPIC: make a new phase for holds, and save their states in a separate folder, and then create a menu to open them with
-
-EPIC: Instead of alt+b just going to the board, have it go to the board and auto-filter for the currently active case - but, when adding keyboard shortcuts, add a setting to disable/enable them
-
-EPIC: instead of an "open case" menu, instead when a new case is created, if the case id entered already exists in the save folder (preferably in the saved state folder, as opposed to just the saved notes folder), then automatically open a dialog asking if I would like to reopen the saved case state (this shouldn't run when deserializing, only when opening a new case)
 
 EPIC: make a simple version of the side bar stuff, but instead of a python script, make it a JS script and host it on a GitHub page so it's easier to access and update

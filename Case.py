@@ -1,46 +1,40 @@
 import json
-import re
-from HintsMenu import HintsMenu
-# from MenuMenu import MenuMenu
-from globals import COLORS, LOG_PATH, SAVE_CASE_PATH, SAVE_NOTES_PATH, capitolize, darken_color, invert_dict
 import random
+import re
+from datetime import datetime
+from difflib import get_close_matches
+
+from textual import on
 from textual.containers import *
 from textual.reactive import reactive
 from textual.widgets import *
-from Phase import Phase
-from texts import Steps
-from CustomTextArea import CustomTextArea
-from Sidebar import Sidebar
-from MobilityMenu import MobilityMenu
-from CommandsMenu import CommandsMenu
+
 from AcronymMenu import AcronymMenu
+from CommandsMenu import CommandsMenu
+from CustomTextArea import CustomTextArea
 from ExternalNotesMenu import ExternalNotesMenu
-from textual import on
-from datetime import datetime
+# from MenuMenu import MenuMenu
+from globals import (COLORS, LOG_PATH, SAVE_CASE_PATH, SAVE_NOTES_PATH,
+                     capitolize, darken_color, invert_dict)
+from HintsMenu import HintsMenu
+from info import DOCKS
+from MobilityMenu import MobilityMenu
+from Phase import Phase
+from Sidebar import Sidebar
+from texts import Steps
 
 
 class Case(VerticalGroup):
-    from step_algorithm import execute_step as _execute_step
-    from step_algorithm import (
-        before_pick_up_case,
-        after_pick_up_case,
-        after_ask_complete_case_CSS,
-        before_generate_external_notes,
-        after_generate_external_notes,
-        # before_ask_copy_notes_1,
-        before_ask_double_check,
-        before_ask_copy_notes_2,
-        before_ask_complete_case_CSS,
-        before_swap_update_css,
-        before_swap_email,
-        before_swap_order,
-        before_swap_note_serial,
-        before_hold_copy_notes_to_CSS,
-        before_wait_parts_closed,
-        before_hold_add_context,
-        before_ask_submit_adj,
-    )
     from parse_commands import parse_command
+    from step_algorithm import (  # before_ask_copy_notes_1,
+        after_ask_complete_case_CSS, after_generate_external_notes,
+        after_pick_up_case, before_ask_complete_case_CSS,
+        before_ask_copy_notes_2, before_ask_double_check,
+        before_ask_submit_adj, before_generate_external_notes,
+        before_hold_add_context, before_hold_copy_notes_to_CSS,
+        before_pick_up_case, before_swap_email, before_swap_note_serial,
+        before_swap_order, before_swap_update_css, before_wait_parts_closed)
+    from step_algorithm import execute_step as _execute_step
 
     BINDINGS = (
         # TODO: reenable this eventually. Somehow.
@@ -57,15 +51,19 @@ class Case(VerticalGroup):
         Phase.FINISH: Steps.ask_bit_mobility_done,
         Phase.SWAP: Steps.swap_unuse_parts,
         Phase.HOLD: Steps.hold_add_context,
+        Phase.CHARGING: Steps.charging,
+        Phase.UPDATING: Steps.updating,
     }
 
     phase_icons = {
-        Phase.CONFIRM: "🪫",
+        Phase.CONFIRM: "",
         Phase.ROUTINE_CHECKS: "📋",
         Phase.DEBUGGING: "🔧",
         Phase.SWAP: "🔃",
         Phase.FINISH: "✅",
         Phase.HOLD: "⏸️",
+        Phase.CHARGING: "🪫",
+        Phase.UPDATING: "💾",
     }
 
     phase = reactive(Phase.CONFIRM)
@@ -117,6 +115,8 @@ class Case(VerticalGroup):
         self._also_check_left = False
         self._swap_after_battery_test = False
         self._swap_due_to_sunken_contacts = False
+        # In the absense of info, assume it is
+        self._is_current_swap_refurb = True
 
         # This gets run on mount of the color selector
         # self.set_color(color)
@@ -284,22 +284,6 @@ class Case(VerticalGroup):
             self._execute_step(event.value)
             self.input.value = ''
 
-    # def action_parse_for_info(self):
-    #     """ Parse the currently set text for things like the dock, customer states, things like that """
-    #     # "Parts in: Robot" + group(optional(', ' + word))
-    #     if (found := re.search(r'Parts\ in:\ Robot((?:,\ \w+)?)', self.text_area.text)):
-    #         self.dock = found.group(1)
-
-    #     # "Customer States: " + group(+anything)
-    #     if (found := re.search(r'Customer\ States:\ ((?:.)+)', self.text_area.text)):
-    #         self.customer_states = found.group(1)
-
-    #     # 'Routine Checks' + match_max(literallyAnything) + '* ' + chunk + ... + match_max(literallyAnything) + 'Process:'
-    #     # self._modular = not bool(re.search(r'Routine\ Checks(?:(?:.|\n))+\*\ .+is\ non\-modular(?:(?:.|\n))+Process:', self.text_area.text))
-    #     self._bin_screw_has_rust = bool(re.search(r'Routine\ Checks(?:(?:.|\n))+\*\ (?:Tank\ float\ screw\ has\ a\ spot\ of\ rust\ on\ it|Tank\ float\ screw\ is\ entirely\ rusted)(?:(?:.|\n))+Process:', self.text_area.text))
-    #     self._dock_tank_screw_has_rust = bool(re.search(r'Routine\ Checks(?:(?:.|\n))+\*\ (?:Dock tank\ float\ screw\ has\ a\ spot\ of\ rust\ on\ it|Dock tank\ float\ screw\ is\ entirely\ rusted)(?:(?:.|\n))+Process:', self.text_area.text))
-    #     self._liquid_found = bool(re.search(r'Routine\ Checks(?:(?:.|\n))+\*\ Found\ signs\ of\ liquid\ (?:(?:.|\n))+Process:', self.text_area.text))
-
     def action_focus_input(self):
         self.input.focus()
 
@@ -310,12 +294,13 @@ class Case(VerticalGroup):
         with open(SAVE_CASE_PATH / (self.ref + '.json'), 'w') as f:
             json.dump(self.serialize(), f)
 
-    # TODO
-    def snap_to_dock(self, name):
+    @staticmethod
+    def snap_to_dock(name):
         """ Make the dock one of the allowed docks
             this parses input given from the ask for dock step, parses it, and returns the dock
         """
-        return capitolize(name.split(',')[0].strip())
+        input = capitolize(name.split(',')[0].strip())
+        return get_close_matches(input, DOCKS, n=1, cutoff=0.0)[0]
 
     # Helper methods
     def get_quick_model(self):
@@ -392,7 +377,7 @@ class Case(VerticalGroup):
             # return 'If the last digit of the SPL SKU is 7, they have a Lapis bin at home! If the middle number is 1, it came with just a home base. In that case, don\'t test on a dock! Just a base.'
         notes = ''
         if self.serial.startswith('c9'):
-            notes += "[on orange_red1]Remember to remove battery before removing the CHM[/]. Also, if the DCT card doesn't work, try a hard reset\nc955 -> albany; c975 -> aurora"
+            notes += "[on orange_red1]Remember to remove battery before removing the CHM.[/] Also, if the DCT card doesn't work, try a hard reset\nc955 -> albany; c975 -> aurora"
 
         if self.serial.startswith('i'):
             notes += 'If having weird trouble with DCT, try factory reset'

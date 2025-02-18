@@ -4,53 +4,43 @@ from numpy import mean, std
 from Phase import Phase
 from globals import capitolize
 
-""" Auto Acronyms:
-d -> cx <dock>
-r -> robot
-nr -> new robot
-nd -> new dock
-rp -> replaced
-fb -> freebee
-sb -> sidebrush
-doa -> DOA
-exp -> expected
-ACRONYM: chm -> CHM
-ACRONYM: opt -> optical bin failures <100 out of range.
-ACRONYM: dc -> expected dock comms failure.
-ACRONYM: batt -> battery
-ACRONYM: md -> module
-ACRONYM: fw -> firmware
-ACRONYM: sw -> software
-ACRONYM: hw -> hardware
-"""
-
 ACRONYMS = {
+    'r': 'robot',
+    'b': 'robot',
+    'd': 'dock',
+    'n': 'new',
+    't': 'test',
+    'p': 'Pass',
     'fw': "firmware",
     'sw': "software",
     'hw': "hardware",
     'md': "module",
-    'batt': "battery",
-    'comms': "Dock comms failure.",
-    'opt': "optical bin failure[s] <100 out of range.",
+    'bt': "battery",
     'chm': "CHM",
-    'exp': 'expected',
+    'bbk': 'BBK',
     'doa': 'DOA',
+    'exp': 'expected',
     'sb': 'sidebrush',
     'fb': 'freebee',
     'rp': 'replaced',
     'nd': 'new dock',
     'nr': 'new robot',
-    'r': 'robot',
-    'd': 'dock',
-    'ch': 'charges on',
-    'n': 'new',
-    't': 'test',
-    'p': 'Pass',
+    'ch': 'charges',
+    'cho': 'charges on',
+    'cm': 'Confirmed with Michelle',
+    'ar': 'Aurora refill debug steps',
+    'hr': 'hard reset',
+    'hfr': 'hard factory reset',
+    'comms': "Dock comms failure.",
+    'batt full': "Battery current test failed (full battery).",
+    'opt': "optical bin failure[s] <100 out of range.",
+    'batt': "battery",
 }
 
 def parse_acronym(input:str):
     for acronym, full in ACRONYMS.items():
-        regex = fr'(?i)\b{acronym}\b'
+        # if_not_preceded_by(any_of(*r"'-_")) + wordBoundary + 'ttt' + wordBoundary + IGNORECASE
+        regex = fr"(?i)(?<!(?:'|\-|_))\b{acronym}\b"
         input = re.sub(regex, full, input)
     return input
 
@@ -78,15 +68,10 @@ def parse_command(self, input:str):
                 step = 'Swap robot'
             case 'sd':
                 step = 'Swap dock'
-            case 'ar':
-                step = 'Aurora refill debug steps'
-            case 'hr':
-                step = 'Hard reset'
-            case 'hfr':
-                step = 'Hard factory reset'
             case 'bit':
-                notes = args.pop(0) if args else 'pass'
-                step = f'BiT: {notes}'
+                step = 'BiT: '
+                if not args:
+                    step += 'Pass'
             case 'bbk':
                 notes = args.pop(0) if args else 'pass'
                 step = f'BBK: {notes}'
@@ -132,16 +117,8 @@ def parse_command(self, input:str):
                             self.add_step('Provisioned lapis bin on app')
             case 'reprov':
                 step = 'Reprovisioned robot to the app'
-            case 'fb':
-                step = 'Freebee'
-            case '2m':
-                step = 'Double checked with Michelle'
-            case 'cm':
-                step = 'Confirmed with Michelle'
             case 'rm':
                 step = 'Removed provisioning'
-            case 'rp':
-                step = 'Replaced'
             case 'bump':
                 side = args.pop(0) if args else 'inside and out'
                 step = f'Cleaned {side}side of the bumper'

@@ -140,6 +140,11 @@ MenuMenu{
     margin: 0 1;
 }
 
+.mm-param-select{
+    # height: 3;
+    # offset-y: 1;
+}
+
 # Menu Menu
 #menu-select{
     layer: hintButton;

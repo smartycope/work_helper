@@ -11,6 +11,14 @@ docks = { #        is dock
     'Boulder': (True, evac, visual, ir),
 }
 
+EVAC_DOCKS = (
+    'Albany', 'Zhuhai', 'Tianjin', 'Fresno', 'Boulder', 'Aurora'
+)
+
+DOCKS = (
+    'Albany', 'Zhuhai', 'Bombay', 'Tianjin', 'Torino', 'San Marino', 'Fresno', 'Boulder', 'Aurora'
+)
+
 ten_sec = 'Hold home for 10 seconds. Indicators should turn off'
 lift_wheel = 'Lift one wheel and hold clean for 3 seconds. Indicators should turn off'
 sleep_mode = {

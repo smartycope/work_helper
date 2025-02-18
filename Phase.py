@@ -6,4 +6,6 @@ class Phase(Enum):
     DEBUGGING = 2
     SWAP = 4
     HOLD = 3
-    FINISH = 5
+    CHARGING = 5
+    UPDATING = 6
+    FINISH = 8

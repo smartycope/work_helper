@@ -6,6 +6,7 @@ from CustomInput import CustomInput
 from Menu import Menu
 from TriSwitch import TriSwitch
 
+from info import EVAC_DOCKS
 from parse_commands import parse_acronym
 
 class MobilityMenu(Menu):
@@ -25,6 +26,8 @@ class MobilityMenu(Menu):
         # super().__init__(classes='mobility-menu', id=f'mobility-menu-{case.ref}')
         super().__init__(case)
         self._been_opened = False
+        self._was_previously_no_dock = False
+        self._was_previously_not_evac = False
 
     def compose(self):
         yield Label('[bold]Mobility Test[/]', id='mobility-title')
@@ -35,20 +38,34 @@ class MobilityMenu(Menu):
         self.cx_states = Label('', id='cx-states')
         yield self.cx_states
 
-        yield Label('Where:')
-        self.where = Select.from_values(('top bench', 'floor', 'bottom bench'), allow_blank=False, value='floor')
+        yield Label('Parameters:')
+        self.where = Select.from_values(('top bench', 'floor', 'bottom bench'), allow_blank=False, value='floor', classes='mm-param-select')
         yield self.where
 
-        # yield Label('Dock:')
-        # self.base = CustomInput(('cx ' + self.case.dock) if self.case.dock else 'test ', placeholder='no dock', id='dock-input')
-        # yield self.base
-        self.base1 = Select(((i, i) for i in ('cx', 'test', 'new', '#2', '#3')), allow_blank=False)
-        self.base2 = Select([], prompt='No Dock')
+        self.base1 = Select(((i, i) for i in ('cx', 'test', 'new', '#2', '#3')), allow_blank=False, classes='mm-param-select')
+        self.base2 = Select([], prompt='No Dock', id='base2', classes='mm-param-select')
         yield self.base1
         yield self.base2
 
-        yield Label('Parameters:')
-        self.params = CustomInput(classes='triple', placeholder='Additional parameters')
+        # new/cx bot
+        # test/cx/new bin
+        # full/empty/partially full test/cx/new tank
+        # test/cx lapis
+        # cx/test/new pad
+
+        self.param_bin = Select([(i,i) for i in ('cx bin', 'new bin', 'test bin')], allow_blank=False, classes='mm-param-select')
+        yield self.param_bin
+
+        self.param_tank = Select([(i,i) for i in ('empty tank', '1/3 tank', 'full tank')], allow_blank=False, classes='mm-param-select')
+        yield self.param_tank
+
+        self.param_pad = Select([(i,i) for i in ('cx pad', 'new pad', 'test pad')], allow_blank=False, classes='mm-param-select')
+        yield self.param_pad
+
+        # self.param_lapis = Select([(i,i) for i in ('', 'cx lapis', 'test lapis')], allow_blank=False, classes='mm-param-select')
+        # yield self.param_lapis
+
+        self.params = CustomInput(placeholder='Parameters')
         yield self.params
 
         yield Rule(line_style='heavy', classes='quadruple')
@@ -119,7 +136,7 @@ class MobilityMenu(Menu):
         yield Button('Done', id='done', classes='mm-buttons')
 
     def reset(self):
-        """ Run whenever the menu gets closed """
+        """ Run whenever the notes get added """
         self.notes.value = ''
         self.todo.value = ''
 
@@ -135,33 +152,67 @@ class MobilityMenu(Menu):
             if self.case.dock in self.case.get_docks()
             else self.case.get_docks()[0]
         )
+
+        # Remove irrelevant params
+        if not self.case.can_mop:
+            self.param_tank.remove()
+            self.param_pad.remove()
+            self.params.styles.column_span = 3
+
         # Disable the non-relevant tests
         disabled_text = '#666666'
+        disable_text_style = 'strike'
         if self.case.serial.startswith('m6'):
             self.auto_evac.disabled = True
             self.auto_evac_label.styles.color = disabled_text
+            self.auto_evac_label.styles.text_style = disable_text_style
+
             self.manual_evac.disabled = True
             self.manual_evac_label.styles.color = disabled_text
+            self.manual_evac_label.styles.text_style = disable_text_style
+
             self.picks_up_debris.disabled = True
             self.picks_up_debris_label.styles.color = disabled_text
-            self.refill.disabled = True
-            self.refill_label.styles.color = disabled_text
+            self.picks_up_debris_label.styles.text_style = disable_text_style
+
+            # self.refill.disabled = True
+            # self.refill_label.styles.color = disabled_text
+            # self.refill_label.styles.text_style = disable_text_style
+
             self.deploy_pad.disabled = True
             self.deploy_pad_label.styles.color = disabled_text
+            self.deploy_pad_label.styles.text_style = disable_text_style
+
             self.num_lines.disabled = True
             self.num_lines_label.styles.color = disabled_text
+            self.num_lines_label.styles.text_style = disable_text_style
+
         elif not self.case.can_mop:
-            self.refill.disabled = True
-            self.refill_label.styles.color = disabled_text
+            # self.refill.disabled = True
+            # self.refill_label.styles.color = disabled_text
+            # self.refill_label.styles.text_style = disable_text_style
+
             self.deploy_pad.disabled = True
             self.deploy_pad_label.styles.color = disabled_text
+            self.deploy_pad_label.styles.text_style = disable_text_style
+
             self.num_lines.disabled = True
             self.num_lines_label.styles.color = disabled_text
+            self.num_lines_label.styles.text_style = disable_text_style
+
             self.spray.disabled = True
             self.spray_label.styles.color = disabled_text
+            self.spray_label.styles.text_style = disable_text_style
+
         else:
             self.spray.disabled = True
             self.spray_label.styles.color = disabled_text
+            self.spray_label.styles.text_style = disable_text_style
+
+        if not self.case.serial.startswith('c9'):
+            self.refill.disabled = True
+            self.refill_label.styles.color = disabled_text
+            self.refill_label.styles.text_style = disable_text_style
 
     def action_toggle(self):
         super().action_toggle()
@@ -174,6 +225,57 @@ class MobilityMenu(Menu):
         self.case.text_area.scroll_to(None, 1000, animate=False)
         self.case.input.focus()
         return super().action_close()
+
+    @on(Select.Changed, '#base2')
+    def dock_kind_changed(self, event:Select.Changed):
+        if event.value == Select.BLANK:
+            self._was_previously_no_dock = True
+
+            self._prev_dock_value = self.dock.value
+            self._prev_undock_value = self.undock.value
+            self._prev_refill_value = self.refill.value
+            self._prev_auto_evac_value = self.auto_evac.value
+            self._prev_manual_evac_value = self.manual_evac.value
+
+            self.refill.value = \
+            self.auto_evac.value = \
+            self.manual_evac.value = \
+            self.dock.value =  \
+            self.undock.value = None
+
+            self.refill.disabled = \
+            self.auto_evac.disabled = \
+            self.manual_evac.disabled = \
+            self.dock.disabled =  \
+            self.undock.disabled = True
+
+        elif self._was_previously_no_dock:
+            self._was_previously_no_dock = False
+
+            # It's okay to reference these here, cause the only way this gets run is if the above gets run sometime previously
+            self.dock.value = self._prev_dock_value
+            self.undock.value = self._prev_undock_value
+            self.refill.value = self._prev_refill_value
+            self.auto_evac.value = self._prev_auto_evac_value
+            self.manual_evac.value = self._prev_manual_evac_value
+
+            self.refill.disabled = not self.case.serial.startswith('c9')
+            self.auto_evac.disabled = \
+            self.manual_evac.disabled = \
+            self.dock.disabled =  \
+            self.undock.disabled = False
+
+        if event.value not in EVAC_DOCKS:
+            self._was_previously_not_evac = True
+            self._prev_auto_evac_value = self.auto_evac.value
+            self._prev_manual_evac_value = self.manual_evac.value
+            self.auto_evac.value = self.manual_evac.value = None
+            self.auto_evac.disabled = self.manual_evac.disabled = True
+        elif self._was_previously_not_evac:
+            self._was_previously_not_evac = False
+            self.auto_evac.value = self._prev_auto_evac_value
+            self.manual_evac.value = self._prev_manual_evac_value
+            self.auto_evac.disabled = self.manual_evac.disabled = False
 
     @on(Input.Submitted, '#dock-input')
     @on(Input.Submitted, '#notes')
@@ -205,6 +307,17 @@ class MobilityMenu(Menu):
             where=self.where.value,
             base=(self.base1.value + ' ' + self.base2.value if type(self.base2.value) is str else 'no dock'),
         )
+        l1 += self.param_bin.value + ', '
+        if self.case.can_mop:
+            l1 += self.param_tank.value + ', '
+            l1 += self.param_pad.value + ', '
+
+        if self.case.is_factory_lapis or self.case.has_lapis:
+            l1 += self.param_lapis.value + ', '
+
+        # Remove the extraneous comma
+        l1 = l1[:-2]
+
         if self.params.value:
             l1 += ', ' + parse_acronym(self.params.value)
 

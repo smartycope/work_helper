@@ -53,12 +53,13 @@ class Steps:
     swap_update_css = "Update CSS repair action and copy notes over {{notes}} [done]"
     swap_email = "Send swap email {{address, subject, notes}} [confirmed]"
     swap_order_dock = "Order a new dock [done]"
-    swap_order = "Reload case and order swap {{original serial}} [done]"
-    swap_order_S9 = "Order main board (not a whole bot!) [done]"
-    swap_order_M6 = "Order the correctly colored swap [done]"
+    swap_order = 'Reload case and order swap {{original serial}} ["out" if out of stock]'
+    swap_order_S9 = 'Order a new chassis (not a whole bot!) ["out" if out of stock] [done]'
+    swap_order_M6 = 'Order the correctly colored swap ["out" if out of stock] [done]'
     swap_move_bin = "Unbox and move bin and battery over, if necessary [no bin needed]"
     # swap_put_in_box = "Put the old bot in the box [done]"
     swap_add_labels = 'Put labels on the new bot'
+    swap_ask_refurb = "Is the swapped bot a refurb? [yes]"
     swap_input_new_serial = "What's the serial number of the new bot"
     swap_note_serial = "Put the new serial number into CSS {{new serial}} [done]"
 
@@ -66,7 +67,7 @@ class Steps:
     # hold_put_todo_in_notes = "Put any context directly into the notes {{TODO}} [done]"
     hold_copy_notes_to_CSS = "Copy notes over to CSS {{notes}}"
     hold_add_context = "Add any context about the case [done]"
-    hold_unuse_parts = "Unuse any parts [done]"
+    hold_unuse_parts = "Unuse any parts, but don't close out parts! [done]"
     hold_put_on_shelf = "Put everything together, and put on the shelf with the traveler [done]"
     hold_done = "Good to close case now!"
 
@@ -96,10 +97,13 @@ class Steps:
     ask_tags_off = "All the tags are off, including the bin and dock, and grab the traveler [done]"
     ask_put_bin_back = "Put the bin back [done]"
     ask_copy_notes_2 = "Copy notes over to CSS {{notes}} [done]"
-    wait_parts_closed = 'Wait for parts to get closed out [done]'
+    wait_parts_closed = 'Wait for parts to get closed out {{case ID}} [done]'
     ask_complete_case_CSS = "Finish the case on CSS {{case ID}} [done]"
     ask_submit_adj = "Send adjustment {{address, subject, adjustment}}"
     ask_put_bot_on_shelf = "Put the robot and traveler{s} on the shelf [done]"
     ask_put_bot_on_shelf_mopping = "Put the robot and traveler{s} on the shelf, and put the tank[s] on top [done]"
     # finish_case = 'All done! [close case]'
     finish_case = "All done! Good to close case now"
+
+    charging = 'Bot is charging [done]'
+    updating = 'Bot is updating firmware [done]'
