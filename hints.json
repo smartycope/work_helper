@@ -55,5 +55,11 @@
         "Take it away from any interferance",
         "Try a different tablet",
         "If none of those work, swap"
+    ],
+    "Bot won't update firmware": [
+        "Factory reset",
+        "Unprovision and reprovision to app",
+        "Have Michelle try an RDP reset",
+        "If all that doesn't work, confirm with Michelle before swapping"
     ]
 }

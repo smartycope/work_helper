@@ -1,8 +1,5 @@
-import json
-
 from clipboard import copy
 from textual.containers import *
-from textual.reactive import reactive
 from textual.widgets import *
 from info import sleep_mode, factory_reset
 from Phase import Phase
@@ -119,6 +116,8 @@ class Sidebar(VerticalGroup):
             button = Button('Copy Notes', id='copy-button')
             button.can_focus = False
             yield button
+
+        self.update()
 
     def on_button_pressed(self, event):
         match event.button.id:

@@ -21,6 +21,8 @@ COLORS = OrderedDict((
     ("#799fad", "Blue"),
 ))
 
+EXISTING_CASES = {path.name.split('.')[0]: path for path in SAVE_CASE_PATH.iterdir()}
+
 def invert_dict(d:dict) -> dict:
     """ Returns the dict given, but with the keys as values and the values as keys. """
     return dict(zip(d.values(), d.keys()))

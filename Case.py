@@ -14,7 +14,7 @@ from CommandsMenu import CommandsMenu
 from CustomTextArea import CustomTextArea
 from ExternalNotesMenu import ExternalNotesMenu
 # from MenuMenu import MenuMenu
-from globals import (COLORS, LOG_PATH, SAVE_CASE_PATH, SAVE_NOTES_PATH,
+from globals import (COLORS, EXISTING_CASES, LOG_PATH, SAVE_CASE_PATH, SAVE_NOTES_PATH,
                      capitolize, darken_color, invert_dict)
 from HintsMenu import HintsMenu
 from info import DOCKS
@@ -56,7 +56,7 @@ class Case(VerticalGroup):
     }
 
     phase_icons = {
-        Phase.CONFIRM: "",
+        Phase.CONFIRM: "📋",
         Phase.ROUTINE_CHECKS: "📋",
         Phase.DEBUGGING: "🔧",
         Phase.SWAP: "🔃",
@@ -152,6 +152,7 @@ class Case(VerticalGroup):
 
         # We're doing this here, because it needs to be mounted before we can change the tab label
         self._tab.label = self.tab_label
+        # self.sidebar.update()
 
         self.input.focus()
 
@@ -190,8 +191,7 @@ class Case(VerticalGroup):
             # TODO: add this as a setting
             # self.mobility_menu.visible = True
         self.sidebar.phase_selector.value = new_phase.value
-        if self._tab:
-            self._tab.label = self.tab_label
+        self._update_label()
 
         if self.phase == Phase.CONFIRM:
             self.step = self.first_steps[Phase.CONFIRM] if not self.serial else Steps.check_repeat
@@ -263,13 +263,22 @@ class Case(VerticalGroup):
             case.serials = [data.get('serial', '') or '']
             if not case.serials[0]:
                 case.serials = []
-        case.sidebar.update()
+        # case.sidebar.update()
         case.sidebar.todo.text = data.get('todo', '')
         case.phase = Phase(data.get('phase', Phase.DEBUGGING))
         case.step = data.get('step', Steps.add_step)
         case.sidebar.phase_selector.value = case.phase.value
         # case.action_parse_for_info()
         return case
+
+    @staticmethod
+    def deserialize_from_ref(ref):
+        if ref in EXISTING_CASES:
+            with EXISTING_CASES[ref].open('r') as f:
+                return Case.deserialize(json.load(f))
+        else:
+            # Because the only thing that uses this is in HelperApp, and it makes sense in that context
+            return ref
 
     def ensure_process(self):
         if 'Process:' not in self.text_area.text:
@@ -299,8 +308,11 @@ class Case(VerticalGroup):
         """ Make the dock one of the allowed docks
             this parses input given from the ask for dock step, parses it, and returns the dock
         """
-        input = capitolize(name.split(',')[0].strip())
-        return get_close_matches(input, DOCKS, n=1, cutoff=0.0)[0]
+        if name:
+            input = capitolize(name.split(',')[0].strip())
+            return get_close_matches(input, DOCKS, n=1, cutoff=0.0)[0]
+        else:
+            return ""
 
     # Helper methods
     def get_quick_model(self):
@@ -446,6 +458,10 @@ class Case(VerticalGroup):
                 timestamp=datetime.now(),
             ))
 
+    def _update_label(self):
+        if self._tab:
+            self._tab.label = self.tab_label
+
     @property
     def _tab(self):
         try:
@@ -455,7 +471,13 @@ class Case(VerticalGroup):
 
     @property
     def tab_label(self):
-        return self.ref + f' [on {darken_color(self.color, .6)}]' + self.phase_icons[self.phase]
+        s = ''
+        if self.repeat:
+            s += 'R '
+        s += self.ref
+        s += f' [on {darken_color(self.color, .6)}]'
+        s += self.phase_icons[self.phase]
+        return s
 
     @property
     def can_mop(self):

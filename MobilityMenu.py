@@ -53,7 +53,7 @@ class MobilityMenu(Menu):
         # test/cx lapis
         # cx/test/new pad
 
-        self.param_bin = Select([(i,i) for i in ('cx bin', 'new bin', 'test bin')], allow_blank=False, classes='mm-param-select')
+        self.param_bin = Select([(i,i) for i in ('cx bin', 'new bin', 'test bin', 'test lapis', 'cx lapis')], allow_blank=False, classes='mm-param-select')
         yield self.param_bin
 
         self.param_tank = Select([(i,i) for i in ('empty tank', '1/3 tank', 'full tank')], allow_blank=False, classes='mm-param-select')
@@ -307,13 +307,13 @@ class MobilityMenu(Menu):
             where=self.where.value,
             base=(self.base1.value + ' ' + self.base2.value if type(self.base2.value) is str else 'no dock'),
         )
-        l1 += self.param_bin.value + ', '
+        l1 += ', ' + self.param_bin.value + ', '
         if self.case.can_mop:
             l1 += self.param_tank.value + ', '
             l1 += self.param_pad.value + ', '
 
-        if self.case.is_factory_lapis or self.case.has_lapis:
-            l1 += self.param_lapis.value + ', '
+        # if self.case.is_factory_lapis or self.case.has_lapis:
+        #     l1 += self.param_lapis.value + ', '
 
         # Remove the extraneous comma
         l1 = l1[:-2]

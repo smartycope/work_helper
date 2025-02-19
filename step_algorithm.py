@@ -11,6 +11,13 @@ import clipboard
 import settings
 from multi_paste import multi_paste
 
+DO_NOT_PARSE_ACRONYM_STEPS = [
+    Steps.add_step,
+    Steps.ask_sunken_contacts,
+    Steps.battery_test,
+    Steps.ask_bin_rust,
+    Steps.ask_dock_tank_rust,
+]
 
 def execute_step(self, resp):
     # To simplify some of the redundant next step logic
@@ -18,7 +25,7 @@ def execute_step(self, resp):
     resp = resp.strip()
 
     # This step specifically does parses them itself later, after it parses the commands
-    if self.step != Steps.add_step:
+    if self.step not in DO_NOT_PARSE_ACRONYM_STEPS:
         resp = parse_acronym(resp)
 
     # TODO: I think back isn't working
@@ -73,6 +80,7 @@ def execute_step(self, resp):
 
             case Steps.check_repeat:
                 self.repeat = bool(resp)
+                self._update_label()
                 self.step = Steps.check_claimed_damage
 
             case Steps.check_claimed_damage:
@@ -530,10 +538,13 @@ def execute_step(self, resp):
             case Steps.swap_input_new_serial:
                 if resp:
                     self.add_serial(resp)
-                    # '*' + at_most(2, anything) + IGNORECASE + 'swap' + at_most(8, anything) + 'bot' + optional(chunk)
-                    last: re.Match = list(re.finditer(r'(?i)\*.{0,2}swap.{0,8}bot(?:.+)?', self.text_area.text))[-1]
-                    t = self.text_area.text.strip()
-                    self.text_area.text = t[:last.end()] + f' -> {resp} ({"" if self._is_current_swap_refurb else "non-"}refurb)' + t[last.end():]
+                    try:
+                        # '*' + at_most(2, anything) + IGNORECASE + 'swap' + at_most(8, anything) + 'bot' + optional(chunk)
+                        last: re.Match = list(re.finditer(r'(?i)\*.{0,2}swap.{0,8}bot(?:.+)?', self.text_area.text))[-1]
+                        t = self.text_area.text.strip()
+                        self.text_area.text = t[:last.end()] + f' -> {resp} ({"" if self._is_current_swap_refurb else "non-"}refurb)' + t[last.end():]
+                    except IndexError:
+                        pass
                     self.step = Steps.swap_note_serial
 
             case Steps.swap_note_serial:
@@ -572,7 +583,7 @@ def execute_step(self, resp):
         self.step = Steps.ask_came_with_pad if self.is_combo else Steps.customer_states
 
     if next_step == 'quiet audio':
-        if self.serial.startswith(('c', 'j')) and "evac" in self.customer_states.lower():
+        if self.serial.startswith(('c', 'j')) and "evac" in self.customer_states.lower() or "empty" in self.customer_states.lower():
             self.step = Steps.ask_quiet_audio
         else:
             self.phase = Phase.DEBUGGING

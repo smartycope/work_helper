@@ -80,7 +80,9 @@ def open_return_product(case:str=None):
         sleep(SHORT)
         keyboard.press_and_release('enter')
 
-def query_case(case):
+# TODO: the position of the query box is unreliable
+def query_case(case=None):
+    return
     mouse.move(388, 205) # Empty spot on the window
     sleep(SHORT)
     mouse.click(button='left')

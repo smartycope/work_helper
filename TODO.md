@@ -1,4 +1,39 @@
 
+
+COMMAND: meas r/l/b -> Measured right/left contact: >4mm; meas empty should do nothing
+COMMAND: blew cliff -> Blew out cliff sensors
+COMMAND: blew chirp -> Blew out chirp sensors
+COMMAND: blew -> Blew out chirp sensors; if more than 1 arg though, it should not capture, and not be treated as a command (so you can still type stuff out normally)
+ACRONYM: lowvac -> low current vacuum test <1500.
+ACRONYM: bb -> false bump
+
+Look up:
+"schrodinger's killer app"
+blog: "cheatle optimized" (phontetic)
+Saturday mar 1 @ 12pm 20 min
+
+URGENT: in step "move bin to new bot...", allow multiple inputs for freebee bin, new bin, and cx bin
+
+
+ACRONYM: something for "Charge current test failed (battery full)."
+ACRONYM: l -> Lapis bin
+ACRONYM: dct -> DCT; ex -> extractors; rdp -> RDP
+ACRONYM: vc -> vacuum; ft/fl -> filter
+ACRONYM: lcv: Low current vaccum failure <1500.
+COMMAND: Update Firmware
+ACRONYM: pad act -> pad actuator deploy/stow failure[s].
+COMMAND: nozzle -> Cleaned out drip nozzles
+COMMAND: BiT: has extra space in it when immediately an acronym is after it
+
+MEDIUM: move steps "check if screws are on tight" and "check if bin is in" to be before the cleaning steps
+
+HIGH: allow CHARGING phase (and only that phase) to enter without a serial number
+
+
+URGENT 2nd PRIORITY: somehow, if the json doesn't load properly, it deletes the file or something?? - also, if it fails to load, and I *do* need to overwrite it, it won't let me. Build in a thing that if you type in "OVERWRITE 11111IR" then it will not check to see if it should load it
+URGENT: if entering swap phase, and "swap robot" or equivelent not in notes, auto add it (like ensure process)
+URGENT: if "provisioned robot to app" (or similar) in the notes, then in finish phase, ask if they've removed bot from the app
+URGENT: if the bot charges on dock @ 1.2, then it could be full battery -- also, if <5, round to 1 place instead of 0
 URGENT: if the case is a repeat, add a button that acts as a stopwatch that only adds. After the case is finished, add a step to remind to send an email with the adjusted time. Also log the time.
 URGENT: add DCT exception: if v2 J7 (uses blue card), DCT doesn't work (for now)
 URGENT: for j series bots that use the green/blue card DCT, add DCT exceptions that it can fail entirely (for now)
@@ -11,12 +46,18 @@ URGENT ish: if M6, don't ask if it's been cleaned
 LOW PRIORITY URGENT: fix updating disabling which switches based on the model
 
 
-Saturday mar 1 @ 12pm 20 min
+
 HINTS: add a sub-branch for evac problems: if it's evacing, and bin *actually* isn't getting cleared, then:
 HOTKEY: search for alternate bot model in stock: alt+f, maybe: ctrl+a, backspace, tab x2, down x2, enter, tab, space, tab x2, enter
 HOTKEY: alternate finish case add attachement shortcut: starting from the description box, "repair report", shift+tab, enter, wait, case id, ".pdf", enter, wait short, shift+tab, down x2, enter, tab x3, enter, done
 DCT: if it's an R series and >=880, then specify that it's USB in the top side corner
 
+MINOR: in the asking about the glitch step, ask if it's quiet *or silent*
+MINOR: also show the cx dock in the ext notes menu
+MINOR: if "pass mobility with lapis bin" (or the step before it, actually) have non-empty inputs, switch back to debugging phase
+MINOR HIGH: in asking for damage phase, add whatever is inputted into the todo box
+MINOR: if repeat is indicated, automatically add " repeat of " on the very first line
+MINOR HIGH: add some indication in the tab that a case is a repeat
 MINOR: ctrl+shift+alt+k needs a longer start delay
 MINOR: add m6 color step formatting in the M6 swap order step:
 M610020 is white (M611020B230621N208362 is also white)
@@ -70,6 +111,9 @@ MINOR: make the mobility todo box an input box and give it a placeholder
 MINOR: in the comment in the texts.py that the steps have to be unique: they technically only have to be unique within each phase
 MINOR: maybe - in the mobility menu update function, in the if statement to reset the dock box, remove the or'ed statement if it's empty (don't reset if it's empty)
 
+HIGH: if there's not a dock bag or pad on the bot, add lines to the TODO box telling me to order them
+HIGH: move both "check claimed damage" and "is the case a repeat" steps to be *before* "pick up case"
+HIGH: in MM, if lapis bin in parameters, and auto-evac is set to pass (True), then add "(didn't)" after auto evac after it
 HIGH: on opening the MM, focus on the first "where" select box
 HIGH: if theres not a bag in the dock when asked (and do the same for the pad when I get around to it), then set a variable and auto-add it once I get to debug phase to order/freebee a bag/pad
 HIGH: do this order: claimed damage -> pickup & update failure box
@@ -129,11 +173,11 @@ HIGH: in M6 bot, with no dock specified, it's asking if there's a bag in the doc
 HIGH: if the case has a lapis bin, *in the serial number*, it should *not* suggest in external notes to reprovision bot to the lapis bin (and should even prevent it if it is checked, just disable it). But if the bot does *not* have a 7 in the serial, but *does* have one in the notes, (add a regex for it), then it *should* recommend reprovisioning, if a factory reset OR a swap
 HIGH: phase deserialize doesn't load correctly
 HIGH: add periodic saving
-
 HIGH: in checking the user dock charging contacts, add the ability to include notes
 HIGH: when doing a mobility test, if the dock specified is a base, not a dock, ask to confirm the bin does not have ad evac port, and if it should
 HIGH: add ctrl+A to *all* input boxes
 
+MEDIUM: if use "back" to go back to the add serial number step, it keeps adding serial numbers
 MEDIUM: try disallowing num_lines can_focus
 MEDIUM: add a "clear" or "reset" all button to MM
 MEDIUM: if M6, in confirm, ask if there's a pad, and if there is, add it to the parts in
@@ -199,6 +243,10 @@ MEDIUM: if serial numbers are different, automatically go to a new step that off
 MEDIUM: if battery tests are needed, also measure contacts, even if they don't feel sunken, but allow na
 --- COME BACK TO THIS --- MEDIUM: add a row immediately above the "parameters" row that just adds 2 more disable-able parameters: is the tank full (full, empty, or 1/4) and something else
 
+LOW: if "pass" is in the bit output step (when expanded
+LOW: make a keyboard shortcuts menu
+LOW: some way to remove serial numbers/swaps
+LOW: also set the tooltip of the input box to be what's in it, cause why not
 LOW: in the MM, disable the cx box if the dock box is set to "no dock"
 LOW: strip MM notes
 LOW: if a repeat, add a 2nd ref CopyText

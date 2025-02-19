@@ -10,15 +10,18 @@ from textual.widgets import *
 from CustomTextArea import CustomTextArea
 from Phase import Phase
 from Case import Case
-from globals import COLORS, SAVE_CASE_PATH, SAVE_STATE_PATH
+from globals import COLORS, SAVE_CASE_PATH, SAVE_STATE_PATH, EXISTING_CASES
 from clipboard import copy, paste
 
 from hotkeys import open_board, open_return_product, open_ship_product, query_case
 from texts import Steps
 
-DEBUG_STATE = '''[{"notes": "19000IR\\n", "color": "#377a11", "ref": "19000IR", "serial": null, "phase": 0, "step": "Put labels on everything", "todo": ""}, {"notes": "19002IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: Waaaaaa\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n! Robot does not charge on test base @ ~0W\\n\\nProcess:\\n* Step\\n* Step\\n* Step\\n* Done\\n", "color": "#d1dd0b", "ref": "19002IR", "serial": "i3", "phase": 3, "step": "All screws are screwed in all the way [done]", "todo": ""}, {"notes": "19003IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: I want money back\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n* Robot charges on test base @ ~9W (battery is full)\\n\\nProcess:\\n* Tehe\\n* Swap\\n", "color": "#ea9daf", "ref": "19003IR", "serial": "j7", "phase": 4, "step": "Send swap email [confirmed]", "todo": ""}, {"notes": "19004IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: It broke\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No play in blower motor\\n* Tank float screw has no signs of rust\\n* Cleaned robot\\n* Robot charges on test base @ ~21W\\n\\nProcess:\\n* Step1\\n* Step2\\n", "color": "#799fad", "ref": "19004IR", "serial": "c9", "phase": 2, "step": "Add Step", "todo": ""}, {"notes": "new\\n", "color": "#ef9e16", "ref": "new", "serial": null, "phase": 0, "step": "Confirm IDs", "todo": ""}]'''
+# {"notes": "19000IR\\n", "color": "#377a11", "ref": "19000IR", "serial": null, "phase": 0, "step": "Put labels on everything", "todo": ""}, {"notes": "19002IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: Waaaaaa\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n! Robot does not charge on test base @ ~0W\\n\\nProcess:\\n* Step\\n* Step\\n* Step\\n* Done\\n", "color": "#d1dd0b", "ref": "19002IR", "serial": "i3", "phase": 3, "step": "All screws are screwed in all the way [done]", "todo": ""}, {"notes": "19003IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: I want money back\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n* Robot charges on test base @ ~9W (battery is full)\\n\\nProcess:\\n* Tehe\\n* Swap\\n", "color": "#ea9daf", "ref": "19003IR", "serial": "j7", "phase": 4, "step": "Send swap email [confirmed]", "todo": ""}, {"notes": "19004IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: It broke\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No play in blower motor\\n* Tank float screw has no signs of rust\\n* Cleaned robot\\n* Robot charges on test base @ ~21W\\n\\nProcess:\\n* Step1\\n* Step2\\n", "color": "#799fad", "ref": "19004IR", "serial": "c9", "phase": 2, "step": "Add Step", "todo": ""}, {"notes": "new\\n", "color": "#ef9e16", "ref": "new", "serial": null, "phase": 0, "step": "Confirm IDs", "todo": ""}
 
-EXISTING_CASES = {path.name.split('.')[0]: path for path in SAVE_CASE_PATH.iterdir()}
+
+
+
+DEBUG_STATE = '''["19002IR", "19003IR", "19004IR", "new"]'''
 
 class HelperApp(App):
     BINDINGS = [
@@ -77,6 +80,8 @@ class HelperApp(App):
     def on_mount(self):
         if self._debug:
             self.deserialize(DEBUG_STATE)
+        else:
+            self.action_load_saved_state()
 
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
@@ -85,6 +90,7 @@ class HelperApp(App):
         yield self.tabs
         yield self.popup
         yield Footer()
+
 
     @on(Select.Changed, "#menu-select")
     def menu_menu_option_pressed(self, event):
@@ -110,6 +116,20 @@ class HelperApp(App):
         if self.popup.visible:
             self.popup.visible = False
 
+    def _create_case(self, ref_or_case:str|Case, add_to_cases=True):
+        """ May throw an error (since instantiating a case may throw an error) """
+        if isinstance(ref_or_case, str):
+            unused_color = random.choice(list(set(COLORS.keys()) - {i.color for i in self.cases}))
+            # If we can't create a case (like, if there's a space in the ID somehow or something), just don't make one
+            case = Case(ref_or_case, unused_color)
+        else:
+            case= ref_or_case
+
+        if add_to_cases:
+            self.cases.append(case)
+        self.tabs.add_pane(TabPane('', case, id=f'tab-pane-{case.ref}'))
+        self.action_save()
+
     # This actually creates the new case
     def on_input_submitted(self):
         # This should be the only way cases get deployed
@@ -118,27 +138,12 @@ class HelperApp(App):
             ref = self.popup.value
             self.popup.value = ''
             if len(self.cases) < 5:
-                # Load an existing case
                 try:
-                    if ref in EXISTING_CASES:
-                        with open(EXISTING_CASES[ref], 'r') as f:
-                            case = Case.deserialize(json.load(f))
-                            case.phase = Phase.SWAP
-                            # TODO: this doesn't work, don't know why
-                            case.step = Steps.swap_move_bin
-
-                    # Create a new case
-                    else:
-                        unused_color = random.choice(list(set(COLORS.keys()) - {i.color for i in self.cases}))
-                        # If we can't create a case (like, if there's a space in the ID somehow or something), just don't make one
-                        case = Case(ref, unused_color)
-                    self.cases.append(case)
-                    self.tabs.add_pane(TabPane('', case, id=f'tab-pane-{ref}'))
+                    self._create_case(Case.deserialize_from_ref(ref))
                 except Exception as err:
                     if self._debug:
                         raise err
                     return
-
 
     def action_new_case(self):
         """Add a new tab."""
@@ -152,6 +157,7 @@ class HelperApp(App):
         if self.active_case.phase in (Phase.FINISH, Phase.HOLD) and self.active_case in self.cases:
             self.cases.remove(self.active_case)
             self.tabs.remove_pane(self.tabs.active_pane.id)
+        self.action_save()
 
     @on(TabbedContent.TabActivated)
     def action_focus_input(self):
@@ -180,9 +186,11 @@ class HelperApp(App):
         self.deserialize(paste())
 
     def action_load_saved_state(self):
-        with open(SAVE_STATE_PATH, 'r') as f:
-            # self.deserialize(json.load(f))
-            self.deserialize(f.read(), clear=True)
+        try:
+            with open(SAVE_STATE_PATH, 'r') as f:
+                self.deserialize(f.read(), clear=True)
+        except:
+            pass
 
     def action_increment_tab(self, inc=1):
         idx = self.cases.index(self.active_case)
@@ -190,12 +198,12 @@ class HelperApp(App):
         self.tabs.active = f'tab-pane-{next.ref}'
 
     def serialize(self):
-        return json.dumps([case.serialize() for case in self.cases])
+        return json.dumps([case.ref for case in self.cases])
 
     def deserialize(self, string, clear=False):
         """ If clear, it clears all the current cases before adding the new ones """
         try:
-            self.cases = [Case.deserialize(case) for case in json.loads(string)]
+            self.cases = [Case.deserialize_from_ref(ref) for ref in json.loads(string)]
         except Exception as err:
             if self._debug:
                 raise err
@@ -206,7 +214,8 @@ class HelperApp(App):
             self.tabs.clear_panes()
 
         for case in self.cases:
-            self.tabs.add_pane(TabPane('', case, id=f'tab-pane-{case.ref}'))
+            self._create_case(case, False)
+            # self.tabs.add_pane(TabPane('', case, id=f'tab-pane-{case.ref}'))
 
     def action_goto_tab(self, index):
         self.bell()
@@ -231,3 +240,22 @@ class HelperApp(App):
 
     def action_query_case(self):
         query_case(self.active_case.ref)
+
+    def panic(self):
+        """ An error has occurred, and we need to save and clean up as best we can
+            ...or we've closed cleanly and we need to clean up anyway
+        """
+        self.action_save()
+        for case in self.cases:
+            print('\n')
+            print(case.ref, ':', sep='')
+            print('Serials, in order:')
+            print('\n'.join(case.serials))
+            print()
+            print('TODO:')
+            print(case.sidebar.todo.text)
+            print()
+            print('Notes:')
+            print(case.text_area.text)
+            print('-'*50)
+            print()

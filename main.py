@@ -24,7 +24,7 @@ if __name__ == "__main__":
     try:
         app.run()
     finally:
-        app.action_save()
+        app.panic()
         # keyboard.remove_all_hotkeys()
 
 
