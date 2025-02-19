@@ -1,36 +1,8 @@
-
-
-COMMAND: meas r/l/b -> Measured right/left contact: >4mm; meas empty should do nothing
-COMMAND: blew cliff -> Blew out cliff sensors
-COMMAND: blew chirp -> Blew out chirp sensors
-COMMAND: blew -> Blew out chirp sensors; if more than 1 arg though, it should not capture, and not be treated as a command (so you can still type stuff out normally)
-ACRONYM: lowvac -> low current vacuum test <1500.
-ACRONYM: bb -> false bump
-
 Look up:
 "schrodinger's killer app"
 blog: "cheatle optimized" (phontetic)
 Saturday mar 1 @ 12pm 20 min
 
-URGENT: in step "move bin to new bot...", allow multiple inputs for freebee bin, new bin, and cx bin
-
-
-ACRONYM: something for "Charge current test failed (battery full)."
-ACRONYM: l -> Lapis bin
-ACRONYM: dct -> DCT; ex -> extractors; rdp -> RDP
-ACRONYM: vc -> vacuum; ft/fl -> filter
-ACRONYM: lcv: Low current vaccum failure <1500.
-COMMAND: Update Firmware
-ACRONYM: pad act -> pad actuator deploy/stow failure[s].
-COMMAND: nozzle -> Cleaned out drip nozzles
-COMMAND: BiT: has extra space in it when immediately an acronym is after it
-
-MEDIUM: move steps "check if screws are on tight" and "check if bin is in" to be before the cleaning steps
-
-HIGH: allow CHARGING phase (and only that phase) to enter without a serial number
-
-
-URGENT 2nd PRIORITY: somehow, if the json doesn't load properly, it deletes the file or something?? - also, if it fails to load, and I *do* need to overwrite it, it won't let me. Build in a thing that if you type in "OVERWRITE 11111IR" then it will not check to see if it should load it
 URGENT: if entering swap phase, and "swap robot" or equivelent not in notes, auto add it (like ensure process)
 URGENT: if "provisioned robot to app" (or similar) in the notes, then in finish phase, ask if they've removed bot from the app
 URGENT: if the bot charges on dock @ 1.2, then it could be full battery -- also, if <5, round to 1 place instead of 0
@@ -44,8 +16,6 @@ URGENT: ya, the sidebars aren't updating after deserialization
 URGENT: re-add hotkey shortcuts back into the main program, with a setting
 URGENT ish: if M6, don't ask if it's been cleaned
 LOW PRIORITY URGENT: fix updating disabling which switches based on the model
-
-
 
 HINTS: add a sub-branch for evac problems: if it's evacing, and bin *actually* isn't getting cleared, then:
 HOTKEY: search for alternate bot model in stock: alt+f, maybe: ctrl+a, backspace, tab x2, down x2, enter, tab, space, tab x2, enter

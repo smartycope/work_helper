@@ -43,6 +43,10 @@ def execute_step(self, resp):
             self.step = self._step_after_manual_serial
         return
 
+    if self.step == Steps.pick_up_case:
+        self._case_picked_up = True
+        self.step = Steps.confirm_id
+        return
 
     if self.phase == Phase.CONFIRM:
         match self.step:
@@ -84,9 +88,6 @@ def execute_step(self, resp):
                 self.step = Steps.check_claimed_damage
 
             case Steps.check_claimed_damage:
-                self.step = Steps.pick_up_case
-
-            case Steps.pick_up_case:
                 self.step = Steps.ask_dock
 
             case Steps.ask_dock:
@@ -522,8 +523,15 @@ def execute_step(self, resp):
                 self.step = Steps.swap_move_bin
 
             case Steps.swap_move_bin:
-                if resp:
-                    self.add_step('Moved bin to new robot')
+                if resp.lower() == 'fb':
+                    self.add_step('Freebee bin for new robot')
+                elif resp.lower() == 'cx':
+                    self.add_step('Moved original bin to new robot')
+                elif resp.lower() == 'new':
+                    self.add_step('Ordered new bin for new robot')
+                elif resp:
+                    return
+
                 self.step = Steps.swap_ask_refurb
 
             case Steps.swap_ask_refurb:
@@ -572,7 +580,11 @@ def execute_step(self, resp):
                 pass
 
     elif self.phase == Phase.CHARGING:
-        self.phase = Phase.DEBUGGING
+        if self.serials:
+            self.phase = Phase.DEBUGGING
+        else:
+            self.phase = Phase.CONFIRM
+            self.step = Steps.confirm_id
 
     elif self.phase == Phase.UPDATING:
         self.phase = Phase.DEBUGGING

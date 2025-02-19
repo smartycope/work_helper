@@ -7,12 +7,12 @@ class Steps:
     todo = "TODO"
 
     # CONFRIM
+    confirm_id = "Confirm IDs"
     ask_labels = "Put labels on everything [done]"
     turn_down_screwdriver = 'Turn down the power setting on the screwdriver [done]'
-    confirm_id = "Confirm IDs"
     check_repeat = "Is the case a repeat [no]"
     check_claimed_damage = "Check the claimed damage"
-    pick_up_case = "Go pick up the case on CSS {{case ID}} [done]"
+    pick_up_case = "Go pick up the case on CSS {case ID} [done]"
     ask_dock = "Additional dock, and any other parts (comma seperated) [no dock]"
     ask_damage = "Additional damage [no damage]"
     ask_came_with_bag = "Is there a bag in the dock [yes]"
@@ -53,10 +53,10 @@ class Steps:
     swap_update_css = "Update CSS repair action and copy notes over {{notes}} [done]"
     swap_email = "Send swap email {{address, subject, notes}} [confirmed]"
     swap_order_dock = "Order a new dock [done]"
-    swap_order = 'Reload case and order swap {{original serial}} ["out" if out of stock]'
-    swap_order_S9 = 'Order a new chassis (not a whole bot!) ["out" if out of stock] [done]'
-    swap_order_M6 = 'Order the correctly colored swap ["out" if out of stock] [done]'
-    swap_move_bin = "Unbox and move bin and battery over, if necessary [no bin needed]"
+    swap_order = 'Reload case and order swap {{original serial}} ("out" if out of stock)'
+    swap_order_S9 = 'Order a new chassis (not a whole bot!) ("out" if out of stock) [done]'
+    swap_order_M6 = 'Order the correctly colored swap ("out" if out of stock) [done]'
+    swap_move_bin = 'Unbox and move bin and battery over, if necessary ("fb", "new", "cx", or empty) [no bin needed]'
     # swap_put_in_box = "Put the old bot in the box [done]"
     swap_add_labels = 'Put labels on the new bot'
     swap_ask_refurb = "Is the swapped bot a refurb? [yes]"

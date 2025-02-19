@@ -21,7 +21,13 @@ from texts import Steps
 
 
 
-DEBUG_STATE = '''["19002IR", "19003IR", "19004IR", "new"]'''
+DEBUG_STATE = '''["19002IR", "19003IR", "19004IR"]'''
+DEBUG_CASES = {
+    '19002IR': {"notes": "19002IR\nParts in: Robot\nClaimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\nCustomer States: Waaaaaa\n\nRoutine Checks:\n* Contacts don't feel sunken\n* No signs of liquid damage\n* No play in blower motor\n* Cleaned robot\n! Robot does not charge on test base @ ~0W\n\nProcess:\n* Step\n* Step\n* Step\n* Done\n\nCONTEXT:\n\n", "color": "#377a11", "ref": "19002IR", "serials": ["i3"], "phase": 0, "step": "Go pick up the case on CSS {case ID} [done]", "todo": "todo!"},
+    '19003IR': {"notes": "19003IR\nParts in: Robot\nClaimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\nCustomer States: Waaaaaa\n\nRoutine Checks:\n* Contacts don't feel sunken\n* No signs of liquid damage\n* No play in blower motor\n* Cleaned robot\n! Robot does not charge on test base @ ~0W\n\nProcess:\n* Step\n* Step\n* Step\n* Done\n\nCONTEXT:\n\n", "color": "#ef9e16", "ref": "19003IR", "serials": ["m6"], "phase": Phase.DEBUGGING.value, "step": Steps.add_step, "todo": ""},
+    '19004IR': {"notes": "19004IR\nParts in: Robot\nClaimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\nCustomer States: Waaaaaa\n\nRoutine Checks:\n* Contacts don't feel sunken\n* No signs of liquid damage\n* No play in blower motor\n* Cleaned robot\n! Robot does not charge on test base @ ~0W\n\nProcess:\n* Step\n* Step\n* Step\n* Done\n\nCONTEXT:\n\n", "color": "#d1dd0b", "ref": "19004IR", "serials": ["c9"], "phase": Phase.FINISH.value, "step": "Pass mobility and attempted BiT [done]", "todo": ""},
+}
+
 
 class HelperApp(App):
     BINDINGS = [
@@ -60,7 +66,7 @@ class HelperApp(App):
         self.cases = []
         self.tabs = TabbedContent(id='tabs')
         self.tabs.can_focus = False
-        self.popup = Input(placeholder='Case ID', id='reference_popup')
+        self.popup = Input(placeholder='Case ID (preface with "overwrite" to forcibly not load the case)', id='reference_popup')
         self.popup.visible = False
 
         self.menu_menu = Select(((m, m) for m in (
@@ -79,6 +85,9 @@ class HelperApp(App):
 
     def on_mount(self):
         if self._debug:
+            for ref, data in DEBUG_CASES.items():
+                with open(EXISTING_CASES[ref], 'w') as f:
+                    json.dump(data, f)
             self.deserialize(DEBUG_STATE)
         else:
             self.action_load_saved_state()
@@ -90,7 +99,6 @@ class HelperApp(App):
         yield self.tabs
         yield self.popup
         yield Footer()
-
 
     @on(Select.Changed, "#menu-select")
     def menu_menu_option_pressed(self, event):
@@ -137,9 +145,24 @@ class HelperApp(App):
             self.popup.visible = False
             ref = self.popup.value
             self.popup.value = ''
+            overwrite = False
+            # If we get "overwite 19000ir", then don't deserialize the case
+            if ' ' in ref:
+                try:
+                    a, b = ref.split(' ')
+                    if a.lower() == 'overwrite':
+                        ref = b
+                        overwrite = True
+                    else:
+                        return
+                except:
+                    return
             if len(self.cases) < 5:
                 try:
-                    self._create_case(Case.deserialize_from_ref(ref))
+                    if overwrite or self._debug:
+                        self._create_case(ref)
+                    else:
+                        self._create_case(Case.deserialize_from_ref(ref))
                 except Exception as err:
                     if self._debug:
                         raise err
@@ -246,16 +269,17 @@ class HelperApp(App):
             ...or we've closed cleanly and we need to clean up anyway
         """
         self.action_save()
-        for case in self.cases:
-            print('\n')
-            print(case.ref, ':', sep='')
-            print('Serials, in order:')
-            print('\n'.join(case.serials))
-            print()
-            print('TODO:')
-            print(case.sidebar.todo.text)
-            print()
-            print('Notes:')
-            print(case.text_area.text)
-            print('-'*50)
-            print()
+        if not self._debug:
+            for case in self.cases:
+                print('\n')
+                print(case.ref, ':', sep='')
+                print('Serials, in order:')
+                print('\n'.join(case.serials))
+                print()
+                print('TODO:')
+                print(case.sidebar.todo.text)
+                print()
+                print('Notes:')
+                print(case.text_area.text)
+                print('-'*50)
+                print()

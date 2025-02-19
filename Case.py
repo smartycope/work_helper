@@ -45,7 +45,7 @@ class Case(VerticalGroup):
     )
     # The step that gets switched to when switched to that phase (the first step of each phase)
     first_steps = {
-        Phase.CONFIRM: Steps.confirm_id,
+        Phase.CONFIRM: Steps.pick_up_case,
         Phase.ROUTINE_CHECKS: Steps.ask_sunken_contacts,
         Phase.DEBUGGING: Steps.add_step,
         Phase.FINISH: Steps.ask_bit_mobility_done,
@@ -67,7 +67,7 @@ class Case(VerticalGroup):
     }
 
     phase = reactive(Phase.CONFIRM)
-    step = reactive(first_steps[Phase.CONFIRM])
+    step = reactive('')
 
     def __init__(self, id, color):
         # If the id has spaces, this will raise an error that gets caught by when we instantiate it
@@ -81,6 +81,7 @@ class Case(VerticalGroup):
         self.color = color
         self._customer_states = ''
         self.repeat = False
+        self._case_picked_up = False
 
         # The way this works, is it gets applied as "s" to the step when putting the current step into
         # the Input box. That way, any step that needs formatting can use it without messing up the
@@ -95,6 +96,8 @@ class Case(VerticalGroup):
 
         self.text_area = CustomTextArea(self.ref)
 
+        # We set this here, instead of when instantiating it, so it triggers the setter
+        self.step = self.first_steps[Phase.CONFIRM]
         self.input = Input(placeholder=self.step, id='input_' + self.ref)
         self.input.cursor_blink = False
         self.sidebar = Sidebar(self)
@@ -120,6 +123,13 @@ class Case(VerticalGroup):
 
         # This gets run on mount of the color selector
         # self.set_color(color)
+
+        # TODO: this shouldn't be here, but pick_up_case as a first step isn't triggering side effects properly
+        self.before_pick_up_case()
+
+    # def on_mount(self):
+        # We set this here, instead of when instantiating it, so it triggers the setter
+        # self.step = self.first_steps[Phase.CONFIRM]
 
     def open_menu(self, event: Select.Changed):
         match event.value:
@@ -159,9 +169,9 @@ class Case(VerticalGroup):
     def watch_step(self, old, new):
         # Because as a reactive attribute, it apparently runs before mounting (before compose is called)
         try:
-            self.save()
-
             self.prev_step = old
+
+            # self.text_area.text += '\n' + old + ' -> ' + new
 
             # If we have a method named `before_<step_name>`, then call it
             method_name = 'after_' + invert_dict(Steps.__dict__)[old]
@@ -179,11 +189,16 @@ class Case(VerticalGroup):
                 self.input.placeholder = new
 
             self.step_formatter = ''
+
+            self.save()
         except:
             pass
 
     def watch_phase(self, old, new):
         new_phase = Phase(new)
+        if not self._case_picked_up:
+            return
+
         # When switching to DEBUGGING phase from anywhere, ensure that Process: exists
         if new_phase == Phase.DEBUGGING:
             self.ensure_process()
@@ -194,7 +209,9 @@ class Case(VerticalGroup):
         self._update_label()
 
         if self.phase == Phase.CONFIRM:
-            self.step = self.first_steps[Phase.CONFIRM] if not self.serial else Steps.check_repeat
+            self.step = self.first_steps[Phase.CONFIRM]# if not self.serial else Steps.check_repeat
+        if self.phase == Phase.CHARGING:
+            self.step = self.first_steps[self.phase]
         elif self.phase == Phase.SWAP:
             # If the first+ swap is DOA
             if len(self.serials) >= 2:
@@ -210,15 +227,18 @@ class Case(VerticalGroup):
         else:
             self.ensure_serial(self.first_steps[self.phase])
 
+    @on(Select.Changed, "#phase-select")
+    def on_phase_changed(self, event: Select.Changed) -> None:
+        if self._case_picked_up:
+            self.phase = Phase(event.value)
+        else:
+            self.sidebar.phase_selector.value = Phase.CONFIRM.value
+        self.input.focus()
+
     def add_step(self, step, bullet='*'):
         # For consistency
         self.text_area.text = self.text_area.text.strip() + '\n'
         self.text_area.text += f'{bullet} {step.strip()}\n'
-
-    @on(Select.Changed, "#phase-select")
-    def on_phase_changed(self, event: Select.Changed) -> None:
-        self.phase = Phase(event.value)
-        self.input.focus()
 
     def action_open_mobility_menu(self):
         # Only allow the mobility menu to be opened if we have information about the bot
@@ -268,7 +288,10 @@ class Case(VerticalGroup):
         case.phase = Phase(data.get('phase', Phase.DEBUGGING))
         case.step = data.get('step', Steps.add_step)
         case.sidebar.phase_selector.value = case.phase.value
-        # case.action_parse_for_info()
+
+        if case.step != Steps.pick_up_case:
+            case._case_picked_up = True
+
         return case
 
     @staticmethod
