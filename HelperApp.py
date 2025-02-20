@@ -10,11 +10,12 @@ from textual.widgets import *
 from CustomTextArea import CustomTextArea
 from Phase import Phase
 from Case import Case
-from globals import COLORS, SAVE_CASE_PATH, SAVE_STATE_PATH, EXISTING_CASES
+from globals import COLORS, INTERNAL_LOG_PATH, SAVE_CASE_PATH, SAVE_STATE_PATH, EXISTING_CASES
 from clipboard import copy, paste
 
 from hotkeys import open_board, open_return_product, open_ship_product, query_case
 from texts import Steps
+import traceback
 
 # {"notes": "19000IR\\n", "color": "#377a11", "ref": "19000IR", "serial": null, "phase": 0, "step": "Put labels on everything", "todo": ""}, {"notes": "19002IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: Waaaaaa\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n! Robot does not charge on test base @ ~0W\\n\\nProcess:\\n* Step\\n* Step\\n* Step\\n* Done\\n", "color": "#d1dd0b", "ref": "19002IR", "serial": "i3", "phase": 3, "step": "All screws are screwed in all the way [done]", "todo": ""}, {"notes": "19003IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: I want money back\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n* Robot charges on test base @ ~9W (battery is full)\\n\\nProcess:\\n* Tehe\\n* Swap\\n", "color": "#ea9daf", "ref": "19003IR", "serial": "j7", "phase": 4, "step": "Send swap email [confirmed]", "todo": ""}, {"notes": "19004IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: It broke\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No play in blower motor\\n* Tank float screw has no signs of rust\\n* Cleaned robot\\n* Robot charges on test base @ ~21W\\n\\nProcess:\\n* Step1\\n* Step2\\n", "color": "#799fad", "ref": "19004IR", "serial": "c9", "phase": 2, "step": "Add Step", "todo": ""}, {"notes": "new\\n", "color": "#ef9e16", "ref": "new", "serial": null, "phase": 0, "step": "Confirm IDs", "todo": ""}
 
@@ -130,8 +131,10 @@ class HelperApp(App):
             unused_color = random.choice(list(set(COLORS.keys()) - {i.color for i in self.cases}))
             # If we can't create a case (like, if there's a space in the ID somehow or something), just don't make one
             case = Case(ref_or_case, unused_color)
-        else:
+        elif isinstance(ref_or_case, Case):
             case= ref_or_case
+        else:
+            raise TypeError('Must be given a ref string or an instantiated case')
 
         if add_to_cases:
             self.cases.append(case)
@@ -162,7 +165,7 @@ class HelperApp(App):
                     if overwrite or self._debug:
                         self._create_case(ref)
                     else:
-                        self._create_case(Case.deserialize_from_ref(ref))
+                        self._create_case(Case.attempt_load_case(ref))
                 except Exception as err:
                     if self._debug:
                         raise err
@@ -216,9 +219,13 @@ class HelperApp(App):
             pass
 
     def action_increment_tab(self, inc=1):
-        idx = self.cases.index(self.active_case)
-        next = self.cases[(idx + inc)%len(self.cases)]
-        self.tabs.active = f'tab-pane-{next.ref}'
+        try:
+            idx = self.cases.index(self.active_case)
+            next = self.cases[(idx + inc)%len(self.cases)]
+            self.tabs.active = f'tab-pane-{next.ref}'
+        # That tab (somehow) doesn't exist. Don't hold it against it.
+        except ValueError:
+            pass
 
     def serialize(self):
         return json.dumps([case.ref for case in self.cases])
@@ -226,7 +233,7 @@ class HelperApp(App):
     def deserialize(self, string, clear=False):
         """ If clear, it clears all the current cases before adding the new ones """
         try:
-            self.cases = [Case.deserialize_from_ref(ref) for ref in json.loads(string)]
+            new_cases = [Case.attempt_load_case(ref) for ref in json.loads(string)]
         except Exception as err:
             if self._debug:
                 raise err
@@ -236,8 +243,8 @@ class HelperApp(App):
         if clear:
             self.tabs.clear_panes()
 
-        for case in self.cases:
-            self._create_case(case, False)
+        for case in new_cases:
+            self._create_case(case)
             # self.tabs.add_pane(TabPane('', case, id=f'tab-pane-{case.ref}'))
 
     def action_goto_tab(self, index):
@@ -246,7 +253,8 @@ class HelperApp(App):
 
     def action_save(self):
         for case in self.cases:
-            case.save()
+            try: case.save()
+            except: pass
 
         # Save the current state, as a backup
         with open(SAVE_STATE_PATH, 'w') as f:
@@ -264,22 +272,32 @@ class HelperApp(App):
     def action_query_case(self):
         query_case(self.active_case.ref)
 
-    def panic(self):
+    def panic(self, err):
         """ An error has occurred, and we need to save and clean up as best we can
-            ...or we've closed cleanly and we need to clean up anyway
         """
-        self.action_save()
+        try:
+            with open(INTERNAL_LOG_PATH, 'a') as f:
+                f.write(traceback.format_exc())
+        except:
+            pass
+
+        try: self.action_save()
+        except: pass
+
         if not self._debug:
             for case in self.cases:
-                print('\n')
-                print(case.ref, ':', sep='')
-                print('Serials, in order:')
-                print('\n'.join(case.serials))
-                print()
-                print('TODO:')
-                print(case.sidebar.todo.text)
-                print()
-                print('Notes:')
-                print(case.text_area.text)
-                print('-'*50)
-                print()
+                # Assume nothing! We're panicking!
+                try:
+                    print('\n')
+                    print(case.ref, ':', sep='')
+                    print('Serials, in order:')
+                    print('\n'.join(case.serials))
+                    print()
+                    print('TODO:')
+                    print(case.sidebar.todo.text)
+                    print()
+                    print('Notes:')
+                    print(case.text_area.text)
+                    print('-'*50)
+                    print()
+                except: pass

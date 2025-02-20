@@ -22,12 +22,13 @@ HOTKEY: search for alternate bot model in stock: alt+f, maybe: ctrl+a, backspace
 HOTKEY: alternate finish case add attachement shortcut: starting from the description box, "repair report", shift+tab, enter, wait, case id, ".pdf", enter, wait short, shift+tab, down x2, enter, tab x3, enter, done
 DCT: if it's an R series and >=880, then specify that it's USB in the top side corner
 
+MINOR: if mobility menu is open, change the tab icon to something relevant
+MINOR: in the swap robot insert SN regex, only match if the line on the whole is less than super long
+MINOR: add a setting to include model numbers to the tabs
 MINOR: in the asking about the glitch step, ask if it's quiet *or silent*
 MINOR: also show the cx dock in the ext notes menu
 MINOR: if "pass mobility with lapis bin" (or the step before it, actually) have non-empty inputs, switch back to debugging phase
-MINOR HIGH: in asking for damage phase, add whatever is inputted into the todo box
 MINOR: if repeat is indicated, automatically add " repeat of " on the very first line
-MINOR HIGH: add some indication in the tab that a case is a repeat
 MINOR: ctrl+shift+alt+k needs a longer start delay
 MINOR: add m6 color step formatting in the M6 swap order step:
 M610020 is white (M611020B230621N208362 is also white)
@@ -60,7 +61,6 @@ MINOR: add external notes regex to find if "charging contacts on ... - cleaned" 
 MINOR: in swap phase, combine "put the old bot in the box" step with the "unbox" step
 MINOR: Guess what type the dock is out of select options, instead of accepting any answer (levenstein dist?)
 MINOR: Make the MM buttons width expand
-MINOR: add [done] to step "put labels on new bot"
 MINOR: on changing of the color, update the phase icon (the background gets desynced)
 MINOR: add an external note that is just "recommend reprovisioning lapis bin on app" (without any factory reset needed)
 MINOR: if there's more serial numbers than there were before, and that number is >1, default the mobility menu dock box to "new ..." instead of "cx ..."
@@ -81,8 +81,7 @@ MINOR: make the mobility todo box an input box and give it a placeholder
 MINOR: in the comment in the texts.py that the steps have to be unique: they technically only have to be unique within each phase
 MINOR: maybe - in the mobility menu update function, in the if statement to reset the dock box, remove the or'ed statement if it's empty (don't reset if it's empty)
 
-HIGH: if there's not a dock bag or pad on the bot, add lines to the TODO box telling me to order them
-HIGH: move both "check claimed damage" and "is the case a repeat" steps to be *before* "pick up case"
+HIGH: if there's an error (but not if closed nicely), automatically create a backup copy of the case notes folder
 HIGH: in MM, if lapis bin in parameters, and auto-evac is set to pass (True), then add "(didn't)" after auto evac after it
 HIGH: on opening the MM, focus on the first "where" select box
 HIGH: if theres not a bag in the dock when asked (and do the same for the pad when I get around to it), then set a variable and auto-add it once I get to debug phase to order/freebee a bag/pad
@@ -147,6 +146,7 @@ HIGH: in checking the user dock charging contacts, add the ability to include no
 HIGH: when doing a mobility test, if the dock specified is a base, not a dock, ask to confirm the bin does not have ad evac port, and if it should
 HIGH: add ctrl+A to *all* input boxes
 
+MEDIUM: if an acronym is expanded at the beginning of a sentence, it doesn't get capitolized. fix that somehow
 MEDIUM: if use "back" to go back to the add serial number step, it keeps adding serial numbers
 MEDIUM: try disallowing num_lines can_focus
 MEDIUM: add a "clear" or "reset" all button to MM

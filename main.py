@@ -17,14 +17,14 @@ args = parser.parse_args()
 if __name__ == "__main__":
     app = HelperApp(debug=args.debug)
     atexit.register(app.action_save)
-    if not LOG_PATH.exists():
-        with LOG_PATH.open('w') as f:
-            f.write('action,id,color,serial,timestamp\n')
 
     try:
         app.run()
+    except Exception as err:
+        app.panic(err)
+        # raise err
     finally:
-        app.panic()
+        app.action_save()
         # keyboard.remove_all_hotkeys()
 
 

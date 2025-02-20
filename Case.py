@@ -3,6 +3,7 @@ import random
 import re
 from datetime import datetime
 from difflib import get_close_matches
+from typing import Union
 
 from textual import on
 from textual.containers import *
@@ -21,6 +22,7 @@ from info import DOCKS
 from MobilityMenu import MobilityMenu
 from Phase import Phase
 from Sidebar import Sidebar
+import settings
 from texts import Steps
 
 
@@ -33,7 +35,8 @@ class Case(VerticalGroup):
         before_ask_submit_adj, before_generate_external_notes,
         before_hold_add_context, before_hold_copy_notes_to_CSS,
         before_pick_up_case, before_swap_email, before_swap_note_serial,
-        before_swap_order, before_swap_update_css, before_wait_parts_closed)
+        before_swap_order, before_swap_update_css, before_wait_parts_closed,
+        before_swap_order_S9, before_swap_order_M6)
     from step_algorithm import execute_step as _execute_step
 
     BINDINGS = (
@@ -120,6 +123,8 @@ class Case(VerticalGroup):
         self._swap_due_to_sunken_contacts = False
         # In the absense of info, assume it is
         self._is_current_swap_refurb = True
+
+        self._step_after_manual_serial = None
 
         # This gets run on mount of the color selector
         # self.set_color(color)
@@ -271,6 +276,7 @@ class Case(VerticalGroup):
             'phase': self.phase.value,
             'step': self.step,
             'todo': self.sidebar.todo.text,
+            '_step_after_manual_serial': self._step_after_manual_serial,
         }
 
     @staticmethod
@@ -287,6 +293,7 @@ class Case(VerticalGroup):
         case.sidebar.todo.text = data.get('todo', '')
         case.phase = Phase(data.get('phase', Phase.DEBUGGING))
         case.step = data.get('step', Steps.add_step)
+        case._step_after_manual_serial = data.get('_step_after_manual_serial', None)
         case.sidebar.phase_selector.value = case.phase.value
 
         if case.step != Steps.pick_up_case:
@@ -295,12 +302,14 @@ class Case(VerticalGroup):
         return case
 
     @staticmethod
-    def deserialize_from_ref(ref):
+    def attempt_load_case(ref:str) -> Union['Case', str]:
         if ref in EXISTING_CASES:
+            # Make a backup before we overwrite it. To be safe.
+            backup_path = EXISTING_CASES[ref].with_suffix('.bak')
+            backup_path.write_bytes(EXISTING_CASES[ref].read_bytes())
             with EXISTING_CASES[ref].open('r') as f:
                 return Case.deserialize(json.load(f))
         else:
-            # Because the only thing that uses this is in HelperApp, and it makes sense in that context
             return ref
 
     def ensure_process(self):
@@ -333,13 +342,15 @@ class Case(VerticalGroup):
         """
         if name:
             input = capitolize(name.split(',')[0].strip())
-            return get_close_matches(input, DOCKS, n=1, cutoff=0.0)[0]
+            return get_close_matches(input, DOCKS + ('Alex-Albany',), n=1, cutoff=0.0)[0]
         else:
             return ""
 
     # Helper methods
     def get_quick_model(self):
-        if self.serial[0] == 'r':
+        if not self.serials:
+            return ''
+        elif self.serial[0] == 'r':
             return self.serial[1:4]
         else:
             return self.serial[:2].upper()
@@ -498,8 +509,17 @@ class Case(VerticalGroup):
         if self.repeat:
             s += 'R '
         s += self.ref
+        if settings.INCLUDE_MODEL_IN_TAB:
+            s += ' • ' + self.get_quick_model()
         s += f' [on {darken_color(self.color, .6)}]'
-        s += self.phase_icons[self.phase]
+        # To distinguish cases that are on my bench charging, from once that aren't
+        if self.phase == Phase.CHARGING:
+            if "Routine Check" in self.text_area.text:
+                s += "🔋"
+            else:
+                s += "🪫"
+        else:
+            s += self.phase_icons[self.phase]
         return s
 
     @property

@@ -6,10 +6,15 @@ LOG_PATH = Documents / 'helper_log.csv'
 SAVE_CASE_PATH = Documents / 'Saved_Cases'
 SAVE_NOTES_PATH = Documents / 'Case_Notes'
 SAVE_STATE_PATH = Documents / 'helper_state.json'
+INTERNAL_LOG_PATH = Documents / 'helper_log_internal.txt'
 
 # TODO:
 for path in (SAVE_CASE_PATH, SAVE_CASE_PATH):
     path.mkdir(parents=True, exist_ok=True)
+
+if not LOG_PATH.exists():
+    with LOG_PATH.open('w') as f:
+        f.write('action,id,color,serial,timestamp\n')
 
 SIDEBAR_WIDTH = 30
 COPY_SERIAL_BUTTON_WIDTH = 8
@@ -22,6 +27,9 @@ COLORS = OrderedDict((
 ))
 
 EXISTING_CASES = {path.name.split('.')[0]: path for path in SAVE_CASE_PATH.iterdir()}
+
+# The phrase that puts you into debug mode
+SECRET_PASSWORD = 'Cope is a genius'
 
 def invert_dict(d:dict) -> dict:
     """ Returns the dict given, but with the keys as values and the values as keys. """

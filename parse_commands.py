@@ -17,6 +17,7 @@ ACRONYMS = {
     'fl': 'filter',
     'ft': 'filter',
     'ex': 'extractors',
+    'od': 'ordered',
     'fw': "firmware",
     'sw': "software",
     'hw': "hardware",
@@ -27,6 +28,7 @@ ACRONYMS = {
     'doa': 'DOA',
     'dct': 'DCT',
     'rdp': 'RDP',
+    'rcon': 'RCON',
     'bb': 'false bump',
     'exp': 'expected',
     'sb': 'sidebrush',
@@ -46,6 +48,7 @@ ACRONYMS = {
     'comms': "Dock comms failure.",
     'batt full': "Battery current test failed (full battery).",
     'opt': "optical bin failure[s] <100 out of range.",
+    'opt150': "optical bin failure[s] <150 out of range.",
     'pad act': "pad actuator deploy/stow failure[s].",
     'batt': "battery",
 }
@@ -135,10 +138,10 @@ def parse_command(self, input:str):
                     step = 'Provisioned robot to the app'
                 else:
                     match args.pop(0):
-                        case 'app': step = 'Provisioned robot to the app'
-                        case 'lapis': step = 'Provisioned lapis bin on app'
+                        case 'app'|'a': step = 'Provisioned robot to the app'
+                        case 'lapis'|'l': step = 'Provisioned lapis bin on app'
                         # Don't allow notes here, where would they go?
-                        case 'both':
+                        case 'both'|'b':
                             self.add_step('Provisioned robot to the app')
                             self.add_step('Provisioned lapis bin on app')
             case 'reprov':

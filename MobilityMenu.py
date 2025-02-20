@@ -8,6 +8,7 @@ from TriSwitch import TriSwitch
 
 from info import EVAC_DOCKS
 from parse_commands import parse_acronym
+import settings
 
 class MobilityMenu(Menu):
     switches = (
@@ -39,7 +40,7 @@ class MobilityMenu(Menu):
         yield self.cx_states
 
         yield Label('Parameters:')
-        self.where = Select.from_values(('top bench', 'floor', 'bottom bench'), allow_blank=False, value='floor', classes='mm-param-select')
+        self.where = Select.from_values(('top bench', 'floor', 'bottom bench'), allow_blank=False, value=settings.DEFAULT_STARTING_LOCATION, classes='mm-param-select')
         yield self.where
 
         self.base1 = Select(((i, i) for i in ('cx', 'test', 'new', '#2', '#3')), allow_blank=False, classes='mm-param-select')
@@ -53,19 +54,19 @@ class MobilityMenu(Menu):
         # test/cx lapis
         # cx/test/new pad
 
-        self.param_bin = Select([(i,i) for i in ('cx bin', 'new bin', 'test bin', 'test lapis', 'cx lapis')], allow_blank=False, classes='mm-param-select')
+        self.param_bin = Select([(i,i) for i in ('cx bin', 'new bin', 'test bin', 'test lapis', 'cx lapis', '')], allow_blank=False, classes='mm-param-select')
         yield self.param_bin
 
         self.param_tank = Select([(i,i) for i in ('empty tank', '1/3 tank', 'full tank')], allow_blank=False, classes='mm-param-select')
         yield self.param_tank
 
-        self.param_pad = Select([(i,i) for i in ('cx pad', 'new pad', 'test pad')], allow_blank=False, classes='mm-param-select')
+        self.param_pad = Select([(i,i) for i in ('cx pad', 'new pad', 'test pad', 'test dry pad')], allow_blank=False, classes='mm-param-select')
         yield self.param_pad
 
         # self.param_lapis = Select([(i,i) for i in ('', 'cx lapis', 'test lapis')], allow_blank=False, classes='mm-param-select')
         # yield self.param_lapis
 
-        self.params = CustomInput(placeholder='Parameters')
+        self.params = CustomInput(placeholder='More Parameters')
         yield self.params
 
         yield Rule(line_style='heavy', classes='quadruple')
@@ -158,6 +159,9 @@ class MobilityMenu(Menu):
             self.param_tank.remove()
             self.param_pad.remove()
             self.params.styles.column_span = 3
+        if self.case.serial.startswith('m6'):
+            self.param_bin.remove()
+            self.params.styles.column_span = 2
 
         # Disable the non-relevant tests
         disabled_text = '#666666'
@@ -307,13 +311,14 @@ class MobilityMenu(Menu):
             where=self.where.value,
             base=(self.base1.value + ' ' + self.base2.value if type(self.base2.value) is str else 'no dock'),
         )
-        l1 += ', ' + self.param_bin.value + ', '
+        l1 += ', '
+
+        if not self.case.serial.startswith('m6'):
+            l1 += self.param_bin.value + ', '
+
         if self.case.can_mop:
             l1 += self.param_tank.value + ', '
             l1 += self.param_pad.value + ', '
-
-        # if self.case.is_factory_lapis or self.case.has_lapis:
-        #     l1 += self.param_lapis.value + ', '
 
         # Remove the extraneous comma
         l1 = l1[:-2]

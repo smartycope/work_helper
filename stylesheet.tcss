@@ -9,6 +9,7 @@ Menu{
     height: 100%;
     width: 70%;
     padding: 2;
+    border: tall #0178D4 round;
 }
 
 ExternalNotesMenu{

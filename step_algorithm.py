@@ -2,7 +2,7 @@ import re
 from textual.containers import *
 from textual.widgets import *
 from Phase import Phase
-from globals import capitolize
+from globals import SECRET_PASSWORD, capitolize
 from parse_commands import parse_acronym
 from texts import Steps
 from numpy import mean, std
@@ -12,6 +12,7 @@ import settings
 from multi_paste import multi_paste
 
 DO_NOT_PARSE_ACRONYM_STEPS = [
+    # This step specifically does parses them itself later, after it parses the commands
     Steps.add_step,
     Steps.ask_sunken_contacts,
     Steps.battery_test,
@@ -22,25 +23,41 @@ DO_NOT_PARSE_ACRONYM_STEPS = [
 def execute_step(self, resp):
     # To simplify some of the redundant next step logic
     next_step = None
+
+    if resp == SECRET_PASSWORD:
+        self.step = Steps._debug_mode
+        return
+
     resp = resp.strip()
 
-    # This step specifically does parses them itself later, after it parses the commands
     if self.step not in DO_NOT_PARSE_ACRONYM_STEPS:
         resp = parse_acronym(resp)
 
-    # TODO: I think back isn't working
+    if self.step == Steps._debug_mode:
+        if resp:
+            self.step = getattr(Steps, resp, Steps._debug_mode)
+            if self.step == Steps._debug_mode:
+                self.phase = getattr(Phase, resp, self.phase)
+            return
+
     if resp.lower() == 'back' and self.step != Steps.confirm_id:
         self.step = self.prev_step
         return
 
     if self.step == Steps.manual_get_serial:
+        # If we just deserialized, and we got left on this step, or something else wonkey happened,
+        # default to this step as a precaution
+        fallback = Steps.ask_labels
         # If we accidentally pressed the change serial binding
         if resp.lower() == 'na':
-            self.step = self._step_after_manual_serial
+            self.step = self._step_after_manual_serial or fallback
 
         if resp:
             self.add_serial(resp.lower())
-            self.step = self._step_after_manual_serial
+            self.step = self._step_after_manual_serial or fallback
+
+        self._update_label()
+
         return
 
     if self.step == Steps.pick_up_case:
@@ -74,6 +91,7 @@ def execute_step(self, resp):
                             self.phase = Phase.FINISH
                             return
                     self.add_serial(ids[len(resp)//2:])
+                    self._update_label()
                     self.step = Steps.turn_down_screwdriver if self.serial.startswith('m6') else Steps.ask_labels
 
             case Steps.turn_down_screwdriver:
@@ -94,7 +112,10 @@ def execute_step(self, resp):
                 self._dock = self.snap_to_dock(resp)
                 self.text_area.text += 'Parts in: ' + self.serial.upper()
                 if resp:
-                    self.text_area.text += ', ' + resp + ', cord'
+                    self.text_area.text += ', ' + self._dock + ', cord'
+                # We snap to all of them before, so if we specify, we want to include that. But for the rest of the program, just use Albany.
+                if self._dock == 'Alex-Albany':
+                    self._dock = 'Albany'
                 self.text_area.text += '\n'
                 self.step = Steps.ask_damage
 
@@ -102,6 +123,8 @@ def execute_step(self, resp):
                 self.text_area.text += 'Damage: Minor scratches'
                 if resp:
                     self.text_area.text += ', ' + capitolize(resp)
+                    # As a reminder, I usually have to do something about it
+                    self.sidebar.todo.text += '\n' + resp
                 self.text_area.text += '\n'
                 if self.is_dock:
                     self.step = Steps.ask_came_with_bag
@@ -673,7 +696,6 @@ def execute_step(self, resp):
 
     self.text_area.scroll_to(None, 1000, animate=False)
 
-
 # All the side effects of the execute_step
 # Remember to import these in Case if you add a new one!
 def before_pick_up_case(self):
@@ -722,6 +744,12 @@ def before_swap_email(self):
     )
 
 def before_swap_order(self):
+    clipboard.copy(self.serial.upper())
+
+def before_swap_order_S9(self):
+    clipboard.copy(self.serial.upper())
+
+def before_swap_order_M6(self):
     clipboard.copy(self.serial.upper())
 
 def before_swap_note_serial(self):

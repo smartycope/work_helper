@@ -117,7 +117,8 @@ class Sidebar(VerticalGroup):
             button.can_focus = False
             yield button
 
-        self.update()
+        try: self.update()
+        except: pass
 
     def on_button_pressed(self, event):
         match event.button.id:
