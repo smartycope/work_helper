@@ -1,27 +1,51 @@
+URGENT: the i5g serial equality bug:
+i517020v230531n400186 ==
+i5g5020v230531n400186
+
+lookup "the others" by Jeremy robinson
+
+
+
+
+
+if 24 × 325 is #f0f8f8 - #f0f0f0, it's in the main board
+
+
+
 Look up:
 "schrodinger's killer app"
 blog: "cheatle optimized" (phontetic)
 Saturday mar 1 @ 12pm 20 min
 
-URGENT: if entering swap phase, and "swap robot" or equivelent not in notes, auto add it (like ensure process)
-URGENT: if "provisioned robot to app" (or similar) in the notes, then in finish phase, ask if they've removed bot from the app
+HIGH: if entering swap phase, and "swap robot" or equivelent not in notes, auto add it (like ensure process)
 URGENT: if the bot charges on dock @ 1.2, then it could be full battery -- also, if <5, round to 1 place instead of 0
 URGENT: if the case is a repeat, add a button that acts as a stopwatch that only adds. After the case is finished, add a step to remind to send an email with the adjusted time. Also log the time.
 URGENT: add DCT exception: if v2 J7 (uses blue card), DCT doesn't work (for now)
 URGENT: for j series bots that use the green/blue card DCT, add DCT exceptions that it can fail entirely (for now)
 URGENT: the ctrl+b LONG delay is way too long, try half a second - jk, it needs that long sometimes. Figure out a different approach. Look into reading the color of a specific pixel
-URGENT: try a different keyboard shortcut for focusing on input box
 URGENT: add to C9 OR C7 notes: CHM stingray: 4 wires, Pearl: 3 wires
-URGENT: ya, the sidebars aren't updating after deserialization
 URGENT: re-add hotkey shortcuts back into the main program, with a setting
 URGENT ish: if M6, don't ask if it's been cleaned
-LOW PRIORITY URGENT: fix updating disabling which switches based on the model
 
 HINTS: add a sub-branch for evac problems: if it's evacing, and bin *actually* isn't getting cleared, then:
-HOTKEY: search for alternate bot model in stock: alt+f, maybe: ctrl+a, backspace, tab x2, down x2, enter, tab, space, tab x2, enter
-HOTKEY: alternate finish case add attachement shortcut: starting from the description box, "repair report", shift+tab, enter, wait, case id, ".pdf", enter, wait short, shift+tab, down x2, enter, tab x3, enter, done
 DCT: if it's an R series and >=880, then specify that it's USB in the top side corner
 
+URGENT MINOR: if rust in either tank, add note in todo box
+URGENT MINOR: auto add the " repeat of" if a repeat
+MINOR: if the current bot (current serial) is non-modular, and bit is entered with no params, add "can't , as bot is non-modular" by default
+MINOR: the bullet in the tab shouldn't show if the quick model is an empty string
+MINOR: remove "if necessary" from step "unbox and move battery over
+MINOR: typo in the pad won't deploy hint
+MINOR: re-add "Diagnosis: " to "sunken contact" when added to notes
+MINOR: remove "including bin and dock" from the "all tags are off" step
+MINOR: make the "check sidebrush is on/screws on tight" step optional according to a setting
+MINOR: make "charging" go back to whatever phase it came from instead
+MINOR: make repeat a property, and have it parse if the first line has "repeat" in it
+MINOR: Audio "doesn't" seem quiet, instead of does not
+MINOR: if cx states mentions "app", also check if the audio is quiet
+MINOR HIGH: regex for ext notes for alex Albany warning: check if "alex" is in the 2nd line of the notes (and not "non")
+MINOR: add icons appropriate icons to the phase select box items
+MINOR: don't show prev and next tab bindings
 MINOR: if mobility menu is open, change the tab icon to something relevant
 MINOR: in the swap robot insert SN regex, only match if the line on the whole is less than super long
 MINOR: add a setting to include model numbers to the tabs
@@ -81,6 +105,18 @@ MINOR: make the mobility todo box an input box and give it a placeholder
 MINOR: in the comment in the texts.py that the steps have to be unique: they technically only have to be unique within each phase
 MINOR: maybe - in the mobility menu update function, in the if statement to reset the dock box, remove the or'ed statement if it's empty (don't reset if it's empty)
 
+
+HIGH: check the claimed damage should be after the check the customer states
+HIGH: drag, or some way to reorder tabs
+HIGH: squish together a bunch of the end steps, and also move back logging as far back as possible
+HIGH: add a step, in confirm, but after "update css box" step, if repeat, to go see what the previous repeat was for
+HIGH: when adding a date to the repeat email, note both the date the case was started, and when it was finished
+HIGH: add another color (maaaybe 2)
+HIGH: if a battery test is needed, ask for it immediately before cleaning, instead of after
+HIGH: There's a bug in the "pad won't deploy" hint:
+ │  ├── Test pad/Test bin                                                                │  ▎firmware version. Actuator arm
+▊   │  ├── If it fails with both a test pad and a test bin,                                 │  ▎current and speed tests, if FW >=
+▊ Pr│  └──  remoand chirp sensors are blown out, it's a swap
 HIGH: if there's an error (but not if closed nicely), automatically create a backup copy of the case notes folder
 HIGH: in MM, if lapis bin in parameters, and auto-evac is set to pass (True), then add "(didn't)" after auto evac after it
 HIGH: on opening the MM, focus on the first "where" select box
@@ -146,6 +182,8 @@ HIGH: in checking the user dock charging contacts, add the ability to include no
 HIGH: when doing a mobility test, if the dock specified is a base, not a dock, ask to confirm the bin does not have ad evac port, and if it should
 HIGH: add ctrl+A to *all* input boxes
 
+MEDIUM: add Boulder to the C9 and C10 in get_docks()
+MEDIUM: add pad wash and pad dry to the MM, if the dock is a boulder
 MEDIUM: if an acronym is expanded at the beginning of a sentence, it doesn't get capitolized. fix that somehow
 MEDIUM: if use "back" to go back to the add serial number step, it keeps adding serial numbers
 MEDIUM: try disallowing num_lines can_focus
@@ -213,6 +251,13 @@ MEDIUM: if serial numbers are different, automatically go to a new step that off
 MEDIUM: if battery tests are needed, also measure contacts, even if they don't feel sunken, but allow na
 --- COME BACK TO THIS --- MEDIUM: add a row immediately above the "parameters" row that just adds 2 more disable-able parameters: is the tank full (full, empty, or 1/4) and something else
 
+
+LOW: add a red (or alerting) border to the todo box if there *is* text in it
+UX: readd TODO label in sidebar (or equivalent)
+UX: add a disclaimer in the ext notes menu stating that this is not definitive, and usually needs editng, and you should always double check it, etc.
+LOW: make the rest of the window dim when a Menu is open
+LOW: only allow one window to be open at a time
+REFACTOR: abstract the ext notes into a JSON file
 LOW: if "pass" is in the bit output step (when expanded
 LOW: make a keyboard shortcuts menu
 LOW: some way to remove serial numbers/swaps

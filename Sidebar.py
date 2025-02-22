@@ -93,16 +93,17 @@ class Sidebar(VerticalGroup):
             yield Label("\nPhase: ")
             yield self.phase_selector
 
-        yield Label('\n')
-        yield self.dct
-        yield Label(f'{" DCT Exceptions ":-^{SIDEBAR_WIDTH}}', classes='sidebar-label')
-        yield self.dct_exp
-        yield Label(f'{" Shipping Mode ":-^{SIDEBAR_WIDTH}}', classes='sidebar-label')
-        yield self.sleep_mode
-        yield Label(f'{" Factory Reset ":-^{SIDEBAR_WIDTH}}', classes='sidebar-label')
-        yield self.factory_reset
-        yield self.notes_sep
-        yield self.notes
+        with ScrollableContainer():
+            yield Label('\n')
+            yield self.dct
+            yield Label(f'{" DCT Exceptions ":-^{SIDEBAR_WIDTH}}', classes='sidebar-label')
+            yield self.dct_exp
+            yield Label(f'{" Shipping Mode ":-^{SIDEBAR_WIDTH}}', classes='sidebar-label')
+            yield self.sleep_mode
+            yield Label(f'{" Factory Reset ":-^{SIDEBAR_WIDTH}}', classes='sidebar-label')
+            yield self.factory_reset
+            yield self.notes_sep
+            yield self.notes
 
         # yield Static(id='spacer')
 

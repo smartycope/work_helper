@@ -39,6 +39,12 @@ def open_board(case:str=None):
     sleep(SHORT)
     mouse.move(x, y)
     sleep(LONG)
+
+    if not case:
+        p = clipboard.paste()
+        if len(p) == 7 and p.lower().endswith('ir'):
+            case = p
+
     if case:
         press_seq(*('tab',)*3)
         keyboard.write(case)
@@ -94,6 +100,31 @@ def query_case(case=None):
     keyboard.write(case)
     sleep(SHORT)
     keyboard.press_and_release('enter')
+
+def search_for_swap():
+    """ ctrl+a, backspace, tab x2, down x2, enter, tab, space, tab x2, enter """
+    # try alt+f
+    press_seq('ctrl+a', 'backspace', 'tab', 'tab', 'down', 'down', 'enter', 'tab', 'space', 'tab', 'tab', 'enter')
+
+def add_case(case=None):
+    """ starting from the description box,
+    "repair report", shift+tab, enter, wait, case id, ".pdf", enter, wait short, shift+tab,
+    down x2, enter, tab x3, enter, done
+    """
+    keyboard.write('Repair Report')
+    press_seq('shift+tab', 'enter')
+    sleep(.5)
+    if case:
+        keyboard.write(case)
+        keyboard.write('.pdf')
+    else:
+        press_seq('ctrl+v')
+        keyboard.write('.pdf')
+    press_seq('enter')
+    press_seq(SHORT)
+    press_seq('shift+tab', 'down', 'down', 'enter', 'tab', 'tab', 'tab', 'enter')
+
+
 
 """
 to goto board: hover over 150, 200 from top left, then delay like, half a second, then click on 150, 260

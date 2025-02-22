@@ -7,9 +7,9 @@ class AcronymMenu(Menu):
     require_case = False
 
     def compose(self):
-        s = "All acryonyms are case insensitve, and are applied when they're by themselves only\n"
+        s = "All acryonyms are case insensitve, and are applied when they're by themselves only\n\n"
 
         for acr, expanded in ACRONYMS.items():
             s += f'{acr} -> {expanded.replace("[", "\\[")}\n'
-        yield Static(s)
+        yield ScrollableContainer(Static(s))
         yield Button('Close', action='close')

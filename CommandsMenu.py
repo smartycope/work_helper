@@ -6,7 +6,7 @@ class CommandsMenu(Menu):
     require_case = False
 
     def compose(self):
-        yield Static("""\
+        yield ScrollableContainer(Static("""\
 All commands stick extra parameters at the end as notes
 All commands are case insensitive
 
@@ -32,6 +32,6 @@ All commands are case insensitive
 `diag` -> Diagnosis:
 `upfw` -> Update firmware
 `nozzle` -> Cleaned out drip nozzles
-        """)
+"""))
 # `ch|charge \[watts] (dock) (bot)` -> \[bot(Robot)] charges on \[dock (dock)] @ ~\[watts]W
         yield Button('Close', action='close')

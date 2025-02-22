@@ -1,4 +1,5 @@
 import re
+import re
 from textual.containers import *
 from textual.widgets import *
 from Phase import Phase
@@ -10,6 +11,7 @@ import settings
 import clipboard
 import settings
 from multi_paste import multi_paste
+from datetime import datetime
 
 DO_NOT_PARSE_ACRONYM_STEPS = [
     # This step specifically does parses them itself later, after it parses the commands
@@ -280,7 +282,7 @@ def execute_step(self, resp):
             case Steps.ask_charge_customer_dock | Steps.ask_charge_test_dock:
                 if resp.lower() != 'na':
                     try:
-                        watts = round(float(resp))
+                        watts = float(resp)
                     except ValueError:
                         if resp:
                             self.add_step(resp)
@@ -289,12 +291,12 @@ def execute_step(self, resp):
 
                     dock = f'cx {self.dock}' if self.dock else 'test base'
 
-                    if watts < 3:
-                        self.add_step(f"Robot does not charge on {dock} @ ~{watts}W", bullet='!')
+                    if watts < 1:
+                        self.add_step(f"Robot does not charge on {dock} @ ~{watts:.1f}W", bullet='!')
                     elif watts < 10:
-                        self.add_step(f"Robot charges on {dock} @ ~{watts}W (battery is full)")
+                        self.add_step(f"Robot charges on {dock} @ ~{watts:.1f}W (battery is full)")
                     else:
-                        self.add_step(f"Robot charges on {dock} @ ~{watts}W")
+                        self.add_step(f"Robot charges on {dock} @ ~{watts:.0f}W")
 
                 next_step = 'quiet audio'
 
@@ -419,10 +421,13 @@ def execute_step(self, resp):
                 elif self.serial.startswith('m6'):
                     self.step = Steps.ask_m6_dry_mobility
                 else:
-                    self.step = Steps.generate_external_notes
-                    self.external_notes_menu.action_open()
+                    next_step = 'remove from app'
 
             case Steps.ask_lapis_mobility_done | Steps.ask_m6_dry_mobility:
+                next_step = 'remove from app'
+
+            case Steps.ask_removed_provisioning:
+                self.add_step('Removed provisioning')
                 self.step = Steps.generate_external_notes
 
             case Steps.generate_external_notes:
@@ -469,38 +474,32 @@ def execute_step(self, resp):
                 self.step = Steps.ask_does_not_have_pad if self.serial.startswith('m6') else Steps.ask_has_pad
 
             case Steps.ask_does_not_have_pad:
-                self.step = Steps.ask_sidebrush_screws
+                next_step = 'screws tight'
 
             case Steps.ask_has_pad:
-                self.step = Steps.ask_sidebrush_screws
+                next_step = 'screws tight'
 
             case Steps.ask_sidebrush_screws:
-                self.step = Steps.double_check_confirmed if settings.DO_DOUBLE_CHECK else Steps.ask_tags_off
+                next_step = 'tags off/double check'
 
             case Steps.double_check_confirmed:
                 self.step = Steps.ask_tags_off
 
             case Steps.ask_tags_off:
-                # self.step = Steps.ask_put_bin_back
-
-            # case Steps.ask_put_bin_back:
                 # If the notes haven't changed since we last updated CSS, we don't need to update CSS again
                 if self._finish_first_copy_notes == self.text_area.text.strip():
-                    self.step = Steps.wait_parts_closed
+                    next_step = 'finish track'
                 else:
                     self.step = Steps.ask_copy_notes_2
 
             case Steps.ask_copy_notes_2:
-                self.step = Steps.wait_parts_closed
+                next_step = 'finish track'
 
             case Steps.wait_parts_closed:
                 self.step = Steps.ask_complete_case_CSS
 
             case Steps.ask_complete_case_CSS:
-                if self.repeat:
-                    self.step = Steps.ask_submit_adj
-                else:
-                    next_step = 'put on shelf'
+                next_step = 'put on shelf'
 
             case Steps.ask_submit_adj:
                 next_step = 'put on shelf'
@@ -618,7 +617,8 @@ def execute_step(self, resp):
         self.step = Steps.ask_came_with_pad if self.is_combo else Steps.customer_states
 
     if next_step == 'quiet audio':
-        if self.serial.startswith(('c', 'j')) and "evac" in self.customer_states.lower() or "empty" in self.customer_states.lower():
+        # TODO: abstract this into a seperate method
+        if self.serial.startswith(('c', 'j')) and "evac" in self.customer_states.lower() or "empty" in self.customer_states.lower() or "app" in self.customer_states.lower():
             self.step = Steps.ask_quiet_audio
         else:
             self.phase = Phase.DEBUGGING
@@ -692,7 +692,28 @@ def execute_step(self, resp):
             next_step = 'empty tank'
 
     if next_step == 'empty tank':
-        self.step = Steps.ask_emptied_tank if self.can_mop else Steps.ask_sidebrush_screws
+        if self.can_mop:
+            self.step = Steps.ask_emptied_tank
+        else:
+            next_step = 'screws tight'
+
+    if next_step == 'screws tight':
+        if settings.ASK_SCREWS_ON_TIGHT:
+            self.step = Steps.ask_sidebrush_screws
+        else:
+            next_step = 'tags off/double check'
+
+    if next_step == 'tags off/double check':
+        self.step = Steps.double_check_confirmed if settings.DO_DOUBLE_CHECK else Steps.ask_tags_off
+
+    if next_step == 'finish track':
+        self.step = Steps.ask_submit_adj if self.repeat else Steps.wait_parts_closed
+
+    if next_step == 'remove from app':
+        if re.search(r'(?i)\bapp\b', self.text_area.text):
+            self.step = Steps.ask_removed_provisioning
+        else:
+            self.step = Steps.generate_external_notes
 
     self.text_area.scroll_to(None, 1000, animate=False)
 
@@ -705,7 +726,8 @@ def after_pick_up_case(self):
     self.log('open')
 
 def after_ask_complete_case_CSS(self):
-    self.log('close')
+    pass
+    # self.log('close')
 
 def before_generate_external_notes(self):
     self.external_notes_menu.action_open()
@@ -743,14 +765,19 @@ def before_swap_email(self):
         self.text_area.text,
     )
 
+def _copy_swap_serial(self):
+    # This *shouldn't* happen, but just in case...
+    if self.serials:
+        clipboard.copy(self.serial[0].upper())
+
 def before_swap_order(self):
-    clipboard.copy(self.serial.upper())
+    self._copy_swap_serial()
 
 def before_swap_order_S9(self):
-    clipboard.copy(self.serial.upper())
+    self._copy_swap_serial()
 
 def before_swap_order_M6(self):
-    clipboard.copy(self.serial.upper())
+    self._copy_swap_serial()
 
 def before_swap_note_serial(self):
     clipboard.copy(self.serial.upper())
@@ -769,8 +796,9 @@ def before_hold_add_context(self):
     # self.sidebar.todo.text = ''
 
 def before_ask_submit_adj(self):
+    current_date = datetime.now().strftime("%m/%d/%Y")
     multi_paste(
         'michelle.gonzalez@acer.com',
         f'Adjustment: {self.ref}',
-        f"{self.ref}: minutes"
+        f"{self.ref}: 15 minutes (finished on {current_date})"
     )

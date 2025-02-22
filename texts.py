@@ -66,7 +66,7 @@ class Steps:
 
     # HOLD
     # hold_put_todo_in_notes = "Put any context directly into the notes {{TODO}} [done]"
-    hold_copy_notes_to_CSS = "Copy notes over to CSS {{notes}}"
+    hold_copy_notes_to_CSS = "Copy notes over to CSS {{notes}} [done] " # The extra space here is important!
     hold_add_context = "Add any context about the case [done]"
     hold_unuse_parts = "Unuse any parts, but don't close out parts! [done]"
     hold_put_on_shelf = "Put everything together, and put on the shelf with the traveler [done]"
@@ -76,6 +76,7 @@ class Steps:
     ask_bit_mobility_done = "Pass mobility and attempted BiT [done]"
     ask_lapis_mobility_done = "Pass mobility with a Lapis bin [done]"
     ask_m6_dry_mobility = "Pass mobility with a dry pad [done]"
+    ask_removed_provisioning = "Remove provisioning [done]"
     # generate_external_notes = "Move notes over and add external notes and a repair action {{notes}} [done]"
     generate_external_notes = "Fill in CSS {{notes}} [done]"
     # ask_copy_notes_1 = "Copy notes over to CSS and add a repair action {{notes}} [done]"
@@ -95,12 +96,12 @@ class Steps:
     double_check_confirmed = 'Wait for the case to be double checked [looks good]'
     ask_shipping_mode = "Placed into shipping mode [done]"
     ask_close_parts = "Close out all parts and get out of case [done]"
-    ask_tags_off = "All the tags are off, including the bin and dock, and grab the traveler [done]"
+    ask_tags_off = "All tags are off and grab the traveler [done]"
     ask_put_bin_back = "Put the bin back [done]"
-    ask_copy_notes_2 = "Copy notes over to CSS {{notes}} [done]"
+    ask_copy_notes_2 = "Copy notes over to CSS {{notes}} [done]" # no extra space here!
+    ask_submit_adj = "Send adjustment {{address, subject, adjustment}}"
     wait_parts_closed = 'Wait for parts to get closed out {{case ID}} [done]'
     ask_complete_case_CSS = "Finish the case on CSS {{case ID}} [done]"
-    ask_submit_adj = "Send adjustment {{address, subject, adjustment}}"
     ask_put_bot_on_shelf = "Put the robot and traveler{s} on the shelf [done]"
     ask_put_bot_on_shelf_mopping = "Put the robot and traveler{s} on the shelf, and put the tank[s] on top [done]"
     # finish_case = 'All done! [close case]'

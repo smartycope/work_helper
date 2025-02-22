@@ -6,6 +6,16 @@ from globals import capitolize
 
 
 ACRONYMS = {
+    # sprayer off current of n.
+    'wh': 'wheel',
+    'whs': 'wheels',
+    'nm': 'non-modular',
+    'mt': 'mobility test',
+    'dg': 'docking',
+    'i': 'I',
+    'err': 'error',
+    'errs': 'errors',
+    'ir': 'IR',
     'r': 'robot',
     'b': 'robot',
     'd': 'dock',

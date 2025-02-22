@@ -30,6 +30,7 @@ class Case(VerticalGroup):
     from parse_commands import parse_command
     from step_algorithm import (  # before_ask_copy_notes_1,
         after_ask_complete_case_CSS, after_generate_external_notes,
+        _copy_swap_serial,
         after_pick_up_case, before_ask_complete_case_CSS,
         before_ask_copy_notes_2, before_ask_double_check,
         before_ask_submit_adj, before_generate_external_notes,
