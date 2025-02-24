@@ -17,6 +17,9 @@ ACRONYMS = {
     'errs': 'errors',
     'ir': 'IR',
     'r': 'robot',
+    'diag': 'Diagnosis',
+    'ss': 'smart scrub',
+    'dd': 'dirt detect',
     'b': 'robot',
     'd': 'dock',
     'n': 'new',
@@ -33,6 +36,8 @@ ACRONYMS = {
     'hw': "hardware",
     'md': "module",
     'bt': "battery",
+    'sn': 'serial number',
+    'oem': 'OEM',
     'chm': "CHM",
     'bbk': 'BBK',
     'doa': 'DOA',
@@ -46,7 +51,10 @@ ACRONYMS = {
     'rp': 'replaced',
     'nd': 'new dock',
     'nr': 'new robot',
-    'ch': 'charges',
+    'ch': 'charge',
+    'chg': 'charging',
+    'chd': 'charged',
+    'chs': 'charges',
     'cho': 'charges on',
     'cm': 'Confirmed with Michelle',
     'ar': 'Aurora refill debug steps',
@@ -59,6 +67,9 @@ ACRONYMS = {
     'batt full': "Battery current test failed (full battery).",
     'opt': "optical bin failure[s] <100 out of range.",
     'opt150': "optical bin failure[s] <150 out of range.",
+    'opt100': "optical bin failure[s] <100 out of range.",
+    'opt50': "optical bin failure[s] <50 out of range.",
+    'opt20': "optical bin failure[s] <20 out of range.",
     'pad act': "pad actuator deploy/stow failure[s].",
     'batt': "battery",
 }
@@ -115,9 +126,12 @@ def parse_command(self, input:str):
                     # This is copied from step_algorithm
                     # TODO: abstract this into a method
                     measurements = list(map(float, args))
-                    meas = mean(measurements)
-                    meas = round(meas, 1 if 3.8 > meas > 3.74 else 2)
-                    self.add_step(f'Measured {"right" if side == "r" else "left"} contact: {meas}mm +/- {max(std(measurements), .1):.1f}')
+                    self.add_measure_contacts_step(side, measurements)
+
+                    # meas = mean(measurements)
+                    # meas = round(meas, 1 if 3.8 > meas > 3.74 else 2)
+                    # self.add_step(f'Measured {"right" if side == "r" else "left"} contact: {meas}mm +/- {max(std(measurements), .1):.1f}')
+
             # TODO: I need a better way to do this
             # case 'ch' | 'charge':
                 # watts = args.pop(0)
@@ -133,9 +147,9 @@ def parse_command(self, input:str):
                         step = 'Blew out chirp sensors'
                 else:
                     step = 'Blew out chirp sensors'
-            case 'diag':
-                step = 'Diagnosis:'
-                args[0] = capitolize(args[0])
+            # case 'diag':
+                # step = 'Diagnosis:'
+                # args[0] = capitolize(args[0])
             case 'cln':
                 if args:
                     if args[0].lower() in ('b', 'r'):

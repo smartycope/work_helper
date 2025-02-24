@@ -1,4 +1,5 @@
 import re
+from numpy import mean, std
 import re
 from textual.containers import *
 from textual.widgets import *
@@ -6,12 +7,12 @@ from Phase import Phase
 from globals import SECRET_PASSWORD, capitolize
 from parse_commands import parse_acronym
 from texts import Steps
-from numpy import mean, std
 import settings
 import clipboard
 import settings
 from multi_paste import multi_paste
 from datetime import datetime
+from math import ceil
 
 DO_NOT_PARSE_ACRONYM_STEPS = [
     # This step specifically does parses them itself later, after it parses the commands
@@ -83,14 +84,14 @@ def execute_step(self, resp):
                 else:
                     ids=  resp.lower()
                     if len(ids) % 2:
-                        self.text_area.text = self.step = '!!! Serial numbers are different lengths !!!'
-                        self.phase = Phase.FINISH
+                        self.text_area.text += '\n\n!!! Serial numbers are different lengths !!!'
+                        # self.phase = Phase.FINISH
                         return
                     else:
                         half = len(ids)//2
-                        if ids[half:] != ids[:half]:
-                            self.text_area.text = self.step = f'!!! Serial numbers are different !!!\n{ids[half:]}\n{ids[:half]}'
-                            self.phase = Phase.FINISH
+                        if not self._ids_equal(ids[half:], ids[:half]):
+                            self.text_area.text += f'\n\n!!! Serial numbers are different !!!\n{ids[half:]}\n{ids[:half]}'
+                            # self.phase = Phase.FINISH
                             return
                     self.add_serial(ids[len(resp)//2:])
                     self._update_label()
@@ -104,7 +105,12 @@ def execute_step(self, resp):
 
             case Steps.check_repeat:
                 self.repeat = bool(resp)
-                self._update_label()
+                if self.repeat:
+                    self._update_label()
+                    self.sidebar.update()
+                    if 'repeat' not in self.text_area.text.splitlines()[0].lower():
+                        self.text_area.text = self.text_area.text.replace('\n', ' repeat of \n', 1)
+
                 self.step = Steps.check_claimed_damage
 
             case Steps.check_claimed_damage:
@@ -208,6 +214,9 @@ def execute_step(self, resp):
                         case _:
                             return
 
+                if self._bin_screw_has_rust:
+                    self.sidebar.todo.text += '\nOrder new bin'
+
                 next_step = 'cleaning/lid pins'
 
             case Steps.ask_dock_tank_rust:
@@ -223,6 +232,9 @@ def execute_step(self, resp):
                             self._dock_tank_screw_has_rust = True
                         case _:
                             return
+
+                if self._dock_tank_screw_has_rust:
+                    self.sidebar.todo.text += '\nFreebee dock tank'
 
                 # This is next_step = 'cleaning/lid pins', except not recursive
                 if self.serial.lower().startswith('s'):
@@ -267,11 +279,23 @@ def execute_step(self, resp):
                 next_step = 'battery_test/charging'
 
             case Steps.battery_test:
+                if not resp:
+                    return
+
                 if resp.lower() != 'na':
                     # charge, health = resp.split(',')
                     try:
-                        charge, health = re.split(r'(?:,|\s)(?:\s)?', resp)
+                        inputs = re.split(r'(?:,|\s)(?:\s)?', resp)
                     except ValueError: return
+
+                    if len(inputs) == 2:
+                        charge, health = inputs
+                    elif len(inputs) == 1:
+                        charge = inputs[0]
+                        health = '100'
+                    else:
+                        return
+
                     self.add_step(f'Tested battery: {charge.strip()}%/{health.strip()}%', bullet='!' if float(health.strip()) < 80 else '*')
 
                 if self._swap_after_battery_test:
@@ -356,6 +380,7 @@ def execute_step(self, resp):
                     next_step = 'ask blower play'
 
             # Sunken contacts path
+            # TODO: combine these into a single function
             case Steps.sunken_ask_right_measurement:
                 try:
                     # either(',', whitespace) + optional(whitespace)
@@ -365,13 +390,14 @@ def execute_step(self, resp):
                     self.input.value = resp
                     return
 
-                meas = mean(measurements)
-                meas = round(meas, 1 if 3.8 > meas > 3.74 else 2)
-                self.add_step(f'Measured right contact: {meas}mm +/- {max(std(measurements), .1):.1f}', '*' if meas > 3.8 else '!')
+                self.add_measure_contacts_step('r', measurements)
+                # meas = mean(measurements)
+                # meas = round(meas, 1 if 3.8 > meas > 3.74 else 2)
+                # self.add_step(f'Measured right contact: {meas}mm +/- {max(std(measurements), .1):.1f}', '*' if meas > 3.8 else '!')
 
                 if mean(measurements) < 3.8:
                     self.ensure_process()
-                    self.add_step('Sunken right contact')
+                    self.add_step('Diagnosis: Sunken right contact')
                     self.add_step('Swap robot and ' + (f'cx {self.dock}' if self.dock else 'ordering a new dock'))
                     self._swap_after_battery_test = True
                     self._swap_due_to_sunken_contacts = True
@@ -391,11 +417,12 @@ def execute_step(self, resp):
                     self.input.value = resp
                     return
 
-                self.add_step(f'Measured left contact: {mean(measurements):.1f}mm +/- {round(std(measurements), 1) or .1:.1f}')
+                self.add_measure_contacts_step('l', measurements)
+                # self.add_step(f'Measured left contact: {mean(measurements):.1f}mm +/- {round(std(measurements), 1) or .1:.1f}')
 
                 if mean(measurements) < 3.8:
                     self.ensure_process()
-                    self.add_step('Sunken left contact')
+                    self.add_step('Diagnosis: Sunken left contact')
                     self.add_step('Swap robot' + (f' and cx {self.dock}' if self.dock else ''))
                     self._swap_after_battery_test = True
                     self._swap_due_to_sunken_contacts = True
@@ -427,7 +454,8 @@ def execute_step(self, resp):
                 next_step = 'remove from app'
 
             case Steps.ask_removed_provisioning:
-                self.add_step('Removed provisioning')
+                if 'removed provisioning' not in self.text_area.text.lower():
+                    self.add_step('Removed provisioning')
                 self.step = Steps.generate_external_notes
 
             case Steps.generate_external_notes:
@@ -526,23 +554,28 @@ def execute_step(self, resp):
                     next_step = 'order swap'
 
             case Steps.swap_order_dock:
-                if resp.lower() == 'out':
+                if resp.lower() in ('out', 'hold'):
                     self.phase = Phase.HOLD
-
-                next_step = 'order swap'
+                else:
+                    next_step = 'order swap'
 
             case Steps.swap_order_S9:
-                if resp.lower() == 'out':
+                if resp.lower() in ('out', 'hold'):
                     self.phase = Phase.HOLD
-                self.step = Steps.swap_ask_refurb
+                else:
+                    self.step = Steps.swap_ask_refurb
 
             case Steps.swap_order_M6:
-                if resp.lower() == 'out':
+                if resp.lower() in ('out', 'hold'):
                     self.phase = Phase.HOLD
-                self.step = Steps.swap_ask_refurb
+                else:
+                    self.step = Steps.swap_ask_refurb
 
             case Steps.swap_order:
-                self.step = Steps.swap_move_bin
+                if resp.lower() in ('out', 'hold'):
+                    self.phase = Phase.HOLD
+                else:
+                    self.step = Steps.swap_move_bin
 
             case Steps.swap_move_bin:
                 if resp.lower() == 'fb':
@@ -797,8 +830,11 @@ def before_hold_add_context(self):
 
 def before_ask_submit_adj(self):
     current_date = datetime.now().strftime("%m/%d/%Y")
+    minutes, seconds = divmod(self.sidebar.time, 60)
+    hours, minutes = divmod(minutes, 60)
+    minutes = ceil(minutes / 15) * 15
     multi_paste(
         'michelle.gonzalez@acer.com',
         f'Adjustment: {self.ref}',
-        f"{self.ref}: 15 minutes (finished on {current_date})"
+        f"{self.ref}: {(str(hours) + ' hours ') if hours else ''}{minutes} minutes (finished on {current_date})"
     )

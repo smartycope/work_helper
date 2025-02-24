@@ -1,0 +1,75 @@
+Screen {
+    layers: below hintButton ext mobility hints cmd acronym menu version ref;
+    # layers: below hintButton menus ref;
+    # layers: ref mobility ext hintButton below hints;
+}
+
+Menu{
+    margin: 4;
+    height: 100%;
+    width: 70%;
+    padding: 2;
+    border: tall #0178D4 round;
+}
+
+ExternalNotesMenu{
+    # height: 100%;
+    layer: ext;
+}
+
+HintsMenu{
+    layer: hints;
+    content-align: center middle;
+}
+
+.align-center{
+    content-align-horizontal: center;
+}
+
+#copy-button{
+    # height: 3;
+    width: 100%;
+    dock: bottom;
+}
+
+
+#copy-serial-button{
+    width: 30%;
+    padding: 0;
+    margin: 0;
+}
+
+#external-preview{
+    background: #383838;
+}
+
+.double{
+    column-span: 2;
+}
+
+.triple{
+    column-span: 3;
+}
+
+.quadruple{
+    column-span: 4;
+}
+
+.extend{
+    row-span: 2;
+}
+
+#hints-tree{
+    background: $surface-darken-1;
+}
+
+#input{
+    dock: top;
+    width: 100%;
+}
+
+#label{
+    width: 100%;
+    height: 100%;
+    background: red;
+}

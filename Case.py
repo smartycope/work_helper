@@ -1,4 +1,5 @@
 import json
+from numpy import mean, std
 import random
 import re
 from datetime import datetime
@@ -347,6 +348,12 @@ class Case(VerticalGroup):
         else:
             return ""
 
+    def add_measure_contacts_step(self, side, measurements):
+        meas = mean(measurements)
+        # meas = round(meas, 1 if 3.8 > meas > 3.74 else 2)
+        meas = round(meas, 1)
+        self.add_step(f'Measured {"right" if side == "r" else "left"} contact: {meas}mm +/- {std(measurements):.2f} ({len(measurements)} measurements)')
+
     # Helper methods
     def get_quick_model(self):
         if not self.serials:
@@ -400,24 +407,29 @@ class Case(VerticalGroup):
                 ○ Ignore if you know the battery State of Charge is high.
         """
         if not self.is_modular:
-            return 'DCT won\'t work, only BBK'
+            rtn = 'DCT won\'t work, only BBK'
         elif self.serial.startswith(('i3', 'i4', 'i5')):
-            return 'Any of the bumper tests can fail'
+            rtn = 'Any of the bumper tests can fail'
         elif self.serial.startswith('j9'):
-            return 'If v2 (clip battery), can fail basically everything. Otherwise, second dock comms test, if FW == 24.29.x (ensure robot still evacs)'
+            rtn = 'If v2 (clip battery), can fail basically everything. Otherwise, second dock comms test, if FW == 24.29.x (ensure robot still evacs)'
         elif self.serial.startswith('j'):
-            return 'Second dock comms test, if FW == 24.29.x (ensure robot still evacs)'
+            rtn = 'Second dock comms test, if FW == 24.29.x (ensure robot still evacs)'
         elif self.serial.startswith('s9'):
-            return 'Low-current vacuum test, pass if the value is <1500'
+            rtn = 'Low-current vacuum test, pass if the value is <1500'
         elif self.serial.startswith('m'):
-            return 'Pad detection test (run both wet and dry missions). If the sprayer on current is too low, charge and try again'
+            rtn = 'Pad detection test (run both wet and dry missions). If the sprayer on current is too low, charge and try again'
         elif self.serial.startswith('c'):
-            text = 'Actuator arm current and speed tests, if FW >= 23.53.6 (ensure it deploys in mobility mission). If FW >= v24.29.5, DCT is brand new. FW >= v24.29.1: dock comms can fail'
+            rtn = 'Actuator arm current and speed tests, if FW >= 23.53.6 (ensure it deploys in mobility mission). If FW >= v24.29.5, DCT is brand new. FW >= v24.29.1: dock comms can fail'
             if self.serial.startswith('c9'):
-                text = 'Sprayer current off, but note the firmware version. ' + text
-            return text
+                rtn = 'Sprayer current off, but note the firmware version. ' + rtn
         else:
-            return 'Optical bin tests (at most 2, if barely out of range)'
+            rtn = 'Optical bin tests (at most 2, if barely out of range)'
+
+        # URGENT: add DCT exception: if v2 J7 (uses blue card), DCT doesn't work (for now) for j series bots that use the green/blue card DCT, add DCT exceptions that it can fail entirely (for now)
+        if self.serial.startswith(('j7', 'j5', 'j6')):
+            rtn += '\nIf uses the blue card, BiT doesn\'t work at all'
+
+        return rtn
 
     def get_notes(self):
         # if self.serial.startswith('j'):
@@ -425,6 +437,9 @@ class Case(VerticalGroup):
         notes = ''
         if self.serial.startswith('c9'):
             notes += "[on orange_red1]Remember to remove battery before removing the CHM.[/] Also, if the DCT card doesn't work, try a hard reset\nc955 -> albany; c975 -> aurora"
+
+        if self.serial.startswith('c'):
+            notes += '\nCHM stingray: 4 wires, Pearl: 3 wires'
 
         if self.serial.startswith('i'):
             notes += 'If having weird trouble with DCT, try factory reset'
@@ -460,14 +475,23 @@ class Case(VerticalGroup):
             return ['San Marino']
         elif self.serial.startswith('s9'):
             return ['Fresno']
-        elif self.serial.startswith(('c10', 'x')):
+        # elif self.serial.startswith('c9'):
+            # return ['Aurora'] + camera
+        elif self.serial.startswith(('c10', 'c9', 'x')):
             return ['Boulder', 'Aurora'] + camera
-        elif self.serial.startswith('c9'):
-            return ['Aurora'] + camera
         elif self.serial.startswith(('j', 'c')):
             return camera
         else:
             return ir
+
+    def _ids_equal(self, a, b):
+        """ i517020v230531n400186 ==
+            i5g5020v230531n400186
+        """
+        if a.lower().startswith('i5') and len(a) > 3 and len(b) > 3:
+            return a[:2] == b[:2] and a[4:] == b[4:]
+        else:
+            return a == b
 
     def require_battery_test(self):
         cx_states = self.customer_states.lower()
@@ -510,8 +534,12 @@ class Case(VerticalGroup):
         if self.repeat:
             s += 'R '
         s += self.ref
+
         if settings.INCLUDE_MODEL_IN_TAB:
-            s += ' • ' + self.get_quick_model()
+            model = self.get_quick_model()
+            if model:
+                s += ' • ' + model
+
         s += f' [on {darken_color(self.color, .6)}]'
         # To distinguish cases that are on my bench charging, from once that aren't
         if self.phase == Phase.CHARGING:

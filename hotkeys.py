@@ -112,6 +112,7 @@ def add_case(case=None):
     down x2, enter, tab x3, enter, done
     """
     keyboard.write('Repair Report')
+    sleep(SHORT)
     press_seq('shift+tab', 'enter')
     sleep(.5)
     if case:
@@ -120,8 +121,9 @@ def add_case(case=None):
     else:
         press_seq('ctrl+v')
         keyboard.write('.pdf')
+    sleep(SHORT)
     press_seq('enter')
-    press_seq(SHORT)
+    sleep(SHORT)
     press_seq('shift+tab', 'down', 'down', 'enter', 'tab', 'tab', 'tab', 'enter')
 
 

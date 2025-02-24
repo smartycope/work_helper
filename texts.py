@@ -53,7 +53,7 @@ class Steps:
     swap_unuse_parts = "Unuse all parts and get out of the case [done]"
     swap_update_css = "Update CSS repair action and copy notes over {{notes}} [done]"
     swap_email = "Send swap email {{address, subject, notes}} [confirmed]"
-    swap_order_dock = "Order a new dock [done]"
+    swap_order_dock = 'Order a new dock [done] ("out" if out of stock)'
     swap_order = 'Reload case and order swap {{original serial}} ("out" if out of stock)'
     swap_order_S9 = 'Order a new chassis (not a whole bot!) {{original serial}} ("out" if out of stock) [done]'
     swap_order_M6 = 'Order the correctly colored swap {{original serial}} ("out" if out of stock) [done]'

@@ -1,42 +1,24 @@
-URGENT: the i5g serial equality bug:
-i517020v230531n400186 ==
-i5g5020v230531n400186
-
-lookup "the others" by Jeremy robinson
-
-
-
-
-
-if 24 × 325 is #f0f8f8 - #f0f0f0, it's in the main board
-
-
-
 Look up:
+"the others" by Jeremy robinson
 "schrodinger's killer app"
 blog: "cheatle optimized" (phontetic)
 Saturday mar 1 @ 12pm 20 min
 
 HIGH: if entering swap phase, and "swap robot" or equivelent not in notes, auto add it (like ensure process)
-URGENT: if the bot charges on dock @ 1.2, then it could be full battery -- also, if <5, round to 1 place instead of 0
-URGENT: if the case is a repeat, add a button that acts as a stopwatch that only adds. After the case is finished, add a step to remind to send an email with the adjusted time. Also log the time.
-URGENT: add DCT exception: if v2 J7 (uses blue card), DCT doesn't work (for now)
-URGENT: for j series bots that use the green/blue card DCT, add DCT exceptions that it can fail entirely (for now)
-URGENT: the ctrl+b LONG delay is way too long, try half a second - jk, it needs that long sometimes. Figure out a different approach. Look into reading the color of a specific pixel
-URGENT: add to C9 OR C7 notes: CHM stingray: 4 wires, Pearl: 3 wires
-URGENT: re-add hotkey shortcuts back into the main program, with a setting
+URGENT: in all the try except statements, if there's an error caught and there *shouldn't* be, log it in the interal log file (I'm thinking specifically of the one if it can't save)
 URGENT ish: if M6, don't ask if it's been cleaned
+MINOR: don't ask if blower play if r (or e) series
 
 HINTS: add a sub-branch for evac problems: if it's evacing, and bin *actually* isn't getting cleared, then:
 DCT: if it's an R series and >=880, then specify that it's USB in the top side corner
+UX: add more explanations (and examples) in command and acronym menus
 
-URGENT MINOR: if rust in either tank, add note in todo box
-URGENT MINOR: auto add the " repeat of" if a repeat
+MINOR: if ctrl+g is pressed while input box is already focused, jump to focusing on the text_area
+MINOR: text wrap the cx states in the ext menu
 MINOR: if the current bot (current serial) is non-modular, and bit is entered with no params, add "can't , as bot is non-modular" by default
 MINOR: the bullet in the tab shouldn't show if the quick model is an empty string
 MINOR: remove "if necessary" from step "unbox and move battery over
 MINOR: typo in the pad won't deploy hint
-MINOR: re-add "Diagnosis: " to "sunken contact" when added to notes
 MINOR: remove "including bin and dock" from the "all tags are off" step
 MINOR: make the "check sidebrush is on/screws on tight" step optional according to a setting
 MINOR: make "charging" go back to whatever phase it came from instead
@@ -58,7 +40,6 @@ MINOR: add m6 color step formatting in the M6 swap order step:
 M610020 is white (M611020B230621N208362 is also white)
 M610220 is black
 M610320 is black & graphite
-MINOR: both alternate swaps should copy the original seria
 MINOR: darken the disabled text in the MM just a little more -- or maybe keep as is and add strikethrough
 MINOR: decrease the width of the dock box 1 (the cx/new Select box), and have it stay to the right
 MINOR: urgent submit event should trigger mobility submit like the other boxes
@@ -105,7 +86,7 @@ MINOR: make the mobility todo box an input box and give it a placeholder
 MINOR: in the comment in the texts.py that the steps have to be unique: they technically only have to be unique within each phase
 MINOR: maybe - in the mobility menu update function, in the if statement to reset the dock box, remove the or'ed statement if it's empty (don't reset if it's empty)
 
-
+HIGH: the ctrl+b LONG delay needs to read the color of a specific pixel
 HIGH: check the claimed damage should be after the check the customer states
 HIGH: drag, or some way to reorder tabs
 HIGH: squish together a bunch of the end steps, and also move back logging as far back as possible
@@ -222,7 +203,6 @@ MEDIUM: multi_paste() is buggy somehow, it stopped working after a while
 MEDIUM: torino asked about bag in the dock in the finish phase
 MEDIUM: CopyText needs some sort of feedback when pressed (lighten background like regular buttons do)
 MEDIUM: make the lower sidebar butt against the bottom properly
-MEDIUM: allow different serial numbers, if it follows the document (i.e. i5g5 instead of i5g7) (also, in the case of g, it means it's a lapis combo)
 MEDIUM: J955 - 1st 5 means evac dock, 1 means base. 2nd 5, if 7, means lapis bin
 MEDIUM: Consider a "clear TODO" button (or at least make it select everything on focus)
 MEDIUM:  make the DCT card a single line
@@ -358,3 +338,5 @@ do double check (also maybe add a button that can turn this on manually later)
 parts are being run (determines if we should ask if the parts have been closed out yet or not)
 
 EPIC: make a simple version of the side bar stuff, but instead of a python script, make it a JS script and host it on a GitHub page so it's easier to access and update
+
+EPIC: add bindings to the MM for all the switches, and then underline the appropriate letters in each. Like alt pneumonics

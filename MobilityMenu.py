@@ -218,6 +218,11 @@ class MobilityMenu(Menu):
             self.refill_label.styles.color = disabled_text
             self.refill_label.styles.text_style = disable_text_style
 
+        # if m6, at first assume a full tank and a test pad
+        if self.case.serial.startswith('m6'):
+            self.param_tank.value = 'full tank'
+            self.param_pad.value = 'test pad'
+
     def action_toggle(self):
         super().action_toggle()
         # The first time, we need to update everything. After that, update only after we insert one

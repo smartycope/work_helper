@@ -14,13 +14,13 @@ from globals import COLORS, INTERNAL_LOG_PATH, SAVE_CASE_PATH, SAVE_STATE_PATH, 
 from clipboard import copy, paste
 
 from hotkeys import open_board, open_return_product, open_ship_product, query_case
+import settings
 from texts import Steps
 import traceback
+import shutil
+import time
 
 # {"notes": "19000IR\\n", "color": "#377a11", "ref": "19000IR", "serial": null, "phase": 0, "step": "Put labels on everything", "todo": ""}, {"notes": "19002IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: Waaaaaa\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n! Robot does not charge on test base @ ~0W\\n\\nProcess:\\n* Step\\n* Step\\n* Step\\n* Done\\n", "color": "#d1dd0b", "ref": "19002IR", "serial": "i3", "phase": 3, "step": "All screws are screwed in all the way [done]", "todo": ""}, {"notes": "19003IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: I want money back\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n* Robot charges on test base @ ~9W (battery is full)\\n\\nProcess:\\n* Tehe\\n* Swap\\n", "color": "#ea9daf", "ref": "19003IR", "serial": "j7", "phase": 4, "step": "Send swap email [confirmed]", "todo": ""}, {"notes": "19004IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: It broke\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No play in blower motor\\n* Tank float screw has no signs of rust\\n* Cleaned robot\\n* Robot charges on test base @ ~21W\\n\\nProcess:\\n* Step1\\n* Step2\\n", "color": "#799fad", "ref": "19004IR", "serial": "c9", "phase": 2, "step": "Add Step", "todo": ""}, {"notes": "new\\n", "color": "#ef9e16", "ref": "new", "serial": null, "phase": 0, "step": "Confirm IDs", "todo": ""}
-
-
-
 
 DEBUG_STATE = '''["19002IR", "19003IR", "19004IR"]'''
 DEBUG_CASES = {
@@ -29,6 +29,16 @@ DEBUG_CASES = {
     '19004IR': {"notes": "19004IR\nParts in: Robot\nClaimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\nCustomer States: Waaaaaa\n\nRoutine Checks:\n* Contacts don't feel sunken\n* No signs of liquid damage\n* No play in blower motor\n* Cleaned robot\n! Robot does not charge on test base @ ~0W\n\nProcess:\n* Step\n* Step\n* Step\n* Done\n\nCONTEXT:\n\n", "color": "#d1dd0b", "ref": "19004IR", "serials": ["c9"], "phase": Phase.FINISH.value, "step": "Pass mobility and attempted BiT [done]", "todo": ""},
 }
 
+if settings.INCLUDE_HOTKEYS:
+    HOTKEY_BINDINGS = [
+        Binding('ctrl+b', 'open_board', 'Board', priority=True, system=True),
+        Binding('ctrl+p', 'query_case', 'Pickup', priority=True, system=True),
+        Binding('ctrl+r', 'open_return_product', 'Return', priority=True, system=True),
+        Binding('ctrl+f', 'open_ship_product', 'Ship', priority=True, system=True),
+    ]
+else:
+    HOTKEY_BINDINGS = []
+
 
 class HelperApp(App):
     BINDINGS = [
@@ -36,15 +46,9 @@ class HelperApp(App):
         Binding('ctrl+e', 'open_external_notes_menu', 'External notes', priority=True, system=True),
         Binding('ctrl+t', 'open_mobility_menu', 'Mobility Test', priority=True, system=True),
 
-        # TODO
-        # Binding('ctrl+b', 'open_board', 'Board', priority=True, system=True),
-        # Binding('ctrl+p', 'query_case', 'Pickup', priority=True, system=True),
-        # Binding('ctrl+r', 'open_return_product', 'Return', priority=True, system=True),
-        # Binding('ctrl+f', 'open_ship_product', 'Ship', priority=True, system=True),
-
         Binding("ctrl+n", "new_case", "New Case", show=False, system=True, priority=True),
         Binding("ctrl+w", "close_case", "Close Case", show=False, system=True, priority=True),
-        Binding("ctrl+s", "save", "Save", show=False, system=True, priority=True),
+        Binding("ctrl+s", "save_manual", "Save", show=False, system=True, priority=True),
 
         Binding("ctrl+`,ctrl+g", "focus_input", "Focus Input", show=False, system=True, priority=True),
         # ('ctrl+e', 'open_external_notes_menu', 'Ext Notes'),
@@ -56,7 +60,7 @@ class HelperApp(App):
 
         Binding('ctrl+j', 'increment_tab', 'Next Tab', show=True, priority=True, system=True),
         Binding('ctrl+f', 'increment_tab(-1)', 'Previous Tab', show=True, priority=True, system=True),
-    ]
+    ] + HOTKEY_BINDINGS
     CSS_PATH = "stylesheet.tcss"
     COMMAND_PALETTE_DISPLAY = False
     ESCAPE_TO_MINIMIZE = False
@@ -259,6 +263,16 @@ class HelperApp(App):
         # Save the current state, as a backup
         with open(SAVE_STATE_PATH, 'w') as f:
             f.write(self.serialize())
+
+    def action_save_manual(self):
+        self.action_save()
+        # TODO: remove this try/except statement, I think it's uneccisary, I just don't trust my own code
+        try:
+            timestamp = time.strftime("%m%d%Y-%H%M%S")
+            backup_path = SAVE_CASE_PATH.parent / f"{SAVE_CASE_PATH.name}_backup_{timestamp}"
+
+            shutil.copytree(SAVE_CASE_PATH, backup_path)
+        except: pass
 
     def action_open_board(self):
         open_board(self.active_case.ref)

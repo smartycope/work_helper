@@ -1,5 +1,5 @@
 import re
-from typing import OrderedDict
+from typing import OrderedDict, Union
 from textual.containers import *
 from textual.widgets import *
 from textual import on
@@ -16,8 +16,9 @@ class ExternalNotesMenu(Menu):
         ("Replaced dock", "Replaced dock with equivalent model"),
         ("Alex-Albany ship with sealing error", "The dock may occasionally generate false error messages. It has been thoroughly tested to ensure optimal compatibility with your Roomba. iRobot is aware of this issue and is actively working on a software update for resolution. For any further inquiries, please reach out to iRobot support"),
         ("Recommend cleaning", "Recommend regular cleaning and maintenance"),
-        ("Recommend cleaning dock charging contacts", "Recommend regular cleaning of dock charging contacts"),
+        ("Recommend cleaning dock charging contacts", "Over time, debris can accumulate on the charging contacts of both the robot and dock, which may prevent charging and potentially cause damage. To help maintain optimal performance, we recommend cleaning these contacts regularly"),
         ("Recommend cleaning filter", "Recommend regular cleaning of the bin filter"),
+        ("Charges Normally caveat", "Robot charges normally on stardard test equipment"),
         ("Use correct bags", "Recommend using only OEM replacement bags"),
         ("Place dock away from obstacles", "Recommend placing dock at least 1.5 feet away from obstacles on either side, and at least 4 feet away from stairs and any obstacles in front of the dock"),
         # auto-change this to exclude Bona if robot is a C10 (C10's can't use Bona)
@@ -39,7 +40,8 @@ class ExternalNotesMenu(Menu):
         ('esc', 'close')
     ]
 
-    def __init__(self, case):
+    require_case = False
+    def __init__(self, case=None):
         # super().__init__(classes='external-menu', id=f'external-menu-{case.ref}')
         super().__init__(case)
         self.text = Label('', id='external-preview')
@@ -54,7 +56,9 @@ class ExternalNotesMenu(Menu):
         with HorizontalGroup():
             yield Button('Close', id='close-external-notes')#, action='close')
             yield Button('Copy', id='copy-external-notes')#, action='copy')
-            yield Button('Copy notes, then this', id='copy-external-notes-and-notes')#, action='copy')
+            # If this is being used by SerialParser, this doesn't make sense
+            if type(self.case) is not str and self.case:
+                yield Button('Copy notes, then this', id='copy-external-notes-and-notes')#, action='copy')
         yield Static()
         yield self.cx_states
         self.set_default_selections()
@@ -71,10 +75,13 @@ class ExternalNotesMenu(Menu):
         self.set_default_selections()
 
     def set_default_selections(self):
-        notes = self.case.text_area.text.lower()
-
         try:
-            old_battery = self.case.serial.startswith(('r', 'e'))
+            if type(self.case) is str and self.case:
+                old_battery = self.case.lower().startswith(('r', 'e'))
+            elif self.case:
+                old_battery = self.case.serial.lower().startswith(('r', 'e'))
+            else:
+                old_battery = False
         except:
             old_battery = False
 
@@ -83,29 +90,32 @@ class ExternalNotesMenu(Menu):
         else:
             self.select("Wake from shipping mode")
 
-        if 'factory reset' in notes and not self.case.is_swap:
-            self.select("Factory reset")
-            if self.case.has_lapis:
-                self.select("Factory reset and Lapis bin")
+        case = self.case
+        if type(self.case) is not str and self.case:
+            notes = self.case.text_area.text.lower()
+            if 'factory reset' in notes and not self.case.is_swap:
+                self.select("Factory reset")
+                if self.case.has_lapis:
+                    self.select("Factory reset and Lapis bin")
 
-        if self.case.is_swap:
-            self.select("Replaced robot")
-            if self.case.serial.startswith('j7'):
-                self.select("J7 and a swap")
+            if self.case.is_swap:
+                self.select("Replaced robot")
+                if self.case.serial.startswith('j7'):
+                    self.select("J7 and a swap")
 
-        if re.search(r'(?i)swap.+dock', notes):
-            self.select("Replaced dock")
+            if re.search(r'(?i)swap.+dock', notes):
+                self.select("Replaced dock")
 
-        if self.case._bin_screw_has_rust or self.case._dock_tank_screw_has_rust:
-            self.select("Rusty bin screw")
+            if self.case._bin_screw_has_rust or self.case._dock_tank_screw_has_rust:
+                self.select("Rusty bin screw")
 
-        if self.case._liquid_found:
-            self.select("Liquid spill")
+            if self.case._liquid_found:
+                self.select("Liquid spill")
 
-        if 'glitch' in notes:
-            self.select("The Glitch")
+            if 'glitch' in notes:
+                self.select("The Glitch")
 
-        self.cx_states.update('cx states:\n' + self.case.customer_states)
+            self.cx_states.update('cx states:\n' + self.case.customer_states)
 
     def get_notes(self):
         indexes = self.selection.selected

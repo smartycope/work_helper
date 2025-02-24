@@ -11,6 +11,7 @@ with open(Path(__file__).resolve().parent / 'hints.json', 'r') as f:
 # print(HINT_DATA)
 
 class HintsMenu(Menu):
+    require_case = False
     def compose(self):
         tree: Tree[str] = Tree("Hints", id='hints-tree')
         tree.root.expand()
