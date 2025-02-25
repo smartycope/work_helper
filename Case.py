@@ -531,24 +531,32 @@ class Case(VerticalGroup):
     @property
     def tab_label(self):
         s = ''
-        if self.repeat:
-            s += 'R '
-        s += self.ref
 
-        if settings.INCLUDE_MODEL_IN_TAB:
-            model = self.get_quick_model()
-            if model:
-                s += ' • ' + model
-
-        s += f' [on {darken_color(self.color, .6)}]'
+        # Phase Icon
+        s += f'[on {darken_color(self.color, .6)}]'
         # To distinguish cases that are on my bench charging, from once that aren't
         if self.phase == Phase.CHARGING:
-            if "Routine Check" in self.text_area.text:
+            if self.text_area.text.count('\n') > 3:
                 s += "🔋"
             else:
                 s += "🪫"
         else:
             s += self.phase_icons[self.phase]
+        s += '[/] '
+
+        # Repeat indicator
+        if self.repeat:
+            s += 'R '
+
+        # Case ID
+        s += self.ref
+
+        # Quick Model
+        if settings.INCLUDE_MODEL_IN_TAB:
+            model = self.get_quick_model()
+            if model:
+                s += ' • ' + model
+
         return s
 
     @property

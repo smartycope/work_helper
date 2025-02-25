@@ -25,11 +25,13 @@ COLORS = OrderedDict((
     ("#ea9daf", "Pink"),
     ("#799fad", "Blue"),
 ))
+DEFAULT_COLOR = '#9f9f9f'
 
 EXISTING_CASES = {path.name.split('.')[0]: path for path in SAVE_CASE_PATH.iterdir()}
 
 # The phrase that puts you into debug mode
 SECRET_PASSWORD = 'Cope is a genius'
+PASSWORD = 'iHeartiRobot'
 
 def invert_dict(d:dict) -> dict:
     """ Returns the dict given, but with the keys as values and the values as keys. """

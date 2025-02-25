@@ -1,3 +1,6 @@
+URGENT!!!!: see if I can reschedule my med appointment until after the 3rd!
+Update resume!
+
 Look up:
 "the others" by Jeremy robinson
 "schrodinger's killer app"
@@ -5,14 +8,22 @@ blog: "cheatle optimized" (phontetic)
 Saturday mar 1 @ 12pm 20 min
 
 HIGH: if entering swap phase, and "swap robot" or equivelent not in notes, auto add it (like ensure process)
+URGENT: move asking if the case is a repeat to be before confirm IDs (immediately after pick up case)
 URGENT: in all the try except statements, if there's an error caught and there *shouldn't* be, log it in the interal log file (I'm thinking specifically of the one if it can't save)
 URGENT ish: if M6, don't ask if it's been cleaned
 MINOR: don't ask if blower play if r (or e) series
 
 HINTS: add a sub-branch for evac problems: if it's evacing, and bin *actually* isn't getting cleared, then:
 DCT: if it's an R series and >=880, then specify that it's USB in the top side corner
-UX: add more explanations (and examples) in command and acronym menus
+DCT EXP: for combo models, you may have to cover the vacuum with your hand during the vacuum test
 
+
+MINOR HIGH: regex for ext notes for alex Albany warning: check if "alex" is in the 2nd line of the notes (and not "non")
+MINOR: abstract adding notes to the TODO box into a method
+MINOR: rename "dct exceptions" to be "BiT exceptions" in the sidebar
+MINOR: add optical failures to all dct exceptions, instead of just as the default
+MINOR: don't capitalize damage
+MINOR: combine step "clean dock" and "clean base" -- this will actually take a rewrite to enable dynamic steps
 MINOR: if ctrl+g is pressed while input box is already focused, jump to focusing on the text_area
 MINOR: text wrap the cx states in the ext menu
 MINOR: if the current bot (current serial) is non-modular, and bit is entered with no params, add "can't , as bot is non-modular" by default
@@ -25,7 +36,6 @@ MINOR: make "charging" go back to whatever phase it came from instead
 MINOR: make repeat a property, and have it parse if the first line has "repeat" in it
 MINOR: Audio "doesn't" seem quiet, instead of does not
 MINOR: if cx states mentions "app", also check if the audio is quiet
-MINOR HIGH: regex for ext notes for alex Albany warning: check if "alex" is in the 2nd line of the notes (and not "non")
 MINOR: add icons appropriate icons to the phase select box items
 MINOR: don't show prev and next tab bindings
 MINOR: if mobility menu is open, change the tab icon to something relevant
@@ -86,6 +96,19 @@ MINOR: make the mobility todo box an input box and give it a placeholder
 MINOR: in the comment in the texts.py that the steps have to be unique: they technically only have to be unique within each phase
 MINOR: maybe - in the mobility menu update function, in the if statement to reset the dock box, remove the or'ed statement if it's empty (don't reset if it's empty)
 
+HIGH: if the bot doesn't charge on the cx dock, then ask if it charges on a test base
+HIGH: attempt better guessing of floor (if can_mop, assume floor. If r or e series, assume top bench. otherwise, go with the setting -- also add "auto" to the floor setting)
+HIGH: attempt better guessing of "new" dock box. If "swap dock" (or similar) in the notes, then guess new instead of cx/test
+HIGH NEXT: add a setting to optionally go straight to charging phase from pickup case step
+HIGH: in multi_paste, add a 2nd parameter of what to copy by default if it can't multi copy properly, then set them all
+HIGH: in the MM, when the dock type box is changed, if the cx has a dock, and it's not what it just got changed to, auto-change the "test/cx/new" dock param box to "test", UNLESS it was previously "new" and 'swap dock' (or equivalent) is in the notes (reuse the same condition as in the other todo)
+HIGH: in MM, if the "test/cx/new" dock param box is switched TO "cx", and there's a dock in the case, change the dock type param box to what the cx dock is
+HIGH: if bot didn't come in with a pad, assume new pad instead of cx pad
+HIGH: add "add new case" and "close case" to the menu menu
+HIGH: make saving each step a setting
+HIGH: change "order a new dock" -> "order a new dock, if it's needed"
+HIGH: make a setting to save every n minutes! You can do that with set_interval()
+HIGH: on (before) "good to close case now" step in hold phase should save the case
 HIGH: the ctrl+b LONG delay needs to read the color of a specific pixel
 HIGH: check the claimed damage should be after the check the customer states
 HIGH: drag, or some way to reorder tabs
@@ -114,10 +137,6 @@ HIGH: add a step to color the box (if applicable) -- or just add onto a step
 HIGH: merge "all done" last step into the "put on shelf" step
 HIGH: remove or nullify all the phase if statements. They needlessly interrupt using "back" to go back to the previous step in a different phase
 HIGH: in the new check voltage on the dock step, empty resp does not trigger a dock swap. Also, consider clarifying the text
-HIGH: serials: the 6th digit from the end (the | in C755020B220912N|02026)
-C7/J7: 0, 1, 2: Stingray (v1) | 3: Pearl (v2) | 4: Topaz (v3)
-J9/C9: 0-3: Pearl max (v1) | 4: Topaz (v2)
-C10: 4: Topaz (v1)
 HIGH: if the contact measurement is less than 3.8, round to 2 decimals instead
 HIGH: move "order dock" to be immediately after instead of before step "reload case and order swap", and then also allow "reload case" to accept "hold" as a response, which automatically goes to the HOLD phase, and if a dock would have been asked about, auto add it to the HOLD context
 HIGH: ensure_process() on changing phase to SWAP
@@ -163,7 +182,7 @@ HIGH: in checking the user dock charging contacts, add the ability to include no
 HIGH: when doing a mobility test, if the dock specified is a base, not a dock, ask to confirm the bin does not have ad evac port, and if it should
 HIGH: add ctrl+A to *all* input boxes
 
-MEDIUM: add Boulder to the C9 and C10 in get_docks()
+MEDIUM: make RobotInfo allow multiple serials, and handle the serial property as well
 MEDIUM: add pad wash and pad dry to the MM, if the dock is a boulder
 MEDIUM: if an acronym is expanded at the beginning of a sentence, it doesn't get capitolized. fix that somehow
 MEDIUM: if use "back" to go back to the add serial number step, it keeps adding serial numbers
@@ -231,13 +250,12 @@ MEDIUM: if serial numbers are different, automatically go to a new step that off
 MEDIUM: if battery tests are needed, also measure contacts, even if they don't feel sunken, but allow na
 --- COME BACK TO THIS --- MEDIUM: add a row immediately above the "parameters" row that just adds 2 more disable-able parameters: is the tank full (full, empty, or 1/4) and something else
 
-
+LOW: make "back" work with multiple steps (add an undo stack)
+LOW: if double click a line in the TODO sidebar box, it deletes the whole line
+LOW: add a setting to make colors optional
 LOW: add a red (or alerting) border to the todo box if there *is* text in it
-UX: readd TODO label in sidebar (or equivalent)
-UX: add a disclaimer in the ext notes menu stating that this is not definitive, and usually needs editng, and you should always double check it, etc.
 LOW: make the rest of the window dim when a Menu is open
 LOW: only allow one window to be open at a time
-REFACTOR: abstract the ext notes into a JSON file
 LOW: if "pass" is in the bit output step (when expanded
 LOW: make a keyboard shortcuts menu
 LOW: some way to remove serial numbers/swaps
@@ -322,21 +340,27 @@ TEST: adding 5 cases all at once
 TEST: tests for combos vs non-combos
 TEST: tests for seralizing/deserializing
 
-EPIC: Consider an option to reopen a case
 EPIC: autocorrect, somehow?
-EPIC: At the end, do a bunch of regex on the notes and confirm that I'm not forgetting anything -- including adding in the customer notes that a
-EPIC: add if the dock or bot have been swapped next to the TODO box for context, along with other context things (factory reset, etc)
-EPIC: add a double check phase, after finish, that regexes everything. Include: factory reset, swap, dct
-EPIC: combine step "clean dock" and "clean base" -- this will actually take a rewrite to enable dynamic steps
-EPIC: make the serial and ref labels into a new class that is a "CopyText" or something like that: a button that when clicked gets copied
-
-EPIC: consider adding a bunch of read-only checkboxes immediately below the "copy notes button" (also, the copy notes button can be a lot smaller)
-EPIC: just make a menu somewhere that has all the buttons - and in that menu, have a collapsible which has a bunch of debug buttons for when stuff goes wrong (like update sidebar)
-
+EPIC: make a simple version of the side bar stuff, but instead of a python script, make it a JS script and host it on a GitHub page so it's easier to access and update
+EPIC: add bindings to the MM for all the switches, and then underline the appropriate letters in each. Like alt pneumonics
+EPIC: color the notes
+EPIC: clean up flowchart, and then write a script to convert it to a more user friendly version
 EPIC: add settings menu, with the following settings:
 do double check (also maybe add a button that can turn this on manually later)
 parts are being run (determines if we should ask if the parts have been closed out yet or not)
 
-EPIC: make a simple version of the side bar stuff, but instead of a python script, make it a JS script and host it on a GitHub page so it's easier to access and update
+UX: readd TODO label in sidebar (or equivalent)
+UX: add a disclaimer in the ext notes menu stating that this is not definitive, and usually needs editng, and you should always double check it, etc.
+UX: add a "tutorial mode" setting, which, if set, add explanations to the input box based on the step (and also write all the explanations)
+UX: add a settings file. initialize if doesn't exist, otherwise just load it
+UX: if in tutorial mode, add a tooltip to the new case Input box (first, see how intrusive and annoying tooltips are)
+UX: instead of disallowing phase to change if haven't picked up the case yet, instead just disable the box
+UX: if no dock is specified, disable the cx/test/new param box
+UX: add more explanations (and examples) in command and acronym menus
 
-EPIC: add bindings to the MM for all the switches, and then underline the appropriate letters in each. Like alt pneumonics
+REFACTOR: abstract the ext notes into a JSON file
+
+WEB REFACTOR: add a global web member that gets auto-set somehow
+WEB: if web version, don't include any of the hotkey bindings
+WEB: if web version, change the bindings to work (ctrl+n, ctrl+w, for starters)
+WEB: remove the date display thing I was using for versioning, and add *real* versioning.

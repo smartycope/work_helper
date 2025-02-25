@@ -6,10 +6,10 @@ SHORT = .05
 START_DELAY = .2
 
 
-def press_seq(*seq):
+def press_seq(*seq, delay=SHORT):
     for key in seq:
         keyboard.press_and_release(key)
-        sleep(SHORT)
+        sleep(delay)
 
 def order_part():
     """ enter, tab x3, "NA", tab, "NA", tab x2, enter """
@@ -104,6 +104,7 @@ def query_case(case=None):
 def search_for_swap():
     """ ctrl+a, backspace, tab x2, down x2, enter, tab, space, tab x2, enter """
     # try alt+f
+    sleep(START_DELAY)
     press_seq('ctrl+a', 'backspace', 'tab', 'tab', 'down', 'down', 'enter', 'tab', 'space', 'tab', 'tab', 'enter')
 
 def add_case(case=None):
@@ -111,6 +112,7 @@ def add_case(case=None):
     "repair report", shift+tab, enter, wait, case id, ".pdf", enter, wait short, shift+tab,
     down x2, enter, tab x3, enter, done
     """
+    sleep(START_DELAY)
     keyboard.write('Repair Report')
     sleep(SHORT)
     press_seq('shift+tab', 'enter')

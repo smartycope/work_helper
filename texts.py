@@ -30,14 +30,14 @@ class Steps:
     ask_s9_lid_pins = "Are the lid pins sunken [no]"
     ask_cleaned = 'Robot cleaned ["na" if not, notes or empty if so]'
     battery_test = "Battery test (don't forget the traveller) [current, health]"
-    ask_user_base_contacts = "How do the charging contacts on the user base look [fine]"
+    ask_user_base_contacts = "How do the charging contacts on the customer base look [fine]"
     ask_charge_customer_dock = "What's the charging wattage on the customer's dock"
     ask_charge_test_dock = "What's the charging wattage on a test base"
     ask_bin_rust = "Amount of rust on the tank screw [empty: none, 1: a spot, 2: entirely]"
     ask_dock_tank_rust ="Amount of rust on the dock's tank screw [empty: none, 1: a spot, 2: entirely]"
     ask_quiet_audio = 'Is the audio quiet? (It may be "The Glitch") [no]'
     liquid_check_corrosion = "Is there corrosion on the board or connections (specify or empty for no)"
-    liquid_check_dock = "Is there liquid residue in the user dock [no]"
+    liquid_check_dock = "Is there liquid residue in the customer dock [no]"
     liquid_check_bin = "Is there liquid residue in the robot bin [no]"
     liquid_check_voltage = "What's the voltage on the cx dock (it should be {s}) [swapping dock]"
     liquid_take_pictures = "Take pictures of liquid residue"

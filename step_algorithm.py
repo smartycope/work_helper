@@ -578,7 +578,8 @@ def execute_step(self, resp):
                     self.step = Steps.swap_move_bin
 
             case Steps.swap_move_bin:
-                if resp.lower() == 'fb':
+                # Because it auto-expands
+                if resp.lower() in ('fb', 'freebee'):
                     self.add_step('Freebee bin for new robot')
                 elif resp.lower() == 'cx':
                     self.add_step('Moved original bin to new robot')
@@ -801,7 +802,7 @@ def before_swap_email(self):
 def _copy_swap_serial(self):
     # This *shouldn't* happen, but just in case...
     if self.serials:
-        clipboard.copy(self.serial[0].upper())
+        clipboard.copy(self.serials[0].upper())
 
 def before_swap_order(self):
     self._copy_swap_serial()

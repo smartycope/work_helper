@@ -3,7 +3,7 @@ from textual.containers import *
 from textual.widgets import *
 from info import sleep_mode, factory_reset
 from Phase import Phase
-from globals import COLORS, SIDEBAR_WIDTH, COPY_SERIAL_BUTTON_WIDTH
+from globals import COLORS, DEFAULT_COLOR, SIDEBAR_WIDTH, COPY_SERIAL_BUTTON_WIDTH
 from CopyText import CopyText
 from time import monotonic
 from textual.reactive import reactive
@@ -88,7 +88,7 @@ class Sidebar(VerticalGroup):
         self.ref = CopyText(self.case.ref, id=f'ref-label-{self.case.ref}')
         self.model = Label("")
         self.color_switcher = Select(
-            [(f'[{color}]{name}[/]', color) for color, name in COLORS.items()],
+            [(f'[{color}]{name}[/]', color) for color, name in COLORS.items()] + [(f'[{DEFAULT_COLOR}]No Color[/]', DEFAULT_COLOR)],
             id="color-selector",
             allow_blank=False,
             value=self.case.color,

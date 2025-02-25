@@ -48,19 +48,22 @@ class ExternalNotesMenu(Menu):
         self.cx_states = Label('cx states:\n', id='cx-states')
 
     def compose(self):
-        self.selection = SelectionList(*zip(self.notes.keys(), range(len(self.notes))))
-        yield self.selection
-        yield Static()
-        yield self.text
-        yield Static()
-        with HorizontalGroup():
-            yield Button('Close', id='close-external-notes')#, action='close')
-            yield Button('Copy', id='copy-external-notes')#, action='copy')
-            # If this is being used by SerialParser, this doesn't make sense
-            if type(self.case) is not str and self.case:
-                yield Button('Copy notes, then this', id='copy-external-notes-and-notes')#, action='copy')
-        yield Static()
-        yield self.cx_states
+        with ScrollableContainer():
+            self.selection = SelectionList(*zip(self.notes.keys(), range(len(self.notes))))
+            # self.selection.scrollbars_enabled = False
+            # self.selection.scroll
+            yield self.selection
+            yield Static()
+            yield self.text
+            yield Static()
+            with HorizontalGroup():
+                yield Button('Close', id='close-external-notes')#, action='close')
+                yield Button('Copy', id='copy-external-notes')#, action='copy')
+                # If this is being used by SerialParser, this doesn't make sense
+                if type(self.case) is not str and self.case:
+                    yield Button('Copy notes, then this', id='copy-external-notes-and-notes')#, action='copy')
+            yield Static()
+            yield self.cx_states
         self.set_default_selections()
 
     def select(self, name):

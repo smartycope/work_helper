@@ -5,9 +5,9 @@ Screen {
 }
 
 Menu{
-    margin: 4;
+    margin: 3;
     height: 100%;
-    width: 70%;
+    width: 100%;
     padding: 2;
     border: tall #0178D4 round;
 }
@@ -15,6 +15,10 @@ Menu{
 ExternalNotesMenu{
     # height: 100%;
     layer: ext;
+    SelectionList {
+        # height: ;
+        max-height: 100%;
+    }
 }
 
 HintsMenu{
@@ -71,5 +75,5 @@ HintsMenu{
 #label{
     width: 100%;
     height: 100%;
-    background: red;
+    background: $surface;
 }

@@ -10,7 +10,7 @@ from textual.widgets import *
 from CustomTextArea import CustomTextArea
 from Phase import Phase
 from Case import Case
-from globals import COLORS, INTERNAL_LOG_PATH, SAVE_CASE_PATH, SAVE_STATE_PATH, EXISTING_CASES
+from globals import COLORS, DEFAULT_COLOR, INTERNAL_LOG_PATH, SAVE_CASE_PATH, SAVE_STATE_PATH, EXISTING_CASES
 from clipboard import copy, paste
 
 from hotkeys import open_board, open_return_product, open_ship_product, query_case
@@ -132,9 +132,12 @@ class HelperApp(App):
     def _create_case(self, ref_or_case:str|Case, add_to_cases=True):
         """ May throw an error (since instantiating a case may throw an error) """
         if isinstance(ref_or_case, str):
-            unused_color = random.choice(list(set(COLORS.keys()) - {i.color for i in self.cases}))
+            if len(self.cases) < len(COLORS):
+                color = random.choice(list(set(COLORS.keys()) - {i.color for i in self.cases}))
+            else:
+                color = DEFAULT_COLOR
             # If we can't create a case (like, if there's a space in the ID somehow or something), just don't make one
-            case = Case(ref_or_case, unused_color)
+            case = Case(ref_or_case, color)
         elif isinstance(ref_or_case, Case):
             case= ref_or_case
         else:
@@ -164,16 +167,16 @@ class HelperApp(App):
                         return
                 except:
                     return
-            if len(self.cases) < 5:
-                try:
-                    if overwrite or self._debug:
-                        self._create_case(ref)
-                    else:
-                        self._create_case(Case.attempt_load_case(ref))
-                except Exception as err:
-                    if self._debug:
-                        raise err
-                    return
+
+            try:
+                if overwrite or self._debug:
+                    self._create_case(ref)
+                else:
+                    self._create_case(Case.attempt_load_case(ref))
+            except Exception as err:
+                if self._debug:
+                    raise err
+                return
 
     def action_new_case(self):
         """Add a new tab."""

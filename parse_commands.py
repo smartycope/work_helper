@@ -3,7 +3,7 @@ from numpy import mean, std
 
 from Phase import Phase
 from globals import capitolize
-
+import settings
 
 ACRONYMS = {
     # sprayer off current of n.
@@ -17,6 +17,10 @@ ACRONYMS = {
     'errs': 'errors',
     'ir': 'IR',
     'r': 'robot',
+    'lq': 'liquid',
+    'ls': 'liquid spill',
+    'btn': 'button',
+    'btns': 'buttons',
     'diag': 'Diagnosis',
     'ss': 'smart scrub',
     'dd': 'dirt detect',
@@ -71,7 +75,6 @@ ACRONYMS = {
     'opt50': "optical bin failure[s] <50 out of range.",
     'opt20': "optical bin failure[s] <20 out of range.",
     'pad act': "pad actuator deploy/stow failure[s].",
-    'batt': "battery",
 }
 
 def parse_acronym(input:str):
@@ -123,21 +126,8 @@ def parse_command(self, input:str):
                     else:
                         self.add_step(f'Measured {"right" if side.lower() == "r" else "left"} contact: >4mm')
                 else:
-                    # This is copied from step_algorithm
-                    # TODO: abstract this into a method
                     measurements = list(map(float, args))
                     self.add_measure_contacts_step(side, measurements)
-
-                    # meas = mean(measurements)
-                    # meas = round(meas, 1 if 3.8 > meas > 3.74 else 2)
-                    # self.add_step(f'Measured {"right" if side == "r" else "left"} contact: {meas}mm +/- {max(std(measurements), .1):.1f}')
-
-            # TODO: I need a better way to do this
-            # case 'ch' | 'charge':
-                # watts = args.pop(0)
-                # dock = args.pop(0) if args else 'dock'
-                # bot = args.pop(0) if args else 'Robot'
-                # step = f'{bot} charges on {dock} @ ~{watts}W'
             case 'blew':
                 if args:
                     which = args.pop(0).lower()
@@ -147,9 +137,6 @@ def parse_command(self, input:str):
                         step = 'Blew out chirp sensors'
                 else:
                     step = 'Blew out chirp sensors'
-            # case 'diag':
-                # step = 'Diagnosis:'
-                # args[0] = capitolize(args[0])
             case 'cln':
                 if args:
                     if args[0].lower() in ('b', 'r'):
@@ -186,6 +173,9 @@ def parse_command(self, input:str):
             case _:
                 raise
         if step:
-            self.add_step(step + ' ' + parse_acronym(' '.join(args)))
+            result = step + ' ' + parse_acronym(' '.join(args))
+            self.add_step(result)
+            if 'BiT' in result and 'pass' in result.lower() and settings.FINISH_AFTER_SUCCESSFULL_BIT:
+                self.phase = Phase.FINISH
     except:
         self.add_step(capitolize(parse_acronym(input)).strip())

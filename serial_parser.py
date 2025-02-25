@@ -1,5 +1,10 @@
 """ A minimal version of the main app that just parses the serial numbers """
+from textual.containers import *
+from textual.reactive import reactive
+from textual.widgets import *
 
+import os
+import traceback
 from textual.app import App
 
 import json
@@ -18,12 +23,37 @@ from textual.widgets import *
 from ExternalNotesMenu import ExternalNotesMenu
 from HintsMenu import HintsMenu
 
+from globals import INTERNAL_LOG_PATH, PASSWORD
 from info import DOCKS
 
-STARTING_TEXT = 'TODO'
+STARTING_TEXT = "Enter a model number, a serial number, or 2 serial numbers back to back. If 2 serial numbers are given, it will confirm that they're the same, and warn you if they're not."
 
 # TODO: incorperate this into Case (but remember that is_factory_lapis and is_weird_i5g have been changed)
 class RobotInfo:
+    ten_sec = 'Hold home for 10 seconds. Indicators should turn off'
+    lift_wheel = 'Lift one wheel and hold clean for 3 seconds. Indicators should turn off'
+    sleep_mode = {
+        'i': ten_sec,
+        's': ten_sec,
+        'm': ten_sec,
+        'j': lift_wheel,
+        'c': lift_wheel,
+        'e': 'Hold clean for 12 seconds. Release after the tone. Then, all indicators should turn off',
+        'r': 'Add the plastic piece',
+    }
+
+    all_3 = 'Hold down all 3 buttons until the clean lights start to spin'
+    remove_bin = 'Remove dust bin, then hold clean for 7 seconds until it beeps. Press clean again to confirm'
+    factory_reset = {
+        's': all_3,
+        'i': all_3,
+        'm': all_3,
+        'j': remove_bin,
+        'c': remove_bin,
+        'e': 'Hold home and spot together for 20 seconds',
+        'r': 'Hold dock and spot and clean until all LEDs turn on (9xx), or it beeps (6xx & 8xx)',
+    }
+
     def __init__(self, serial=None):
         self.serial = serial or ''
 
@@ -31,25 +61,25 @@ class RobotInfo:
         if self.serial.startswith('i') and not self.is_modular:
             return '[on red]Red card[/] from the top'
         elif self.serial.startswith(('i1', 'i2', 'i3', 'i4', 'i5')):
-            return '[on red]Red card[/]'
+            return '[black on red]Red card[/]'
         elif self.serial.startswith('r') and not self.serial.startswith('r9'):
             return 'Serial'
         elif self.serial.startswith(('r', 's')):
             return 'USB'
         elif self.serial.startswith(('j8', 'q7', 'i6', 'i7', 'i8')):
-            return '[on green]Green card[/]'
+            return '[black on green]Green card[/]'
         elif self.serial.startswith('m6'):
             return 'Small debug card, use Trident driver'
         elif self.serial.startswith(('j9')):
-            return '[on blue]Blue card[/]'
+            return '[black on blue]Blue card[/]'
         elif self.serial.startswith('c9'):
-            return '[on green]Green card[/] through the pad'
+            return '[black on green]Green card[/] through the pad'
         elif self.serial.startswith('c7'):
-            return '[on green]Green card[/] / [on blue]Blue card[/] through the pad'
+            return '[black on green]Green card[/] / [black on blue]Blue card[/] through the pad'
         elif self.serial.startswith('e'):
-            return '[on green]Green card[/], with micro USB\nplugged into the other side\non the card'
+            return '[black on green]Green card[/], with micro USB\nplugged into the other side\non the card'
         elif self.serial.startswith(('j7', 'j5', 'j6')):
-            return '[on green]Green card[/] / [on blue]Blue card[/]'
+            return '[black on green]Green card[/] / [black on blue]Blue card[/]'
         else:
             return 'Error: Model from serial number not recognized'
             # MINOR: in combo models, for the DCT card, remind to put it under the pad
@@ -129,6 +159,45 @@ class RobotInfo:
 
         return notes
 
+    def get_platform(self):
+        """ Unfinished, currently only works with combo and late J series models
+            Returns an empty string if unknown
+        """
+
+        # the 6th digit from the end (the | in C755020B220912N|02026)
+        # C7/J7: 0, 1, 2: Stingray (v1) | 3: Pearl (v2) | 4: Topaz (v3)
+        # J9/C9: 0-3: Pearl max (v1) | 4: Topaz (v2)
+        # C10: 4: Topaz (v1)
+        if len(self.serial) < 17:
+            # return "Unknown, need a full serial number"
+            return ''
+        digit = self.serial[-6]
+        if self.serial.startswith(('c7', 'j7')):
+            if digit in '012':
+                return 'Stingray (v1)'
+            elif digit == '3':
+                return 'Pearl (v2)'
+            elif digit == '4':
+                return 'Topaz (v3)'
+            else:
+                return ''
+        elif self.serial.startswith(('c9', 'j9')):
+            if digit in '0123':
+                return 'Pearl Max (v1)'
+            elif digit == '4':
+                return 'Topaz (v2)'
+            else:
+                return ''
+        elif self.serial.startswith(('c10', 'j10', 'x')):
+            if digit == '4':
+                return 'Topaz (v1)'
+            else:
+                return ''
+        elif self.serial.startswith('i') and not self.is_modular:
+            return 'K2'
+        else:
+            return ''
+
     def get_docks(self):
         """ Get a sorted list of the docks this model can use, the first element being the preferred one """
 
@@ -177,12 +246,11 @@ class RobotInfo:
         """ True if *any* of the serials are a factory lapis, not just the current one """
         # if self.serial.startswith(('e', 'r')):
         #     return False
-        # try:
-        #     return any(i[3] == '7' for i in self.serials)
-        # except IndexError:
-        #     return False
-        return self.serial[3] == '7'
-
+        try:
+            # return any(i[3] == '7' for i in self.serials)
+            return self.serial[3] == '7'
+        except IndexError:
+            return False
 
     @property
     def is_modular(self):
@@ -207,30 +275,65 @@ class RobotInfo:
         else:
             return self.serial[:2].upper()
 
-
     def statement(self):
-        return 'stuuff'
+        try:
+            width = os.get_terminal_size().columns - 2
+        except OSError:
+            width = 50
+        char = '─'
+        platform = self.get_platform()
+        return f"""
+[bold]{self.get_quick_model()}[/] {('• ' + platform) if platform else ''}
+[grey35]{self.serial.upper()}[/]
 
+DCT: {self.get_DCT()}
+
+{" DCT Exceptions ":{char}^{width}}
+{self.get_DCT_exceptions()}
+
+{" Shipping Mode ":{char}^{width}}
+{self.sleep_mode.get(self.serial[0], 'Unknown')}
+
+{" Factory Reset ":{char}^{width}}
+{self.factory_reset.get(self.serial[0], 'Unknown')}
+
+{" Notes ":{char}^{width}}
+{self.get_notes()}
+
+"""
 
 
 
 class SerialParser(App):
     BINDINGS = [
-        ('ctrl+e', 'toggle_external_notes_menu', 'External Notes'),
-        ('ctrl+i', 'toggle_hints_menu', 'Hints'),
+        Binding('ctrl+e', 'toggle_external_notes_menu', 'External Notes', priority=True, system=True),
+        Binding('ctrl+i', 'toggle_hints_menu', 'Hints', priority=True, system=True),
     ]
 
     CSS_PATH = "serial_parser_stylesheet.tcss"
 
     def __init__(self):
         super().__init__()
+        self.password = PASSWORD
+        self.password_input = Input(password=True, placeholder='Enter password', id='password_input')
+        self.message = Label('', id='message')
+        self.authenticated = False
+
         self.input = Input(placeholder='Input the model, one, or both serials squished together', id='input')
         self.input.cursor_blink = False
-        self.text_area = Label(STARTING_TEXT, id='label')
+        self.text = Label(STARTING_TEXT, id='label')
         self.info = RobotInfo()
 
         self.external_notes_menu = ExternalNotesMenu()
         self.hints_menu = HintsMenu(self)
+
+        self.contents = VerticalGroup(
+            self.external_notes_menu,
+            self.hints_menu,
+            self.input,
+            ScrollableContainer(self.text),
+            Footer(),
+        )
 
     @property
     def serial(self):
@@ -241,15 +344,16 @@ class SerialParser(App):
     def set_serial(self, to):
         self.info.serial = to
         self.external_notes_menu.case = to
-        self.text_area.update(self.info.statement())
+        self.text.update(self.info.statement())
 
     def compose(self):
-        yield self.external_notes_menu
-        yield self.hints_menu
-        yield self.input
-        yield Footer()
+        # if not self.authenticated:
+        yield self.password_input
+        yield self.message
+        # else:
+        # yield self.contents
 
-        self.input.focus()
+        # self.input.focus()
 
     def action_toggle_external_notes_menu(self):
         if self.serial:
@@ -261,28 +365,54 @@ class SerialParser(App):
 
     @on(Input.Submitted, '#input')
     def serial_submitted(self, event: Input.Submitted):
-        if event.input.value:
-            ids=  event.input.value.lower()
-            # If they're different lengths, just assume they've inputted a single serial number
-            # serial numbers are 21 characters long
-            if len(ids) % 2 or len(ids) <= 25:
-                # self.text_area.update('\n\n!!! Serial numbers are different lengths !!!')
-                # self.serial = ids
-                self.set_serial(ids)
-                return
-            else:
-                half = len(ids)//2
-                if not self.info._ids_equal(ids[half:], ids[:half]):
-                    self.text_area.update(f'\n\n!!! Serial numbers are different !!!\n{ids[half:]}\n{ids[:half]}')
+        try:
+            if event.input.value:
+                ids=  event.input.value.lower()
+                # If they're different lengths, just assume they've inputted a single serial number
+                # serial numbers are 21 characters long
+                if len(ids) % 2 or len(ids) <= 25:
+                    # self.text_area.update('\n\n!!! Serial numbers are different lengths !!!')
+                    # self.serial = ids
+                    self.set_serial(ids)
+                    event.input.clear()
                     return
+                else:
+                    half = len(ids)//2
+                    if not self.info._ids_equal(ids[half:], ids[:half]):
+                        self.text.update(f'\n\n!!! Serial numbers are different !!!\n{ids[half:]}\n{ids[:half]}')
+                        event.input.clear()
+                        return
 
-            # self.serial = ids[len(event.input.value)//2:]
-            self.set_serial(ids[len(event.input.value)//2:])
+                # self.serial = ids[len(event.input.value)//2:]
+                self.set_serial(ids[len(event.input.value)//2:])
+
+            event.input.clear()
+        except:
+            self.text.update(traceback.format_exc())
 
     def action_focus_input(self):
         self.input.focus()
 
+    @on(Input.Submitted, '#password_input')
+    def check_password(self, event: Input.Submitted):
+        if event.input.value == self.password:  # Replace 'correct_password' with the actual password
+            self.message.update('Correct! Running app...')
+            self.password_input.remove()
+            self.message.remove()
+            self.mount(self.contents)
+            self.input.focus()
+        else:
+            self.message.update('Incorrect password. Please try again.')
+            event.input.clear()
+            self.password_input.focus()
+
 
 if __name__ == "__main__":
-    app = SerialParser()
-    app.run()
+    # password_app = PasswordApp(SerialParser, 'iHeartiRobot')
+    # password_app.run()
+    try:
+        app = SerialParser()
+        app.run()
+    except:
+        with open(INTERNAL_LOG_PATH, 'a') as f:
+            f.write(traceback.format_exc())
