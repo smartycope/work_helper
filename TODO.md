@@ -12,7 +12,6 @@ HINTS: add a sub-branch for evac problems: if it's evacing, and bin *actually* i
 DCT: if it's an R series and >=880, then specify that it's USB in the top side corner
 DCT EXP: for combo models, you may have to cover the vacuum with your hand during the vacuum test
 
-MINOR: in Case.deserialize(), if color can't be found, default to DEFAULT_COLOR
 MINOR: make the "R" in the tab label stand out more somehow
 MINOR HIGH: the folder backup name needs dashes and seconds
 MINOR: if "runtime" in cx states, also check the battery
