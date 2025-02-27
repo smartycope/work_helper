@@ -1,0 +1,6 @@
+textual
+numpy
+keyboard
+mouse
+clipboard
+pyautogui

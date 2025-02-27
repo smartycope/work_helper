@@ -1,23 +1,23 @@
-URGENT!!!!: see if I can reschedule my med appointment until after the 3rd!
-Update resume!
+Ask about how adjustments work for repeats that go on hold
 
-Look up:
-"the others" by Jeremy robinson
-"schrodinger's killer app"
-blog: "cheatle optimized" (phontetic)
-Saturday mar 1 @ 12pm 20 min
-
+URGENT: add more comments and clean things up more
 HIGH: if entering swap phase, and "swap robot" or equivelent not in notes, auto add it (like ensure process)
 URGENT: move asking if the case is a repeat to be before confirm IDs (immediately after pick up case)
 URGENT: in all the try except statements, if there's an error caught and there *shouldn't* be, log it in the interal log file (I'm thinking specifically of the one if it can't save)
 URGENT ish: if M6, don't ask if it's been cleaned
 MINOR: don't ask if blower play if r (or e) series
+URGENT: log what error multi_paste is giving so I can fix it already
 
 HINTS: add a sub-branch for evac problems: if it's evacing, and bin *actually* isn't getting cleared, then:
 DCT: if it's an R series and >=880, then specify that it's USB in the top side corner
 DCT EXP: for combo models, you may have to cover the vacuum with your hand during the vacuum test
 
-
+MINOR: in Case.deserialize(), if color can't be found, default to DEFAULT_COLOR
+MINOR: make the "R" in the tab label stand out more somehow
+MINOR HIGH: the folder backup name needs dashes and seconds
+MINOR: if "runtime" in cx states, also check the battery
+MINOR: remove update sidebar from menu menu
+MINOR HIGH: if there's a box (there's not a dock), add "and box" to the step "labels off and grab the traveler" (as a formatter)
 MINOR HIGH: regex for ext notes for alex Albany warning: check if "alex" is in the 2nd line of the notes (and not "non")
 MINOR: abstract adding notes to the TODO box into a method
 MINOR: rename "dct exceptions" to be "BiT exceptions" in the sidebar
@@ -45,7 +45,6 @@ MINOR: in the asking about the glitch step, ask if it's quiet *or silent*
 MINOR: also show the cx dock in the ext notes menu
 MINOR: if "pass mobility with lapis bin" (or the step before it, actually) have non-empty inputs, switch back to debugging phase
 MINOR: if repeat is indicated, automatically add " repeat of " on the very first line
-MINOR: ctrl+shift+alt+k needs a longer start delay
 MINOR: add m6 color step formatting in the M6 swap order step:
 M610020 is white (M611020B230621N208362 is also white)
 M610220 is black
@@ -96,6 +95,15 @@ MINOR: make the mobility todo box an input box and give it a placeholder
 MINOR: in the comment in the texts.py that the steps have to be unique: they technically only have to be unique within each phase
 MINOR: maybe - in the mobility menu update function, in the if statement to reset the dock box, remove the or'ed statement if it's empty (don't reset if it's empty)
 
+HIGH: if sunken contacts, assume "recommend cleaning dock contacts" in EXT menu
+HIGH: when coming out of charging phase, go back to the step it was in previously, as well as the phase it was in previously.
+HIGH: in MM, add a shortcut to "done" the mobility test
+HIGH: in MM, add bindings for the Select boxes as well
+HIGH: in battery test, allow an input ("low"?) to put in "Battery too low to test" instead
+HIGH: allow debug mode to manually set attributes like repeat
+HIGH: move "check claimed damage" step to be immediately after "update css failure box" step
+HIGH: ask for serial number in swap phase before ask to put on labels (have labels be last)
+HIGH: if M6, ask if there's a pad, and if there is, add it to parts in
 HIGH: if the bot doesn't charge on the cx dock, then ask if it charges on a test base
 HIGH: attempt better guessing of floor (if can_mop, assume floor. If r or e series, assume top bench. otherwise, go with the setting -- also add "auto" to the floor setting)
 HIGH: attempt better guessing of "new" dock box. If "swap dock" (or similar) in the notes, then guess new instead of cx/test
@@ -182,6 +190,8 @@ HIGH: in checking the user dock charging contacts, add the ability to include no
 HIGH: when doing a mobility test, if the dock specified is a base, not a dock, ask to confirm the bin does not have ad evac port, and if it should
 HIGH: add ctrl+A to *all* input boxes
 
+MEDIUM: in "add any context about the case" step, if the resp is *not* empty, add it to the case just like add_step would. Only progress if it's empty.
+MEDIUM: guess the mm cx bin param box each time reset based on regexing notes to find "move bin to new bot" and the like
 MEDIUM: make RobotInfo allow multiple serials, and handle the serial property as well
 MEDIUM: add pad wash and pad dry to the MM, if the dock is a boulder
 MEDIUM: if an acronym is expanded at the beginning of a sentence, it doesn't get capitolized. fix that somehow
@@ -248,8 +258,8 @@ MEDIUM: add "esc" binding to both menus
 MEDIUM: have a variable that indicates a rusted bin screw, for the external notes menu
 MEDIUM: if serial numbers are different, automatically go to a new step that offers (and allows) you to close the case immediately
 MEDIUM: if battery tests are needed, also measure contacts, even if they don't feel sunken, but allow na
---- COME BACK TO THIS --- MEDIUM: add a row immediately above the "parameters" row that just adds 2 more disable-able parameters: is the tank full (full, empty, or 1/4) and something else
 
+LOW: in MM, if "test dry pad" is selected, and only if it is, disable the tank param box
 LOW: make "back" work with multiple steps (add an undo stack)
 LOW: if double click a line in the TODO sidebar box, it deletes the whole line
 LOW: add a setting to make colors optional
@@ -357,10 +367,17 @@ UX: if in tutorial mode, add a tooltip to the new case Input box (first, see how
 UX: instead of disallowing phase to change if haven't picked up the case yet, instead just disable the box
 UX: if no dock is specified, disable the cx/test/new param box
 UX: add more explanations (and examples) in command and acronym menus
+UX: add a caviat in ext menu to absolutely only select what you actually did
 
 REFACTOR: abstract the ext notes into a JSON file
+REFACTOR: the TODOs above RobotInfo
 
 WEB REFACTOR: add a global web member that gets auto-set somehow
 WEB: if web version, don't include any of the hotkey bindings
 WEB: if web version, change the bindings to work (ctrl+n, ctrl+w, for starters)
 WEB: remove the date display thing I was using for versioning, and add *real* versioning.
+
+Look up:
+"the others" by Jeremy robinson
+"schrodinger's killer app"
+blog: "cheatle optimized" (phontetic)
