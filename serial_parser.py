@@ -135,25 +135,29 @@ class RobotInfo:
 
         # TODO: remove this once get_platform() works
         if self.serial.startswith('c'):
-            notes += '\nCHM stingray: 4 wires, Pearl: 3 wires'
+            if notes:
+                notes += '\n'
+            notes += 'CHM stingray: 4 wires, Pearl: 3 wires'
 
         if self.serial.startswith('i'):
             notes += 'If having weird trouble with DCT, try factory reset'
 
         if self.serial.startswith(('r', 'e')):
             # There's probably more models, but I don't know which ones
-            home_is_next = not self.serial.startswith('r98'):
+            home_is_next = not self.serial.startswith('r98')
             notes += f"To BiT: lights have to be off (hold down clean to turn off), then hold home & clean and press spot 5x. Then press {'home' if home_is_next else 'spot'} to start the tests. {'Spot is prev, home is next.' if home_is_next else 'Spot is next, home is prev.'} Hold clean when finished successfully, otherwise reset."
 
         if self.serial.startswith(('j7', 'j9')):
             notes += "If the blue DCT card doesn't work, try a hard reset"
 
         if self.has_weird_i5g:
-            notes += '\n [on orange_red1]Possibly a factory provisioned lapis bin[/]'
+            if notes:
+                notes += '\n'
+            notes += '[on orange_red1]Possibly a factory provisioned lapis bin[/]'
 
         elif self.is_factory_lapis:
             if notes:
-                notes += '\n '
+                notes += '\n'
             notes += '[on red]Factory provisioned lapis bin![/]'
 
         return notes
