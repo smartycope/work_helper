@@ -451,7 +451,7 @@ class Case(VerticalGroup):
         if self.serial.startswith(('r', 'e')):
             # R989
             # There's probably more models, but I don't know which ones
-            home_is_next = not self.serial.startswith('r98'):
+            home_is_next = not self.serial.startswith('r98')
             notes += f"To BiT: lights have to be off (hold down clean to turn off), then hold home & clean and press spot 5x. Then press {'home' if home_is_next else 'spot'} to start the tests. {'Spot is prev, home is next.' if home_is_next else 'Spot is next, home is prev.'} Hold clean when finished successfully, otherwise reset."
 
         # if self.serial.startswith('e'):
