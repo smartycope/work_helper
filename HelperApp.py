@@ -20,21 +20,21 @@ import traceback
 import shutil
 import time
 
-# {"notes": "19000IR\\n", "color": "#377a11", "ref": "19000IR", "serial": null, "phase": 0, "step": "Put labels on everything", "todo": ""}, {"notes": "19002IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: Waaaaaa\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n! Robot does not charge on test base @ ~0W\\n\\nProcess:\\n* Step\\n* Step\\n* Step\\n* Done\\n", "color": "#d1dd0b", "ref": "19002IR", "serial": "i3", "phase": 3, "step": "All screws are screwed in all the way [done]", "todo": ""}, {"notes": "19003IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: I want money back\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No signs of liquid damage\\n* No play in blower motor\\n* Cleaned robot\\n* Robot charges on test base @ ~9W (battery is full)\\n\\nProcess:\\n* Tehe\\n* Swap\\n", "color": "#ea9daf", "ref": "19003IR", "serial": "j7", "phase": 4, "step": "Send swap email [confirmed]", "todo": ""}, {"notes": "19004IR\\nParts in: Robot\\nClaimed Damage: Minor scratches\\nVisible Damage: Confirmed claimed damage\\nCustomer States: It broke\\n\\nRoutine Checks:\\n* Contacts don't feel sunken\\n* No play in blower motor\\n* Tank float screw has no signs of rust\\n* Cleaned robot\\n* Robot charges on test base @ ~21W\\n\\nProcess:\\n* Step1\\n* Step2\\n", "color": "#799fad", "ref": "19004IR", "serial": "c9", "phase": 2, "step": "Add Step", "todo": ""}, {"notes": "new\\n", "color": "#ef9e16", "ref": "new", "serial": null, "phase": 0, "step": "Confirm IDs", "todo": ""}
 
+# TODO: move this into a seperate file
 DEBUG_STATE = '''["19002IR", "19003IR", "19004IR"]'''
 DEBUG_CASES = {
-    '19002IR': {"notes": "19002IR\nParts in: Robot\nClaimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\nCustomer States: Waaaaaa\n\nRoutine Checks:\n* Contacts don't feel sunken\n* No signs of liquid damage\n* No play in blower motor\n* Cleaned robot\n! Robot does not charge on test base @ ~0W\n\nProcess:\n* Step\n* Step\n* Step\n* Done\n\nCONTEXT:\n\n", "color": "#377a11", "ref": "19002IR", "serials": ["i3"], "phase": 0, "step": "Go pick up the case on CSS {case ID} [done]", "todo": "todo!"},
+    '19002IR': {"notes": "19002IR\nParts in: Robot\nClaimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\nCustomer States: Waaaaaa\n\nRoutine Checks:\n* Contacts don't feel sunken\n* No signs of liquid damage\n* No play in blower motor\n* Cleaned robot\n! Robot does not charge on test base @ ~0W\n\nProcess:\n* Step\n* Step\n* Step\n* Done\n\nCONTEXT:\n\n", "color": "#377a11", "ref": "19002IR", "serials": ["i3"], "phase": 0, "step": "Go pick up the case on CSS {case ID} [done]", "todo": "todo!", "repeat": True, "adj": 10*60+27},
     '19003IR': {"notes": "19003IR\nParts in: Robot\nClaimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\nCustomer States: Waaaaaa\n\nRoutine Checks:\n* Contacts don't feel sunken\n* No signs of liquid damage\n* No play in blower motor\n* Cleaned robot\n! Robot does not charge on test base @ ~0W\n\nProcess:\n* Step\n* Step\n* Step\n* Done\n\nCONTEXT:\n\n", "color": "#ef9e16", "ref": "19003IR", "serials": ["m6"], "phase": Phase.DEBUGGING.value, "step": Steps.add_step, "todo": ""},
     '19004IR': {"notes": "19004IR\nParts in: Robot\nClaimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\nCustomer States: Waaaaaa\n\nRoutine Checks:\n* Contacts don't feel sunken\n* No signs of liquid damage\n* No play in blower motor\n* Cleaned robot\n! Robot does not charge on test base @ ~0W\n\nProcess:\n* Step\n* Step\n* Step\n* Done\n\nCONTEXT:\n\n", "color": "#d1dd0b", "ref": "19004IR", "serials": ["c9"], "phase": Phase.FINISH.value, "step": "Pass mobility and attempted BiT [done]", "todo": ""},
 }
 
 if settings.INCLUDE_HOTKEYS:
     HOTKEY_BINDINGS = [
-        Binding('ctrl+b', 'open_board', 'Board', priority=True, system=True),
-        Binding('ctrl+p', 'query_case', 'Pickup', priority=True, system=True),
-        Binding('ctrl+r', 'open_return_product', 'Return', priority=True, system=True),
-        Binding('ctrl+f', 'open_ship_product', 'Ship', priority=True, system=True),
+        Binding('ctrl+b', 'open_board', 'Board', priority=True, system=True, show=settings.SHOW_HOTKEYS),
+        Binding('ctrl+p', 'query_case', 'Pickup', priority=True, system=True, show=settings.SHOW_HOTKEYS),
+        Binding('ctrl+r', 'open_return_product', 'Return', priority=True, system=True, show=settings.SHOW_HOTKEYS),
+        Binding('ctrl+f', 'open_ship_product', 'Ship', priority=True, system=True, show=settings.SHOW_HOTKEYS),
     ]
 else:
     HOTKEY_BINDINGS = []

@@ -11,17 +11,17 @@ from textual import on
 
 import settings
 
-class TodoTextArea(TextArea):
-    BINDINGS = (
-        Binding('ctrl+a', 'select_all', 'Select All', show=False),
-    )
-
-    def __init__(self, *a, **kw):
-        super().__init__(*a, id='todo-textarea', **kw)
-        self.cursor_blink = False
-
-
 class Sidebar(VerticalGroup):
+    class TodoTextArea(TextArea):
+        BINDINGS = (
+            Binding('ctrl+a', 'select_all', 'Select All', show=False),
+        )
+
+        def __init__(self, *a, **kw):
+            super().__init__(*a, id='todo-textarea', **kw)
+            self.cursor_blink = False
+
+    # TODO: abstract the Adjustment button into a seperate class
     time_since_last_updated = reactive(monotonic)
     time = reactive(0.0)
     ADJ_BUTTON_ACTIVE = '$success'
@@ -59,14 +59,13 @@ class Sidebar(VerticalGroup):
     def paused(self):
         return self.repeat_timer_button.variant == 'default'
 
-
     def __init__(self, case):
         self.has_mounted = False
         super().__init__(classes='sidebar', id='sidebar-' + case.ref)
         self.adj_timer = None
         self.case = case
         self.styles.background = self.case.color
-        self.todo = TodoTextArea()
+        self.todo = Sidebar.TodoTextArea()
         self.phase_selector = Select(
             [
                 (

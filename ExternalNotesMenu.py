@@ -10,6 +10,7 @@ from Menu import Menu
 from multi_paste import multi_paste
 
 class ExternalNotesMenu(Menu):
+    # TODO: put this in a JSON file
     # These are in the order they should be in in the final notes
     notes = OrderedDict((
         ("Replaced robot", "Replaced robot with equivalent model"),
@@ -31,7 +32,7 @@ class ExternalNotesMenu(Menu):
         ("Had child lock", "Child & pet lock removed, use app to re-enable"),
         ("Wake from shipping mode", "Please place robot on dock to wake from shipping mode"),
         ("Remove battery strip", "Remove yellow slip underneath robot once received to activate"),
-        #J7's, if a swap (due to the client's dock might have outdated firmware
+        #J7's, if a swap (due to the client's dock might have outdated firmware)
         ("J7 and a swap", "Please provision robot to application"),
     ))
 
@@ -42,7 +43,6 @@ class ExternalNotesMenu(Menu):
 
     require_case = False
     def __init__(self, case=None):
-        # super().__init__(classes='external-menu', id=f'external-menu-{case.ref}')
         super().__init__(case)
         self.text = Label('', id='external-preview')
         self.cx_states = Label('cx states:\n', id='cx-states')
@@ -50,8 +50,6 @@ class ExternalNotesMenu(Menu):
     def compose(self):
         with ScrollableContainer():
             self.selection = SelectionList(*zip(self.notes.keys(), range(len(self.notes))))
-            # self.selection.scrollbars_enabled = False
-            # self.selection.scroll
             yield self.selection
             yield Static()
             yield self.text
@@ -62,8 +60,9 @@ class ExternalNotesMenu(Menu):
                 # If this is being used by SerialParser, this doesn't make sense
                 if type(self.case) is not str and self.case:
                     yield Button('Copy notes, then this', id='copy-external-notes-and-notes')#, action='copy')
-            yield Static()
-            yield self.cx_states
+            if type(self.case) is not str and self.case:
+                yield Static()
+                yield self.cx_states
         self.set_default_selections()
 
     def select(self, name):
@@ -78,6 +77,11 @@ class ExternalNotesMenu(Menu):
         self.set_default_selections()
 
     def set_default_selections(self):
+        """  Guess what notes we need to use based on the case notes
+            This has gotten pretty good. There's a few tweaks, but it's about 80% right. I usually
+            add text by hand though (this doesn't mention replacing parts for example, by intent)
+        """
+
         try:
             if type(self.case) is str and self.case:
                 old_battery = self.case.lower().startswith(('r', 'e'))
@@ -151,7 +155,7 @@ class ExternalNotesMenu(Menu):
     def action_copy(self):
         copy(self.get_notes())
 
-    # I hate how this is necissary
+    # I hate how this is necissary, I don't know why it is
     @on(Button.Pressed, '#close-external-notes')
     def close(self):
         self.action_close()

@@ -23,6 +23,8 @@ def _clear_schedule():
     __PASTE_SCHEDULE = []
     # I don't need to remove everything right now, cause _increment_paste() will handle that for me
 
+# TODO: combine these and move the if statement to the inside. But it works (90% of the time), so I'm
+# afraid to touch it cause it's just so darn useful
 if os.name == 'nt':
     def multi_paste(*pastes, clear=True, caps_lock=True):
         """ Paste multiple things in order. Each time you paste something, it'll switch to the next thing.

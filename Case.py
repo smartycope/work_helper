@@ -16,7 +16,7 @@ from CommandsMenu import CommandsMenu
 from CustomTextArea import CustomTextArea
 from ExternalNotesMenu import ExternalNotesMenu
 # from MenuMenu import MenuMenu
-from globals import (COLORS, EXISTING_CASES, LOG_PATH, SAVE_CASE_PATH, SAVE_NOTES_PATH,
+from globals import (COLORS, DEFAULT_COLOR, EXISTING_CASES, LOG_PATH, SAVE_CASE_PATH, SAVE_NOTES_PATH,
                      capitolize, darken_color, invert_dict)
 from HintsMenu import HintsMenu
 from info import DOCKS
@@ -85,7 +85,7 @@ class Case(VerticalGroup):
         # Set in set_color()
         self.color = color
         self._customer_states = ''
-        self.repeat = False
+        self._repeat = None
         self._case_picked_up = False
 
         # The way this works, is it gets applied as "s" to the step when putting the current step into
@@ -207,7 +207,7 @@ class Case(VerticalGroup):
             return
 
         # When switching to DEBUGGING phase from anywhere, ensure that Process: exists
-        if new_phase == Phase.DEBUGGING:
+        if new_phase in (Phase.DEBUGGING, Phase.SWAP):
             self.ensure_process()
             # I tried this and determined I didn't like it
             # TODO: add this as a setting
@@ -278,12 +278,14 @@ class Case(VerticalGroup):
             'phase': self.phase.value,
             'step': self.step,
             'todo': self.sidebar.todo.text,
+            'repeat': self.repeat,
+            'adj': self.sidebar.time,
             '_step_after_manual_serial': self._step_after_manual_serial,
         }
 
     @staticmethod
     def deserialize(data):
-        case = Case(data['ref'], data.get('color', random.choice(list(COLORS.keys()))))
+        case = Case(data['ref'], data.get('color', DEFAULT_COLOR))
         case.text_area.text = data.get('notes', data['ref'] + '\n')
         try:
             case.serials = data['serials']
@@ -295,6 +297,8 @@ class Case(VerticalGroup):
         case.sidebar.todo.text = data.get('todo', '')
         case.phase = Phase(data.get('phase', Phase.DEBUGGING))
         case.step = data.get('step', Steps.add_step)
+        case._repeat = data.get('repeat', None)
+        case.sidebar.time = data.get('adj', 0)
         case._step_after_manual_serial = data.get('_step_after_manual_serial', None)
         case.sidebar.phase_selector.value = case.phase.value
 
@@ -427,7 +431,7 @@ class Case(VerticalGroup):
 
         # URGENT: add DCT exception: if v2 J7 (uses blue card), DCT doesn't work (for now) for j series bots that use the green/blue card DCT, add DCT exceptions that it can fail entirely (for now)
         if self.serial.startswith(('j7', 'j5', 'j6')):
-            rtn += '\nIf uses the blue card, BiT doesn\'t work at all'
+            rtn += '\nIf uses the blue card, BiT may not work at all'
 
         return rtn
 
@@ -446,11 +450,9 @@ class Case(VerticalGroup):
 
         if self.serial.startswith(('r', 'e')):
             # R989
-            if self.serial.startswith('r98'):
-                buttons = 'Spot is next, home is prev.'
-            else:
-                buttons = 'Spot is prev, home is next.'
-            notes += f'To BiT: lights have to be off (hold down clean to turn off), then hold home & clean and press spot 5x. Then press home to start the tests. {buttons} Hold clean when finished successfully, otherwise reset.'
+            # There's probably more models, but I don't know which ones
+            home_is_next = not self.serial.startswith('r98'):
+            notes += f"To BiT: lights have to be off (hold down clean to turn off), then hold home & clean and press spot 5x. Then press {'home' if home_is_next else 'spot'} to start the tests. {'Spot is prev, home is next.' if home_is_next else 'Spot is next, home is prev.'} Hold clean when finished successfully, otherwise reset."
 
         # if self.serial.startswith('e'):
         #     notes += 'To BiT: lights have to be off, then hold home & clean and press spot 5x. You also have to press clean to get it to connect to DCT'
@@ -478,7 +480,7 @@ class Case(VerticalGroup):
         # elif self.serial.startswith('c9'):
             # return ['Aurora'] + camera
         elif self.serial.startswith(('c10', 'c9', 'x')):
-            return ['Boulder', 'Aurora'] + camera
+            return ['Aurora', 'Boulder'] + camera
         elif self.serial.startswith(('j', 'c')):
             return camera
         else:
@@ -639,7 +641,7 @@ class Case(VerticalGroup):
 
     @property
     def bin_screw_has_rust(self):
-        if self._bin_screw_has_rust is None :
+        if self._bin_screw_has_rust is None:
             self._bin_screw_has_rust = bool(re.search(
                 r'Routine\ Checks(?:(?:.|\n))+\*\ (?:Tank\ float\ screw\ has\ a\ spot\ of\ rust\ on\ it|Tank\ float\ screw\ is\ entirely\ rusted)(?:(?:.|\n))+Process:',
                 self.text_area.text
@@ -679,3 +681,9 @@ class Case(VerticalGroup):
             if (found := re.search(r'Parts\ in:\ (?:(?:(?:\d|[A-Za-z]))+|Robot)(?:,\ (\w+))?', self.text_area.text)):
                 self._dock = found.group(1)
         return self._dock or ''
+
+    @property
+    def repeat(self):
+        if self._repeat is None:
+            self._repeat = 'repeat' in self.text_area.text.splitlines()[0].lower()
+        return self._repeat

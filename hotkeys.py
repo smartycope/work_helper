@@ -1,10 +1,19 @@
-from time import sleep
+""" Automatic control functions for my specific setup of CSS. They only use the mouse to click on the
+main drop down menu, everything else is nice, deterministic key presses, mostly navigating via tab.
+These are only meant to be used by me.
+"""
+
+from re import S
+from time import sleep, monotonic
 import keyboard, mouse, clipboard
+import pyautogui
 
 LONG = 1
 SHORT = .05
 START_DELAY = .2
 
+# 388 × 205 is an empty space on the CSS window
+EMPTY_SPACE = 388, 205
 
 def press_seq(*seq, delay=SHORT):
     for key in seq:
@@ -48,6 +57,48 @@ def open_board(case:str=None):
     if case:
         press_seq(*('tab',)*3)
         keyboard.write(case)
+
+# URGENT NEXT HOTKEY: please just detect my board dynamically
+# This is the dynamic version
+def open_board_dynamic(case:str=None, timeout_sec=5):
+    in_board = lambda tolerance=10: pyautogui.pixelMatchesColor(24, 325, (244, 244, 244), tolerance=tolerance) # 5 should be enough
+
+    # Don't load the board if we're already there
+    x, y = mouse.get_position()
+    if not in_board():
+        sleep(SHORT)
+        mouse.move(150, 200)
+        sleep(.1)
+        mouse.move(150, 260)
+        sleep(SHORT)
+        mouse.click(button='left')
+        sleep(SHORT)
+        mouse.move(x, y)
+
+        start = monotonic()
+        while monotonic() < start + timeout_sec:
+            # if 24 × 325 is #f0f8f8 - #f0f0f0, it's in the main board
+            if in_board():
+                break
+            sleep(SHORT)
+    else:
+        # Still make sure the right window is open
+        mouse.move(*EMPTY_SPACE)
+        sleep(SHORT)
+        mouse.click(button='left')
+        sleep(SHORT)
+        mouse.move(x, y)
+
+    # If we weren't given a case, but one is loaded in the clipboard, use it
+    if not case:
+        p = clipboard.paste()
+        if len(p) == 7 and p.lower().endswith('ir'):
+            case = p
+
+    if case:
+        press_seq(*('tab',)*3, 'ctrl+a', 'backspace')
+        keyboard.write(case)
+
 
 def open_ship_product(case:str=None):
     x, y = mouse.get_position()
@@ -145,7 +196,7 @@ In the repair activities menu (the first step of alt+b):
 130, 370 is the return product button (shift+tab, then type case id, then enter)
 130, 400 is the ship product button (type case id, then tab x 11, then enter)
 
-388 × 205 is an empty space on the CSS window
+
 936 × 142 is the query box (then tab, then enter, OR just enter. Try just enter first)
 
 Previous loaded menu color invalid! New is #272b30 @ 316 × 309
@@ -160,4 +211,7 @@ CSS all the loaded menus should have #272b30 @ 100, 860
 
 ! the quick search box location is unreliable!
 
+ This is now unreliable, as more holds get put on
+// CSS loaded board has #272b30 @ 100, 860 and #3e444c @ 50, 782
+ if 24 × 325 is #f0f8f8 - #f0f0f0, it's in the main board
 """

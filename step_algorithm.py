@@ -104,7 +104,8 @@ def execute_step(self, resp):
                 self.step = Steps.check_repeat
 
             case Steps.check_repeat:
-                self.repeat = bool(resp)
+                # Manually set it
+                self._repeat = bool(resp)
                 if self.repeat:
                     self._update_label()
                     self.sidebar.update()
@@ -243,10 +244,11 @@ def execute_step(self, resp):
                     self.step = Steps.ask_cleaned
 
             case Steps.ask_quiet_audio:
-                if resp:
-                    self.add_step('Audio is noticeably quiet - suspect The Glitch', '!')
-                else:
-                    self.add_step('Audio does not seem quiet')
+                if resp.lower() != 'na':
+                    if resp:
+                        self.add_step('Audio is noticeably quiet - possibly the Glitch', '!')
+                    else:
+                        self.add_step('Audio does not seem quiet')
                 self.phase = Phase.DEBUGGING
 
             case Steps.ask_s9_lid_pins:
@@ -398,7 +400,10 @@ def execute_step(self, resp):
                 if mean(measurements) < 3.8:
                     self.ensure_process()
                     self.add_step('Diagnosis: Sunken right contact')
-                    self.add_step('Swap robot and ' + (f'cx {self.dock}' if self.dock else 'ordering a new dock'))
+                    if settings.ASSUME_SWAP_DOCK_ON_SUNKEN_CONTACT:
+                        self.add_step('Swap robot and ' + (f'cx {self.dock}' if self.dock else 'ordering a new dock'))
+                    else:
+                        self.add_step('Swap robot')
                     self._swap_after_battery_test = True
                     self._swap_due_to_sunken_contacts = True
                     next_step = 'battery_test/charging'
@@ -423,7 +428,10 @@ def execute_step(self, resp):
                 if mean(measurements) < 3.8:
                     self.ensure_process()
                     self.add_step('Diagnosis: Sunken left contact')
-                    self.add_step('Swap robot' + (f' and cx {self.dock}' if self.dock else ''))
+                    if settings.ASSUME_SWAP_DOCK_ON_SUNKEN_CONTACT:
+                        self.add_step('Swap robot and ' + (f'cx {self.dock}' if self.dock else 'ordering a new dock'))
+                    else:
+                        self.add_step('Swap robot')
                     self._swap_after_battery_test = True
                     self._swap_due_to_sunken_contacts = True
                     next_step = 'battery_test/charging'
