@@ -151,6 +151,7 @@ class Case(VerticalGroup):
         self._tab.styles.background = to_color
         # Easier to just set it here rather than try to figure out how to reference them all via stylesheet
         self._tab.styles.color = 'black'
+        # self.text_area.text += '\n set color called!'
 
     def compose(self):
         yield self.text_area
@@ -524,6 +525,7 @@ class Case(VerticalGroup):
                 timestamp=datetime.now(),
             ))
 
+    # TODO: make this not private
     def _update_label(self):
         if self._tab:
             self._tab.label = self.tab_label

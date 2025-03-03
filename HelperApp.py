@@ -46,8 +46,8 @@ class HelperApp(App):
         Binding('ctrl+e', 'open_external_notes_menu', 'External notes', priority=True, system=True),
         Binding('ctrl+t', 'open_mobility_menu', 'Mobility Test', priority=True, system=True),
         # TODO
-        # Binding('ctrl+k', 'move_tab(-1)', 'Move Tab Left', priority=True, system=True),
-        # Binding('ctrl+d', 'move_tab(1)', 'Move Tab Right', priority=True, system=True),
+        Binding('ctrl+k', 'move_tab(1)', 'Move Tab Left', priority=True, system=True),
+        Binding('ctrl+d', 'move_tab(-1)', 'Move Tab Right', priority=True, system=True),
 
         Binding("ctrl+n", "new_case", "New Case", show=False, system=True, priority=True),
         Binding("ctrl+w", "close_case", "Close Case", show=False, system=True, priority=True),
@@ -205,7 +205,7 @@ class HelperApp(App):
     def active_case(self):
         try:
             return self.tabs.active_pane.children[0]
-        except AttributeError:
+        except (AttributeError, IndexError):
             return
 
     def action_remove(self) -> None:
@@ -261,22 +261,36 @@ class HelperApp(App):
     # TODO: this doesn't work yet, but it's close
     async def action_move_tab(self, amt):
         if self.active_case:
-            idx = self.cases.index(self.active_case)
+            case: Case = self.active_case
+            idx = self.cases.index(case)
             new_idx = (idx + amt) % len(self.cases)
 
             # Modify self.cases
             self.cases.insert(new_idx, self.cases.pop(idx))
 
             # Calculate the pane it should be before
-            # before_pane = f'tab-pane-{self.cases[new_idx+1].ref}' if new_idx < len(self.cases) - 1 else None
+            before_pane = f'tab-pane-{self.cases[new_idx+1].ref}' if new_idx < len(self.cases) - 1 else None
 
             # Remove the current pane, and add it back into the correct place
-            active_pane = f'tab-pane-{self.active_case.ref}'
+            active_pane = f'tab-pane-{case.ref}'
             pane = self.tabs.get_pane(active_pane)
             await self.tabs.remove_pane(active_pane)
             # self.tabs.remove_pane(active_pane)
             # self.tabs.add_pane(pane, before=before_pane)
-            self.tabs.add_pane(pane)
+            # self.tabs.add_pane(pane)
+            await self.tabs.add_pane(TabPane('', case, id=f'tab-pane-{case.ref}'), before=before_pane)
+            # case._update_label()
+            # case.set_color()
+            to_color = case.color
+            # This doesn't do anything
+            case.sidebar.color_switcher.value = to_color
+            # This is copied from case.set_color()
+            # TODO: This works, but the color switcher box gets unset, just like the phase box does
+            # on deserialization. Once I figure that out, fix it here too
+            case.sidebar.styles.background = to_color
+            case._tab.styles.background = to_color
+            case._tab.styles.color = 'black'
+            self.tabs.active = active_pane
 
     def action_goto_tab(self, index):
         self.bell()
