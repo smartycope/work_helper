@@ -31,8 +31,8 @@ class Steps:
     ask_cleaned = 'Robot cleaned ["na" if not, notes or empty if so]'
     battery_test = "Battery test (don't forget the traveller) [current, health]"
     ask_user_base_contacts = "How do the charging contacts on the customer base look [fine]"
-    ask_charge_customer_dock = "What's the charging wattage on the customer's dock"
-    ask_charge_test_dock = "What's the charging wattage on a test base"
+    ask_charge_customer_dock = "What's the charging wattage on the customer's dock [wattage or notes]"
+    ask_charge_test_dock = "What's the charging wattage on a test base [wattage or notes]"
     ask_bin_rust = "Amount of rust on the tank screw [empty: none, 1: a spot, 2: entirely]"
     ask_dock_tank_rust ="Amount of rust on the dock's tank screw [empty: none, 1: a spot, 2: entirely]"
     ask_quiet_audio = 'Is the audio quiet? (It may be "The Glitch") [no]'

@@ -4,3 +4,4 @@ keyboard
 mouse
 clipboard
 pyautogui
+pillow

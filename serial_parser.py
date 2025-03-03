@@ -216,6 +216,8 @@ class RobotInfo:
             # return ['Aurora'] + camera
         elif self.serial.startswith(('c10', 'c9', 'x')):
             return ['Aurora', 'Boulder'] + camera
+        elif self.serial.startswith('c7'):
+            return camera + ['Aurora']
         elif self.serial.startswith(('j', 'c')):
             return camera
         else:

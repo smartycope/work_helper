@@ -6,7 +6,6 @@ from textual.containers import *
 from textual.widgets import *
 
 from HelperApp import HelperApp
-from globals import LOG_PATH
 # import hotkeys
 
 
@@ -22,7 +21,8 @@ if __name__ == "__main__":
         app.run()
     except Exception as err:
         app.panic(err)
-        # raise err
+        # if args.debug:
+        raise err
     finally:
         app.action_save()
         # keyboard.remove_all_hotkeys()

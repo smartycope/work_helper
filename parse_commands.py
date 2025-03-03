@@ -10,7 +10,7 @@ ACRONYMS = {
     'wh': 'wheel',
     'whs': 'wheels',
     'nm': 'non-modular',
-    'mt': 'mobility test',
+    # 'mt': 'mobility test',
     'dg': 'docking',
     'i': 'I',
     'err': 'error',
@@ -22,6 +22,12 @@ ACRONYMS = {
     'btn': 'button',
     'btns': 'buttons',
     'diag': 'Diagnosis',
+    'mt': 'mobility test',
+    'mts': 'mobility tests',
+    # 'nr': 'new robot',
+    'ml': 'manual',
+    'ev': 'evac',
+    'evs': 'evacs',
     'ss': 'smart scrub',
     'dd': 'dirt detect',
     'b': 'robot',
@@ -120,7 +126,7 @@ def parse_command(self, input:str):
             case 'meas':
                 side = args.pop(0).lower()
                 if not args:
-                    self.add_step('Measured both contacts: >4mm')
+                    # self.add_step('Measured both contacts: >4mm')
                     if side == 'b':
                         self.add_step('Measured both contacts: >4mm')
                     else:

@@ -1,3 +1,26 @@
+
+URGENT: in parts in step, "alb, l" does not work -- test please
+
+URGENT: if repeat, in finish phase, it entirely skips "wait for parts" and "finish case on CSS" steps
+
+HIGH: add print statements to all/most/some of the hotkeys (can't hurt)
+URGENT: add if repeat and adjustment to the log
+
+
+MEDIUM: if "remove provisioning" already detected in the notes, don't ask to remove it in finish phase
+
+
+URGENT: instead of logging on certain steps, log when it's opened, when it was closed, and the phase it was in when it was closed (hold vs accident vs finished)
+
+
+
+URGENT: allow some way to reorder tabs, even if it's via bindings (for now, anyway)
+HIGH: switch "put on labels" to be immediately before "confirm ids" instead of after
+
+
+
+
+
 Ask about how adjustments work for repeats that go on hold
 
 URGENT: add more comments and clean things up more
@@ -5,12 +28,13 @@ HIGH: if entering swap phase, and "swap robot" or equivelent not in notes, auto 
 URGENT: move asking if the case is a repeat to be before confirm IDs (immediately after pick up case)
 URGENT: in all the try except statements, if there's an error caught and there *shouldn't* be, log it in the interal log file (I'm thinking specifically of the one if it can't save)
 URGENT ish: if M6, don't ask if it's been cleaned
-MINOR: don't ask if blower play if r (or e) series
 URGENT: log what error multi_paste is giving so I can fix it already
 
+EXT: remove "factory reset and lapis bin"
 HINTS: add a sub-branch for evac problems: if it's evacing, and bin *actually* isn't getting cleared, then:
 DCT: if it's an R series and >=880, then specify that it's USB in the top side corner
 DCT EXP: for combo models, you may have to cover the vacuum with your hand during the vacuum test
+HIGH: don't ask if blower play if r (or e) series
 
 MINOR: make the "R" in the tab label stand out more somehow
 MINOR HIGH: the folder backup name needs dashes and seconds
@@ -375,6 +399,8 @@ WEB REFACTOR: add a global web member that gets auto-set somehow
 WEB: if web version, don't include any of the hotkey bindings
 WEB: if web version, change the bindings to work (ctrl+n, ctrl+w, for starters)
 WEB: remove the date display thing I was using for versioning, and add *real* versioning.
+
+BUG: "I510020C240713N701134" is non-modular, but doesn't detect that it is. Was a refurb, though
 
 Look up:
 "the others" by Jeremy robinson

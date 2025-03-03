@@ -30,14 +30,15 @@ def order_swap():
     sleep(START_DELAY)
     press_seq('enter', 'tab', 'tab', 'tab', 'N', 'A', 'tab', 'ctrl+v', 'tab', 'tab', 'enter')
 
-# TODO: this needs work
+# This is old, don't use it. use add_case instead
 def add_repair_report(case:str=None):
     """down, enter, tab, enter, (shift+tab, shift+tab, down, up, enter) OR (type current id, down, enter), tab, "Repair Report", tab, enter"""
     sleep(START_DELAY)
     press_seq('down', 'enter', 'tab', 'enter', *(case if case else clipboard.paste()), 'down', 'enter', 'tab', *'Repair Report', 'tab', 'enter')
 
 # This is fairly reliable
-def open_board(case:str=None):
+def open_board(case:str=None, guess_from_clipboard=False):
+    sleep(START_DELAY)
     x, y = mouse.get_position()
     sleep(SHORT)
     mouse.move(150, 200)
@@ -49,7 +50,7 @@ def open_board(case:str=None):
     mouse.move(x, y)
     sleep(LONG)
 
-    if not case:
+    if not case and guess_from_clipboard:
         p = clipboard.paste()
         if len(p) == 7 and p.lower().endswith('ir'):
             case = p
@@ -58,14 +59,18 @@ def open_board(case:str=None):
         press_seq(*('tab',)*3)
         keyboard.write(case)
 
-# URGENT NEXT HOTKEY: please just detect my board dynamically
-# This is the dynamic version
-def open_board_dynamic(case:str=None, timeout_sec=5):
+def open_board_dynamic(case:str=None, timeout_sec=10, guess_from_clipboard=False, end_mouse_loc=(472, 449)):
+    """ make end_mouse_loc None to end the mouse where it started """
+    sleep(START_DELAY)
+    print('-'*20)
+    # if 24 × 325 is #f0f8f8 - #f0f0f0, it's in the main board
     in_board = lambda tolerance=10: pyautogui.pixelMatchesColor(24, 325, (244, 244, 244), tolerance=tolerance) # 5 should be enough
 
     # Don't load the board if we're already there
     x, y = mouse.get_position()
     if not in_board():
+        # started_in_board = False
+        print('not in board, going to board')
         sleep(SHORT)
         mouse.move(150, 200)
         sleep(.1)
@@ -73,31 +78,45 @@ def open_board_dynamic(case:str=None, timeout_sec=5):
         sleep(SHORT)
         mouse.click(button='left')
         sleep(SHORT)
-        mouse.move(x, y)
+        # mouse.move(x, y)
 
         start = monotonic()
         while monotonic() < start + timeout_sec:
-            # if 24 × 325 is #f0f8f8 - #f0f0f0, it's in the main board
+            print('waiting until board is loaded...')
             if in_board():
+                print('board loaded!')
                 break
             sleep(SHORT)
-    else:
-        # Still make sure the right window is open
-        mouse.move(*EMPTY_SPACE)
-        sleep(SHORT)
-        mouse.click(button='left')
-        sleep(SHORT)
+    # else:
+    # started_in_board = True
+    # Still make sure the right window is open
+    print('board is open, clicking on window')
+    mouse.move(*EMPTY_SPACE)
+    sleep(SHORT)
+    mouse.click(button='left')
+    sleep(SHORT)
+    # TODO: change this
+    if end_mouse_loc is None:
         mouse.move(x, y)
+    else:
+        mouse.move(*end_mouse_loc)
 
     # If we weren't given a case, but one is loaded in the clipboard, use it
-    if not case:
+    if not case and guess_from_clipboard:
         p = clipboard.paste()
         if len(p) == 7 and p.lower().endswith('ir'):
+            print('loading case from clipboard')
             case = p
 
     if case:
-        press_seq(*('tab',)*3, 'ctrl+a', 'backspace')
+        print('filtering case')
+        # press_seq(*('tab',)*(5 if started_in_board else 3), 'ctrl+a', 'backspace')
+        press_seq(*('tab',)*5, 'ctrl+a', 'backspace')
         keyboard.write(case)
+    else:
+        print('no case provided or inferred, done')
+
+
 
 
 def open_ship_product(case:str=None):
@@ -167,13 +186,12 @@ def add_case(case=None):
     keyboard.write('Repair Report')
     sleep(SHORT)
     press_seq('shift+tab', 'enter')
-    sleep(.5)
+    sleep(.75)
     if case:
         keyboard.write(case)
-        keyboard.write('.pdf')
     else:
         press_seq('ctrl+v')
-        keyboard.write('.pdf')
+    keyboard.write('.pdf')
     sleep(SHORT)
     press_seq('enter')
     sleep(SHORT)

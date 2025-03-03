@@ -13,7 +13,7 @@ from Case import Case
 from globals import COLORS, DEFAULT_COLOR, INTERNAL_LOG_PATH, SAVE_CASE_PATH, SAVE_STATE_PATH, EXISTING_CASES
 from clipboard import copy, paste
 
-from hotkeys import open_board, open_return_product, open_ship_product, query_case
+from hotkeys import open_board, open_board_dynamic, open_return_product, open_ship_product, query_case
 import settings
 from texts import Steps
 import traceback
@@ -31,7 +31,7 @@ DEBUG_CASES = {
 
 if settings.INCLUDE_HOTKEYS:
     HOTKEY_BINDINGS = [
-        Binding('ctrl+b', 'open_board', 'Board', priority=True, system=True, show=settings.SHOW_HOTKEYS),
+        Binding('ctrl+b', 'open_board_dynamic', 'Board', priority=True, system=True, show=settings.SHOW_HOTKEYS),
         Binding('ctrl+p', 'query_case', 'Pickup', priority=True, system=True, show=settings.SHOW_HOTKEYS),
         Binding('ctrl+r', 'open_return_product', 'Return', priority=True, system=True, show=settings.SHOW_HOTKEYS),
         Binding('ctrl+f', 'open_ship_product', 'Ship', priority=True, system=True, show=settings.SHOW_HOTKEYS),
@@ -45,21 +45,18 @@ class HelperApp(App):
         # The visible ones
         Binding('ctrl+e', 'open_external_notes_menu', 'External notes', priority=True, system=True),
         Binding('ctrl+t', 'open_mobility_menu', 'Mobility Test', priority=True, system=True),
+        # TODO
+        # Binding('ctrl+k', 'move_tab(-1)', 'Move Tab Left', priority=True, system=True),
+        # Binding('ctrl+d', 'move_tab(1)', 'Move Tab Right', priority=True, system=True),
 
         Binding("ctrl+n", "new_case", "New Case", show=False, system=True, priority=True),
         Binding("ctrl+w", "close_case", "Close Case", show=False, system=True, priority=True),
         Binding("ctrl+s", "save_manual", "Save", show=False, system=True, priority=True),
 
         Binding("ctrl+`,ctrl+g", "focus_input", "Focus Input", show=False, system=True, priority=True),
-        # ('ctrl+e', 'open_external_notes_menu', 'Ext Notes'),
-        # Binding('ctrl+1,ctrl+shift+1', 'goto_tab(1)', 'Tab 1', show=False, system=True, priority=True),
-        # Binding('ctrl+2,ctrl+shift+2', 'goto_tab(2)', 'Tab 2', show=False, system=True, priority=True),
-        # Binding('ctrl+3,ctrl+shift+3', 'goto_tab(3)', 'Tab 3', show=False, system=True, priority=True),
-        # Binding('ctrl+4,ctrl+shift+4', 'goto_tab(4)', 'Tab 4', show=False, system=True, priority=True),
-        # Binding('ctrl+5,ctrl+shift+5', 'goto_tab(5)', 'Tab 5', show=False, system=True, priority=True),
 
-        Binding('ctrl+j', 'increment_tab', 'Next Tab', show=True, priority=True, system=True),
-        Binding('ctrl+f', 'increment_tab(-1)', 'Previous Tab', show=True, priority=True, system=True),
+        Binding('ctrl+j', 'increment_tab', 'Next Tab', show=False, priority=True, system=True),
+        Binding('ctrl+f', 'increment_tab(-1)', 'Previous Tab', show=False, priority=True, system=True),
     ] + HOTKEY_BINDINGS
     CSS_PATH = "stylesheet.tcss"
     COMMAND_PALETTE_DISPLAY = False
@@ -88,6 +85,7 @@ class HelperApp(App):
         )), id='menu-select', prompt='☰')
         self.menu_menu.can_focus = False
 
+
     def on_mount(self):
         if self._debug:
             for ref, data in DEBUG_CASES.items():
@@ -96,6 +94,11 @@ class HelperApp(App):
             self.deserialize(DEBUG_STATE)
         else:
             self.action_load_saved_state()
+
+        self._save_timer = None
+        if settings.SAVE_EVERY_MINUTES and settings.SAVE_EVERY_MINUTES > 0:
+            self._save_timer = self.set_interval(settings.SAVE_EVERY_MINUTES*60, self.action_save)
+
 
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
@@ -190,6 +193,7 @@ class HelperApp(App):
         if self.active_case.phase in (Phase.FINISH, Phase.HOLD) and self.active_case in self.cases:
             self.cases.remove(self.active_case)
             self.tabs.remove_pane(self.tabs.active_pane.id)
+        self.active_case.log('close')
         self.action_save()
 
     @on(TabbedContent.TabActivated)
@@ -254,6 +258,26 @@ class HelperApp(App):
             self._create_case(case)
             # self.tabs.add_pane(TabPane('', case, id=f'tab-pane-{case.ref}'))
 
+    # TODO: this doesn't work yet, but it's close
+    async def action_move_tab(self, amt):
+        if self.active_case:
+            idx = self.cases.index(self.active_case)
+            new_idx = (idx + amt) % len(self.cases)
+
+            # Modify self.cases
+            self.cases.insert(new_idx, self.cases.pop(idx))
+
+            # Calculate the pane it should be before
+            # before_pane = f'tab-pane-{self.cases[new_idx+1].ref}' if new_idx < len(self.cases) - 1 else None
+
+            # Remove the current pane, and add it back into the correct place
+            active_pane = f'tab-pane-{self.active_case.ref}'
+            pane = self.tabs.get_pane(active_pane)
+            await self.tabs.remove_pane(active_pane)
+            # self.tabs.remove_pane(active_pane)
+            # self.tabs.add_pane(pane, before=before_pane)
+            self.tabs.add_pane(pane)
+
     def action_goto_tab(self, index):
         self.bell()
         self.tabs.active = f'tab-{index}'
@@ -279,6 +303,9 @@ class HelperApp(App):
 
     def action_open_board(self):
         open_board(self.active_case.ref)
+
+    def action_open_board_dynamic(self):
+        open_board_dynamic(self.active_case.ref)
 
     def action_open_ship_product(self):
         open_ship_product(self.active_case.ref)

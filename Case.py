@@ -41,13 +41,7 @@ class Case(VerticalGroup):
         before_swap_order_S9, before_swap_order_M6)
     from step_algorithm import execute_step as _execute_step
 
-    BINDINGS = (
-        # TODO: reenable this eventually. Somehow.
-        # ('_s', 'change_serial', 'Set Serial'),
-        # ('ctrl+l', 'parse_for_info', 'Parse Info'),
-        # TODO: This doesn't work
-        Binding('ctrl+i', 'focus_input', 'Focus Input', show=False, priority=True),
-    )
+    # BINDINGS = ()
     # The step that gets switched to when switched to that phase (the first step of each phase)
     first_steps = {
         Phase.CONFIRM: Steps.pick_up_case,
@@ -131,6 +125,8 @@ class Case(VerticalGroup):
         # This gets run on mount of the color selector
         # self.set_color(color)
 
+        self.log('created')
+
         # TODO: this shouldn't be here, but pick_up_case as a first step isn't triggering side effects properly
         self.before_pick_up_case()
 
@@ -197,7 +193,8 @@ class Case(VerticalGroup):
 
             self.step_formatter = ''
 
-            self.save()
+            if settings.SAVE_EVERY_STEP:
+                self.save()
         except:
             pass
 
@@ -353,10 +350,16 @@ class Case(VerticalGroup):
             return ""
 
     def add_measure_contacts_step(self, side, measurements):
+        if not side:
+            return
         meas = mean(measurements)
-        # meas = round(meas, 1 if 3.8 > meas > 3.74 else 2)
-        meas = round(meas, 1)
-        self.add_step(f'Measured {"right" if side == "r" else "left"} contact: {meas}mm +/- {std(measurements):.2f} ({len(measurements)} measurements)')
+        meas = round(meas, 1 if 3.9 > meas > 3.65 else 2)
+        # meas = round(meas, 1)
+        if len(measurements) == 1:
+            # If there's only a single contact measurement, don't include the +/-, or the number of measurements
+            self.add_step(f'Measured {"right" if side == "r" else "left"} contact: {meas}mm')
+        else:
+            self.add_step(f'Measured {"right" if side == "r" else "left"} contact: {meas}mm +/- {std(measurements):.2f} ({len(measurements)} measurements)')
 
     # Helper methods
     def get_quick_model(self):
@@ -481,6 +484,8 @@ class Case(VerticalGroup):
             # return ['Aurora'] + camera
         elif self.serial.startswith(('c10', 'c9', 'x')):
             return ['Aurora', 'Boulder'] + camera
+        elif self.serial.startswith('c7'):
+            return camera + ['Aurora']
         elif self.serial.startswith(('j', 'c')):
             return camera
         else:

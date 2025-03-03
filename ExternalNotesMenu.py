@@ -1,5 +1,5 @@
 import re
-from typing import OrderedDict, Union
+from collections import OrderedDict
 from textual.containers import *
 from textual.widgets import *
 from textual import on
@@ -17,8 +17,9 @@ class ExternalNotesMenu(Menu):
         ("Replaced dock", "Replaced dock with equivalent model"),
         ("Alex-Albany ship with sealing error", "The dock may occasionally generate false error messages. It has been thoroughly tested to ensure optimal compatibility with your Roomba. iRobot is aware of this issue and is actively working on a software update for resolution. For any further inquiries, please reach out to iRobot support"),
         ("Recommend cleaning", "Recommend regular cleaning and maintenance"),
-        ("Recommend cleaning dock charging contacts", "Over time, debris can accumulate on the charging contacts of both the robot and dock, which may prevent charging and potentially cause damage. To help maintain optimal performance, we recommend cleaning these contacts regularly"),
+        ("Recommend cleaning charging contacts", "Over time, debris can accumulate on the charging contacts of both the robot and dock, which may prevent charging and potentially cause damage. To help maintain optimal performance, we recommend cleaning these contacts regularly"),
         ("Recommend cleaning filter", "Recommend regular cleaning of the bin filter"),
+        ("Long Runtime", "The number of times the Roomba goes over an area can be set in the app under Product Settings > Cleaning Preferences > Cleaning Passes"),
         ("Charges Normally caveat", "Robot charges normally on stardard test equipment"),
         ("Use correct bags", "Recommend using only OEM replacement bags"),
         ("Place dock away from obstacles", "Recommend placing dock at least 1.5 feet away from obstacles on either side, and at least 4 feet away from stairs and any obstacles in front of the dock"),
@@ -27,7 +28,7 @@ class ExternalNotesMenu(Menu):
         ("Liquid spill", "Advise that robots are not rated for liquid cleanup"),
         ("Broken mop pad", "Recommend hand washing mop pads, as machine wash can break them"),
         ("Factory reset", "Factory reset performed, recommend re-provisioning robot on app"),
-        ("Factory reset and Lapis bin", "Factory reset performed, recommend re-provisioning the robot and mop bin in the app"),
+        # ("Factory reset and Lapis bin", "Factory reset performed, recommend re-provisioning the robot and mop bin in the app"),
         ("The Glitch", "If issues persist, factory reset as necessary"),
         ("Had child lock", "Child & pet lock removed, use app to re-enable"),
         ("Wake from shipping mode", "Please place robot on dock to wake from shipping mode"),
@@ -121,6 +122,9 @@ class ExternalNotesMenu(Menu):
 
             if 'glitch' in notes:
                 self.select("The Glitch")
+
+            if "cleaned dock charging contacts" in notes:
+                self.select("Recommend cleaning charging contacts")
 
             self.cx_states.update('cx states:\n' + self.case.customer_states)
 

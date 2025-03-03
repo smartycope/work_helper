@@ -72,6 +72,7 @@ def execute_step(self, resp):
         match self.step:
             # Main path
             case Steps.confirm_id:
+                self.log('started')
                 # If we (somehow) already have the serial number, we don't need to confirm it
                 if self.serial:
                     self.step = Steps.turn_down_screwdriver if self.serial.startswith('m6') else Steps.ask_labels
@@ -306,23 +307,27 @@ def execute_step(self, resp):
                     next_step = 'charging'
 
             case Steps.ask_charge_customer_dock | Steps.ask_charge_test_dock:
+                if not resp:
+                    return
+
                 if resp.lower() != 'na':
                     try:
                         watts = float(resp)
                     except ValueError:
-                        if resp:
-                            self.add_step(resp)
-                            next_step = 'quiet audio'
-                        return
-
-                    dock = f'cx {self.dock}' if self.dock else 'test base'
-
-                    if watts < 1:
-                        self.add_step(f"Robot does not charge on {dock} @ ~{watts:.1f}W", bullet='!')
-                    elif watts < 10:
-                        self.add_step(f"Robot charges on {dock} @ ~{watts:.1f}W (battery is full)")
+                        self.add_step(capitolize(resp))
+                        done = True
                     else:
-                        self.add_step(f"Robot charges on {dock} @ ~{watts:.0f}W")
+                        done = False
+
+                    if not done:
+                        dock = f'cx {self.dock}' if self.dock else 'test base'
+
+                        if watts < 1:
+                            self.add_step(f"Robot does not charge on {dock} @ ~{watts:.1f}W", bullet='!')
+                        elif watts < 10:
+                            self.add_step(f"Robot charges on {dock} @ ~{watts:.1f}W (battery is full)")
+                        else:
+                            self.add_step(f"Robot charges on {dock} @ ~{watts:.0f}W")
 
                 next_step = 'quiet audio'
 
@@ -765,7 +770,8 @@ def before_pick_up_case(self):
     clipboard.copy(self.ref)
 
 def after_pick_up_case(self):
-    self.log('open')
+    pass
+    # self.log('open')
 
 def after_ask_complete_case_CSS(self):
     pass
@@ -829,7 +835,7 @@ def before_hold_copy_notes_to_CSS(self):
 
 def before_wait_parts_closed(self):
     clipboard.copy(self.ref)
-    self.log('finish')
+    # self.log('finish')
 
 def before_hold_add_context(self):
     self.ensure_context()
