@@ -76,6 +76,7 @@ class Sidebar(VerticalGroup):
             ],
             id='phase-select',
             allow_blank=False,
+            disabled=True,
         )
         self.phase_selector.can_focus = False
 
@@ -157,7 +158,7 @@ class Sidebar(VerticalGroup):
         with ScrollableContainer():
             yield Label('\n')
             yield self.dct
-            yield Label(f'{" DCT Exceptions ":-^{SIDEBAR_WIDTH}}', classes='sidebar-label')
+            yield Label(f'{" BiT Exceptions ":-^{SIDEBAR_WIDTH}}', classes='sidebar-label')
             yield self.dct_exp
             yield Label(f'{" Shipping Mode ":-^{SIDEBAR_WIDTH}}', classes='sidebar-label')
             yield self.sleep_mode

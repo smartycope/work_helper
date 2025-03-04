@@ -6,11 +6,43 @@ from CustomInput import CustomInput
 from Menu import Menu
 from TriSwitch import TriSwitch
 
+from globals import DEBUG
 from info import EVAC_DOCKS
 from parse_commands import parse_acronym
 import settings
 
+# TODO: add "does" and "doesn't" to auto evac as appriopriate
+
 class MobilityMenu(Menu):
+    BINDINGS = (
+        Binding('u', 'activate("undock")', show=False),
+        Binding('v', 'activate("navigate")', show=False),
+        Binding('d', 'activate("dock")', show=False),
+        Binding('a', 'activate("auto_evac")', show=False),
+        Binding('m', 'activate("manual_evac")', show=False),
+        Binding('c', 'activate("picks_up_debris")', show=False),
+        Binding('r', 'activate("refill")', show=False),
+        Binding('p', 'activate("deploy_pad")', show=False),
+        Binding('s', 'activate("spray")', show=False),
+
+        Binding('l', 'activate("num_lines")', show=False),
+
+        Binding('1', 'activate("where")', show=False),
+        Binding('2', 'activate("base1")', show=False),
+        Binding('3', 'activate("base2")', show=False),
+        Binding('4', 'activate("param_bin")', show=False),
+        Binding('5', 'activate("param_tank")', show=False),
+        Binding('6', 'activate("param_pad")', show=False),
+
+        Binding('7', 'activate("params")', show=False),
+        Binding('n', 'activate("notes")', show=False),
+        # Binding('', 'activate("todo")', show=False),
+
+        # TODO: Neither of these work
+        Binding('esc', 'close', show=False),
+        Binding('ctrl+enter', 'done', show=True),
+    )
+
     switches = (
             'undock',
             'dock',
@@ -23,7 +55,42 @@ class MobilityMenu(Menu):
             'spray',
         )
 
-    def __init__(self, case):
+    def action_focus_self(self):
+        self.focus()
+
+    def action_activate(self, element):
+        # All the switches
+        if element in self.switches:
+            switch: TriSwitch = getattr(self, element)
+            if not switch.disabled:
+                switch.action_toggle_switch()
+
+        # Handle Num Lines seperately
+        elif element == 'num_lines':
+            if not self.num_lines.disabled:
+                match self.num_lines.value:
+                    case '1': self.num_lines.value = '2'
+                    case '2': self.num_lines.value = '3'
+                    case '3': self.num_lines.value = '0'
+                    case '0': self.num_lines.value = '1'
+                    case _: self.num_lines.value = '1'
+
+        # The Select boxes
+        elif element in (
+            'param_bin',
+            'param_tank',
+            'param_pad',
+            'base1',
+            'base2',
+            'where',
+        ):
+            getattr(self, element).action_show_overlay()
+
+        # The text areas
+        elif element in ('params', 'notes', 'todo'):
+            getattr(self, element).focus()
+
+    def __init__(self, case:'Case'):
         # super().__init__(classes='mobility-menu', id=f'mobility-menu-{case.ref}')
         super().__init__(case)
         self._been_opened = False
@@ -41,100 +108,99 @@ class MobilityMenu(Menu):
 
         yield Label('Parameters:')
         self.where = Select.from_values(('top bench', 'floor', 'bottom bench'), allow_blank=False, value=settings.DEFAULT_STARTING_LOCATION, classes='mm-param-select')
+        if DEBUG:
+            self.where.tooltip = 'where'
         yield self.where
 
         self.base1 = Select(((i, i) for i in ('cx', 'test', 'new', '#2', '#3')), allow_blank=False, classes='mm-param-select')
         self.base2 = Select([], prompt='No Dock', id='base2', classes='mm-param-select')
+        if DEBUG:
+            self.base1.tooltip = 'base1'
+            self.base2.tooltip = 'base2'
         yield self.base1
         yield self.base2
 
-        # new/cx bot
-        # test/cx/new bin
-        # full/empty/partially full test/cx/new tank
-        # test/cx lapis
-        # cx/test/new pad
+        self.param_bin = Select([(i,i) for i in ('cx bin', 'new bin', 'test bin', 'test lapis', 'cx lapis', '')], allow_blank=False, classes='mm-param-select', tooltip='param_bin\n[underline]b[/]')
+        self.param_tank = Select([(i,i) for i in ('empty tank', '1/3 tank', 'full tank')], allow_blank=False, classes='mm-param-select', tooltip='param_tank\n[underline]t[/]')
+        self.param_pad = Select([(i,i) for i in ('cx pad', 'new pad', 'test pad', 'test dry pad')], allow_blank=False, classes='mm-param-select', tooltip='param_pad\n')
 
-        self.param_bin = Select([(i,i) for i in ('cx bin', 'new bin', 'test bin', 'test lapis', 'cx lapis', '')], allow_blank=False, classes='mm-param-select')
+        if DEBUG:
+            self.param_bin.tooltip = 'param_bin'
+            self.param_tank.tooltip = 'param_tank'
+            self.param_pad.tooltip = 'param_pad'
+
         yield self.param_bin
-
-        self.param_tank = Select([(i,i) for i in ('empty tank', '1/3 tank', 'full tank')], allow_blank=False, classes='mm-param-select')
         yield self.param_tank
-
-        self.param_pad = Select([(i,i) for i in ('cx pad', 'new pad', 'test pad', 'test dry pad')], allow_blank=False, classes='mm-param-select')
         yield self.param_pad
 
         # self.param_lapis = Select([(i,i) for i in ('', 'cx lapis', 'test lapis')], allow_blank=False, classes='mm-param-select')
         # yield self.param_lapis
 
-        self.params = CustomInput(placeholder='More Parameters')
+        self.params = CustomInput(placeholder='More Parameters', id='params')
         yield self.params
 
         yield Rule(line_style='heavy', classes='quadruple')
 
-        self.undock_label = Label('Undock:')
+        self.undock_label = Label('[underline]U[/]ndock:')
         yield self.undock_label
         self.undock = TriSwitch(value=True)
         yield self.undock
 
-        self.picks_up_debris_label = Label('Picks up Debris:')
+        self.picks_up_debris_label = Label('Pi[underline]c[/]ks up Debris:')
         yield self.picks_up_debris_label
         self.picks_up_debris = TriSwitch(value=None)
         yield self.picks_up_debris
 
-        self.navigate_label = Label('Navigate:')
+        self.navigate_label = Label('Na[underline]v[/]igate:')
         yield self.navigate_label
         self.navigate = TriSwitch(value=True)
         yield self.navigate
 
-        self.refill_label = Label('Refill:')
+        self.refill_label = Label('[underline]R[/]efill:')
         yield self.refill_label
         self.refill = TriSwitch(value=None, disabled=self.case.is_combo is False)
         yield self.refill
 
-        self.dock_label = Label('Dock:')
+        self.dock_label = Label('[underline]D[/]ock:')
         yield self.dock_label
         self.dock = TriSwitch(value=True)
         yield self.dock
 
-        self.deploy_pad_label = Label('Deploy Pad:')
+        self.deploy_pad_label = Label('Deploy [underline]P[/]ad:')
         yield self.deploy_pad_label
         self.deploy_pad = TriSwitch(value=None, disabled=self.case.is_combo is False)
         yield self.deploy_pad
 
-        self.auto_evac_label = Label('Auto Evac:')
+        self.auto_evac_label = Label('[underline]A[/]uto Evac:')
         yield self.auto_evac_label
         self.auto_evac = TriSwitch(value=None)
         yield self.auto_evac
 
-        self.num_lines_label = Label('Num Lines:')
+        self.num_lines_label = Label('Num [underline]L[/]ines:')
         yield self.num_lines_label
         self.num_lines = MaskedInput(template="9", id='num-lines', disabled=self.case.is_combo is False)
         yield self.num_lines
 
-        self.manual_evac_label = Label('Manual Evac:')
+        self.manual_evac_label = Label('[underline]M[/]anual Evac:')
         yield self.manual_evac_label
         self.manual_evac = TriSwitch(value=None)
         yield self.manual_evac
 
-        self.spray_label = Label('Spray:')
+        self.spray_label = Label('[underline]S[/]pray:')
         yield self.spray_label
         self.spray = TriSwitch(value=None)
         yield self.spray
 
-        # yield Static(classes='double')
         yield Static(classes='quadruple')
 
-        # yield Label('Notes')
         self.notes = CustomInput(placeholder='Notes', classes='quadruple', id='notes')
         yield self.notes
 
-        # yield Static(classes='quadruple')
-        # yield Static(classes='double')
         self.todo = Input(placeholder='Temporary Notes', classes='double extend')
         yield self.todo
 
         yield Button('Close', id='cancel', classes='mm-buttons', action='close')
-        yield Button('Done', id='done', classes='mm-buttons')
+        yield Button('Done', id='done', classes='mm-buttons', action='done')
 
     def reset(self):
         """ Run whenever the notes get added """
@@ -153,6 +219,9 @@ class MobilityMenu(Menu):
             if self.case.dock in self.case.get_docks()
             else self.case.get_docks()[0]
         )
+        # if the bot is non-modular, assume no dock at first
+        if not self.case.is_modular:
+            self.base2.value = Select.BLANK
 
         # Remove irrelevant params
         if not self.case.can_mop:
@@ -288,8 +357,9 @@ class MobilityMenu(Menu):
 
     @on(Input.Submitted, '#dock-input')
     @on(Input.Submitted, '#notes')
-    @on(Button.Pressed, '#done')
-    def done(self):
+    @on(Input.Submitted, '#params')
+    # @on(Button.Pressed, '#done')
+    def action_done(self):
         extra_line = '' if self.case.text_area.text.strip().endswith('Process:') else '\n'
         self.case.text_area.text = self.case.text_area.text.strip() + '\n' + extra_line + self.stringify() + '\n\n'
         self.reset()
@@ -318,7 +388,7 @@ class MobilityMenu(Menu):
         )
         l1 += ', '
 
-        if not self.case.serial.startswith('m6'):
+        if not self.case.serial.startswith('m6') and self.param_bin.value:
             l1 += self.param_bin.value + ', '
 
         if self.case.can_mop:
@@ -356,7 +426,28 @@ class MobilityMenu(Menu):
         if lines_pass is False:
             if has_fail:
                 l2 += ', '
-            l2 += f'{self.num_lines.value} lines'
+            l2 += f'{self.num_lines.value} line'
+            if self.num_lines.value != '1':
+                l2 += 's'
+
+        # Add some clarification for a few of the ambiguous tests, based on context
+        if 'lapis' in self.param_bin.value:
+            if self.auto_evac.value is True:
+                l2 = l2.replace('auto evac', "auto evac (doesn't)")
+            elif self.auto_evac.value is False:
+                l2 = l2.replace('auto evac', "auto evac (does)")
+
+        if 'lapis' in self.param_bin.value:
+            if self.manual_evac.value is True:
+                l2 = l2.replace('manual evac', "manual evac (doesn't)")
+            elif self.manual_evac.value is False:
+                l2 = l2.replace('manual evac', "manual evac (does)")
+
+        if self.param_pad == 'test dry pad' and self.case.serial.startswith('m6'):
+            if self.spray.value is True:
+                l2 = l2.replace('spray', "spray (doesn't)")
+            elif self.spray.value is False:
+                l2 = l2.replace('spray', "spray (does)")
 
         l3 = '** Result: ' + ("Fail" if has_fail or lines_pass is False else 'Pass')
         if self.notes.value:

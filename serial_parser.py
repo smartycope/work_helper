@@ -131,7 +131,7 @@ class RobotInfo:
     def get_notes(self) -> str:
         notes = ''
         if self.serial.startswith('c9'):
-            notes += "[on orange_red1]Remember to remove battery before removing the CHM.[/] Also, if the DCT card doesn't work, try a hard reset\nc955 -> albany; c975 -> aurora"
+            notes += "[on orange_red1]Remember to remove battery before removing the CHM.[/] Also, if the DCT card doesn't work, try a hard reset\nc955 -> Albany; c975 -> Aurora"
 
         # TODO: remove this once get_platform() works
         if self.serial.startswith('c'):

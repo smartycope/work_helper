@@ -6,6 +6,7 @@ from textual.containers import *
 from textual.widgets import *
 
 from HelperApp import HelperApp
+from globals import DEBUG
 # import hotkeys
 
 
@@ -14,6 +15,7 @@ parser.add_argument('-d', '--debug', action='store_true')
 args = parser.parse_args()
 
 if __name__ == "__main__":
+    DEBUG = args.debug
     app = HelperApp(debug=args.debug)
     atexit.register(app.action_save)
 

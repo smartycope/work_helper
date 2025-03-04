@@ -29,6 +29,8 @@ DEFAULT_COLOR = '#9f9f9f'
 
 EXISTING_CASES = {path.name.split('.')[0]: path for path in SAVE_CASE_PATH.iterdir()}
 
+DEBUG = None
+
 # The phrase that puts you into debug mode
 SECRET_PASSWORD = 'Cope is a genius'
 PASSWORD = 'iHeartiRobot'
@@ -40,6 +42,16 @@ def invert_dict(d:dict) -> dict:
 def capitolize(s:str) -> str:
     try:
         return s[0].upper() + s[1:]
+    except IndexError:
+        return s
+
+def uncapitolize(s:str) -> str:
+    try:
+        # Don't uncapitolize it if it's an acronym, or yourself. Names are out of luck
+        if not s[1].isupper() and s[0:1] != 'i ':
+            return s[0].lower() + s[1:]
+        else:
+            return s
     except IndexError:
         return s
 

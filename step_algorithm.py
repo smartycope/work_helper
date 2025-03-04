@@ -1,10 +1,11 @@
+from multiprocessing import Value
 import re
 from numpy import mean, std
 import re
 from textual.containers import *
 from textual.widgets import *
 from Phase import Phase
-from globals import SECRET_PASSWORD, capitolize
+from globals import SECRET_PASSWORD, capitolize, uncapitolize
 from parse_commands import parse_acronym
 from texts import Steps
 import settings
@@ -132,7 +133,7 @@ def execute_step(self, resp):
             case Steps.ask_damage:
                 self.text_area.text += 'Damage: Minor scratches'
                 if resp:
-                    self.text_area.text += ', ' + capitolize(resp)
+                    self.text_area.text += ', ' + uncapitolize(resp)
                     # As a reminder, I usually have to do something about it
                     self.sidebar.todo.text += '\n' + resp
                 self.text_area.text += '\n'
@@ -246,10 +247,14 @@ def execute_step(self, resp):
 
             case Steps.ask_quiet_audio:
                 if resp.lower() != 'na':
-                    if resp:
+                    if resp == '1':
                         self.add_step('Audio is noticeably quiet - possibly the Glitch', '!')
+                    elif resp == '2':
+                        self.add_step('Audio is silent - possibly the Glitch', '!')
+                    elif not resp:
+                        self.add_step("Audio doesn't sound quiet")
                     else:
-                        self.add_step('Audio does not seem quiet')
+                        return
                 self.phase = Phase.DEBUGGING
 
             case Steps.ask_s9_lid_pins:
@@ -289,17 +294,32 @@ def execute_step(self, resp):
                     # charge, health = resp.split(',')
                     try:
                         inputs = re.split(r'(?:,|\s)(?:\s)?', resp)
-                    except ValueError: return
 
-                    if len(inputs) == 2:
-                        charge, health = inputs
-                    elif len(inputs) == 1:
-                        charge = inputs[0]
-                        health = '100'
+                        # This is all just so if the input is 1 or 2 words, but not floats, it adds it
+                        # manually instead of try to parse them as floats later
+                        if inputs:
+                            float(inputs[0])
+                        if len(inputs) == 2:
+                            float(inputs[1])
+                        if len(inputs) > 2:
+                            raise ValueError
+
+                    except ValueError:
+                        done = True
+                        self.add_step(resp, '!')
                     else:
-                        return
+                        done = False
 
-                    self.add_step(f'Tested battery: {charge.strip()}%/{health.strip()}%', bullet='!' if float(health.strip()) < 80 else '*')
+                    if not done:
+                        if len(inputs) == 2:
+                            charge, health = inputs
+                        elif len(inputs) == 1:
+                            charge = inputs[0]
+                            health = '100'
+                        else:
+                            return
+
+                        self.add_step(f'Tested battery: {charge.strip()}%/{health.strip()}%', bullet='!' if float(health.strip()) < 80 else '*')
 
                 if self._swap_after_battery_test:
                     self.phase = Phase.SWAP
@@ -549,8 +569,7 @@ def execute_step(self, resp):
                 self.step = Steps.finish_case
 
             case Steps.finish_case:
-                pass
-                # self.parent().parent().parent().action_close_case()
+                self.close()
 
     elif self.phase == Phase.SWAP:
         match self.step:
@@ -645,15 +664,15 @@ def execute_step(self, resp):
                 self.step = Steps.hold_done
 
             case Steps.hold_done:
-                # Don't change the step
-                pass
+                self.close()
 
     elif self.phase == Phase.CHARGING:
-        if self.serials:
-            self.phase = Phase.DEBUGGING
-        else:
-            self.phase = Phase.CONFIRM
-            self.step = Steps.confirm_id
+        # if self.serials:
+            # self.phase = Phase.DEBUGGING
+        # else:
+
+        self.phase = self._pre_charging_phase
+        self.step = self._pre_charging_step
 
     elif self.phase == Phase.UPDATING:
         self.phase = Phase.DEBUGGING
@@ -664,8 +683,7 @@ def execute_step(self, resp):
         self.step = Steps.ask_came_with_pad if self.is_combo else Steps.customer_states
 
     if next_step == 'quiet audio':
-        # TODO: abstract this into a seperate method
-        if self.serial.startswith(('c', 'j')) and "evac" in self.customer_states.lower() or "empty" in self.customer_states.lower() or "app" in self.customer_states.lower():
+        if self.require_glitch_test():
             self.step = Steps.ask_quiet_audio
         else:
             self.phase = Phase.DEBUGGING
@@ -770,7 +788,8 @@ def before_pick_up_case(self):
     clipboard.copy(self.ref)
 
 def after_pick_up_case(self):
-    pass
+    self.sidebar.phase_selector.disabled = False
+    # pass
     # self.log('open')
 
 def after_ask_complete_case_CSS(self):

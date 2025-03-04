@@ -19,8 +19,8 @@ class ExternalNotesMenu(Menu):
         ("Recommend cleaning", "Recommend regular cleaning and maintenance"),
         ("Recommend cleaning charging contacts", "Over time, debris can accumulate on the charging contacts of both the robot and dock, which may prevent charging and potentially cause damage. To help maintain optimal performance, we recommend cleaning these contacts regularly"),
         ("Recommend cleaning filter", "Recommend regular cleaning of the bin filter"),
-        ("Long Runtime", "The number of times the Roomba goes over an area can be set in the app under Product Settings > Cleaning Preferences > Cleaning Passes"),
-        ("Charges Normally caveat", "Robot charges normally on stardard test equipment"),
+        ("Long runtime", "The number of times the Roomba goes over an area can be set in the app under Product Settings > Cleaning Preferences > Cleaning Passes"),
+        ("Charges normally caveat", "Robot charges normally on stardard test equipment"),
         ("Use correct bags", "Recommend using only OEM replacement bags"),
         ("Place dock away from obstacles", "Recommend placing dock at least 1.5 feet away from obstacles on either side, and at least 4 feet away from stairs and any obstacles in front of the dock"),
         # auto-change this to exclude Bona if robot is a C10 (C10's can't use Bona)
@@ -46,7 +46,8 @@ class ExternalNotesMenu(Menu):
     def __init__(self, case=None):
         super().__init__(case)
         self.text = Label('', id='external-preview')
-        self.cx_states = Label('cx states:\n', id='cx-states')
+        self.cx_states = Label('', id='cx-states')
+        self.cx_dock = Label('', id='cx-dock-label')
 
     def compose(self):
         with ScrollableContainer():
@@ -62,12 +63,18 @@ class ExternalNotesMenu(Menu):
                 if type(self.case) is not str and self.case:
                     yield Button('Copy notes, then this', id='copy-external-notes-and-notes')#, action='copy')
             if type(self.case) is not str and self.case:
-                yield Static()
+                yield Static('Customer States:')
                 yield self.cx_states
+                yield Static('Cusomter Dock:')
+                yield self.cx_dock
         self.set_default_selections()
 
     def select(self, name):
-        self.selection.select(list(self.notes.keys()).index(name))
+        # if name in self.notes.keys():
+        try:
+            self.selection.select(list(self.notes.keys()).index(name))
+        except ValueError:
+            pass
 
     def action_toggle(self):
         super().action_toggle()
@@ -103,8 +110,8 @@ class ExternalNotesMenu(Menu):
             notes = self.case.text_area.text.lower()
             if 'factory reset' in notes and not self.case.is_swap:
                 self.select("Factory reset")
-                if self.case.has_lapis:
-                    self.select("Factory reset and Lapis bin")
+                # if self.case.has_lapis:
+                    # self.select("Factory reset and Lapis bin")
 
             if self.case.is_swap:
                 self.select("Replaced robot")
@@ -126,7 +133,8 @@ class ExternalNotesMenu(Menu):
             if "cleaned dock charging contacts" in notes:
                 self.select("Recommend cleaning charging contacts")
 
-            self.cx_states.update('cx states:\n' + self.case.customer_states)
+            self.cx_states.update(textwrap.fill(self.case.customer_states, 55))
+            self.cx_dock.update(self.case.dock)
 
     def get_notes(self):
         indexes = self.selection.selected

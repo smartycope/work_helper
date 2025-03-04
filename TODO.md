@@ -1,27 +1,9 @@
-
+URGENT: don't ask if the bot was cleaned if bot is non-modular
+URGENT: printing cases on error isn't working
 URGENT: in parts in step, "alb, l" does not work -- test please
-
 URGENT: if repeat, in finish phase, it entirely skips "wait for parts" and "finish case on CSS" steps
-
-HIGH: add print statements to all/most/some of the hotkeys (can't hurt)
 URGENT: add if repeat and adjustment to the log
-
-
-MEDIUM: if "remove provisioning" already detected in the notes, don't ask to remove it in finish phase
-
-
 URGENT: instead of logging on certain steps, log when it's opened, when it was closed, and the phase it was in when it was closed (hold vs accident vs finished)
-
-
-
-URGENT: allow some way to reorder tabs, even if it's via bindings (for now, anyway)
-HIGH: switch "put on labels" to be immediately before "confirm ids" instead of after
-
-
-
-
-
-Ask about how adjustments work for repeats that go on hold
 
 URGENT: add more comments and clean things up more
 HIGH: if entering swap phase, and "swap robot" or equivelent not in notes, auto add it (like ensure process)
@@ -36,88 +18,39 @@ DCT: if it's an R series and >=880, then specify that it's USB in the top side c
 DCT EXP: for combo models, you may have to cover the vacuum with your hand during the vacuum test
 HIGH: don't ask if blower play if r (or e) series
 
+HIGH: move asking for additional damage to be immediately before asking for the dock
+
 MINOR: make the "R" in the tab label stand out more somehow
-MINOR HIGH: the folder backup name needs dashes and seconds
-MINOR: if "runtime" in cx states, also check the battery
-MINOR: remove update sidebar from menu menu
 MINOR HIGH: if there's a box (there's not a dock), add "and box" to the step "labels off and grab the traveler" (as a formatter)
 MINOR HIGH: regex for ext notes for alex Albany warning: check if "alex" is in the 2nd line of the notes (and not "non")
 MINOR: abstract adding notes to the TODO box into a method
-MINOR: rename "dct exceptions" to be "BiT exceptions" in the sidebar
 MINOR: add optical failures to all dct exceptions, instead of just as the default
-MINOR: don't capitalize damage
 MINOR: combine step "clean dock" and "clean base" -- this will actually take a rewrite to enable dynamic steps
 MINOR: if ctrl+g is pressed while input box is already focused, jump to focusing on the text_area
-MINOR: text wrap the cx states in the ext menu
 MINOR: if the current bot (current serial) is non-modular, and bit is entered with no params, add "can't , as bot is non-modular" by default
-MINOR: the bullet in the tab shouldn't show if the quick model is an empty string
-MINOR: remove "if necessary" from step "unbox and move battery over
-MINOR: typo in the pad won't deploy hint
-MINOR: remove "including bin and dock" from the "all tags are off" step
-MINOR: make the "check sidebrush is on/screws on tight" step optional according to a setting
-MINOR: make "charging" go back to whatever phase it came from instead
-MINOR: make repeat a property, and have it parse if the first line has "repeat" in it
-MINOR: Audio "doesn't" seem quiet, instead of does not
-MINOR: if cx states mentions "app", also check if the audio is quiet
 MINOR: add icons appropriate icons to the phase select box items
-MINOR: don't show prev and next tab bindings
-MINOR: if mobility menu is open, change the tab icon to something relevant
 MINOR: in the swap robot insert SN regex, only match if the line on the whole is less than super long
-MINOR: add a setting to include model numbers to the tabs
-MINOR: in the asking about the glitch step, ask if it's quiet *or silent*
-MINOR: also show the cx dock in the ext notes menu
 MINOR: if "pass mobility with lapis bin" (or the step before it, actually) have non-empty inputs, switch back to debugging phase
-MINOR: if repeat is indicated, automatically add " repeat of " on the very first line
 MINOR: add m6 color step formatting in the M6 swap order step:
 M610020 is white (M611020B230621N208362 is also white)
 M610220 is black
 M610320 is black & graphite
-MINOR: darken the disabled text in the MM just a little more -- or maybe keep as is and add strikethrough
 MINOR: decrease the width of the dock box 1 (the cx/new Select box), and have it stay to the right
 MINOR: urgent submit event should trigger mobility submit like the other boxes
 MINOR: if there's any mention of turn.+on in cx states, then offer a battery test
-MINOR: add MM param: started via app (checkbox)
-MINOR: Change DCT's in sidebar to BiT
-MINOR: if there's only one line, it should be "1 line" not "1 lines"
 MINOR: the "refill" MM disable should be and'd with if the current dock can refill or not (a C7 with an Albany shouldn't have it be enabled)
 MINOR: don't add a newline to lapis bin warning if there's no other notes
 MINOR: if "cleaned bot" step has a non-default resp, make the bullet a !
-MINOR: move asking for additional damage to be immediately before asking for the dock
-MINOR: in ext notes, add regex for "the glitch"
 MINOR: readd ! as the default if non-empty resp for step "how do the customers base charging contacts look"
-MINOR: make all the triswitches unable to focus by default -- and the num_lines box
-MINOR: capitalize the dock names in the C9 notes at the end
-MINOR: don't separate claimed damage and visible damage anymore, just combine them
-MINOR: explicitly disallow "factory reset with lapis bin" in ewxternal notes menu to activate when it's a factory provisioned lapis (even if has_lapis is true)
-MINOR: after doing the command for swap robot, automatically set the phase to "swap"
-MINOR: the measured voltage step should be ** not *
-MINOR: don't min() the measurement uncertainty anymore
-MINOR: serialize all the other members, like cx states, and dock and such. Either that, or fix the regexs
-MINOR: move "parse info" binding to the menu menu
 MINOR: add external notes regex to find if "charging contacts on ... - cleaned" (in routine checks), and if found, recommend cleaning dock charging contacts
-MINOR: in swap phase, combine "put the old bot in the box" step with the "unbox" step
-MINOR: Guess what type the dock is out of select options, instead of accepting any answer (levenstein dist?)
-MINOR: Make the MM buttons width expand
-MINOR: on changing of the color, update the phase icon (the background gets desynced)
-MINOR: add an external note that is just "recommend reprovisioning lapis bin on app" (without any factory reset needed)
 MINOR: if there's more serial numbers than there were before, and that number is >1, default the mobility menu dock box to "new ..." instead of "cx ..."
-MINOR: after whenever I change phase, focus on the input box
-MINOR: in battery test step, add something to express that health is optional
-MINOR: battery test step should allow a single number, and default health to 100
-MINOR: change the default for the MM where box to be floor
-MINOR: disable focus of menu_menu
-MINOR: if mobility menu attempted to open with no cases, it throws an error. Catch that
-MINOR: add the quick model number to the tab name
-MINOR: r series has to have lights off, not on
-MINOR: only if "lapis" mentioned in the notes, remind to reprovision lapis bin in the app in the external
-MINOR: immediately after opening a new case, autofocus on the input box
-MINOR: uppercase all the serial buttons
-MINOR: the colors of the CopyText buttons are arbitrary: make the text color the color of the case
-MINOR: when checking for 'charg' or 'batt', also check for "does not turn on", or "doesn't turn on", or "won't turn on" and similar
-MINOR: make the mobility todo box an input box and give it a placeholder
-MINOR: in the comment in the texts.py that the steps have to be unique: they technically only have to be unique within each phase
-MINOR: maybe - in the mobility menu update function, in the if statement to reset the dock box, remove the or'ed statement if it's empty (don't reset if it's empty)
+MINOR LOW: the colors of the CopyText buttons are arbitrary: make the text color the color of the case
+MINOR LOW: if mobility menu is open, change the tab icon to something relevant
 
+HIGH: ask to test the battery after asking for the charging wattage on the cx dock
+HIGH: either change the comms acronym, or only trigger it if it's used with bit
+HIGH: add print statements to all/most/some of the hotkeys (can't hurt)
+HIGH: switch "put on labels" to be immediately before "confirm ids" instead of after
 HIGH: if sunken contacts, assume "recommend cleaning dock contacts" in EXT menu
 HIGH: when coming out of charging phase, go back to the step it was in previously, as well as the phase it was in previously.
 HIGH: in MM, add a shortcut to "done" the mobility test
@@ -213,6 +146,9 @@ HIGH: in checking the user dock charging contacts, add the ability to include no
 HIGH: when doing a mobility test, if the dock specified is a base, not a dock, ask to confirm the bin does not have ad evac port, and if it should
 HIGH: add ctrl+A to *all* input boxes
 
+MEDIUM: save the previous notes as well, so if "back" entered, it undos what was just done in the last step. Consider having the event triggered by manual editing the notes to None the prev_notes, so it doesn't do that if the user put stuff in
+MEDIUM: organize acronyms better
+MEDIUM: if "remove provisioning" already detected in the notes, don't ask to remove it in finish phase
 MEDIUM: in "add any context about the case" step, if the resp is *not* empty, add it to the case just like add_step would. Only progress if it's empty.
 MEDIUM: guess the mm cx bin param box each time reset based on regexing notes to find "move bin to new bot" and the like
 MEDIUM: make RobotInfo allow multiple serials, and handle the serial property as well
@@ -406,3 +342,6 @@ Look up:
 "the others" by Jeremy robinson
 "schrodinger's killer app"
 blog: "cheatle optimized" (phontetic)
+
+
+Ask about how adjustments work for repeats that go on hold

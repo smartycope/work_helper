@@ -9,7 +9,7 @@
         "Check there's water in the bin",
         "Test pad/Test bin",
         "If it fails with both a test pad and a test bin,",
-        "\tand chirp sensors are blown out, it's a swap"
+        "    and chirp sensors are blown out, it's a swap"
     ],
     "Evac Issues": [
         "Factory Reset",

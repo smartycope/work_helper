@@ -1,5 +1,4 @@
-# from enum import Enum
-
+# TODO: make this a dataclass?
 class Steps:
     """ NOTE: within each phase these all need to be unique """
 
@@ -29,13 +28,13 @@ class Steps:
     ask_rollers = "How do the extractors look [fine]"
     ask_s9_lid_pins = "Are the lid pins sunken [no]"
     ask_cleaned = 'Robot cleaned ["na" if not, notes or empty if so]'
-    battery_test = "Battery test (don't forget the traveller) [current, health]"
+    battery_test = "Battery test (don't forget the traveller) [current, <health>]"
     ask_user_base_contacts = "How do the charging contacts on the customer base look [fine]"
     ask_charge_customer_dock = "What's the charging wattage on the customer's dock [wattage or notes]"
     ask_charge_test_dock = "What's the charging wattage on a test base [wattage or notes]"
     ask_bin_rust = "Amount of rust on the tank screw [empty: none, 1: a spot, 2: entirely]"
     ask_dock_tank_rust ="Amount of rust on the dock's tank screw [empty: none, 1: a spot, 2: entirely]"
-    ask_quiet_audio = 'Is the audio quiet? (It may be "The Glitch") [no]'
+    ask_quiet_audio = 'Is the audio quiet or silent? (1: quiet, 2: silent) [no]'
     liquid_check_corrosion = "Is there corrosion on the board or connections (specify or empty for no)"
     liquid_check_dock = "Is there liquid residue in the customer dock [no]"
     liquid_check_bin = "Is there liquid residue in the robot bin [no]"
@@ -57,7 +56,7 @@ class Steps:
     swap_order = 'Reload case and order swap {{original serial}} ("out" if out of stock)'
     swap_order_S9 = 'Order a new chassis (not a whole bot!) {{original serial}} ("out" if out of stock) [done]'
     swap_order_M6 = 'Order the correctly colored swap {{original serial}} ("out" if out of stock) [done]'
-    swap_move_bin = 'Unbox and move bin and battery over, if necessary ("fb", "new", "cx", or empty) [no bin needed]'
+    swap_move_bin = 'Unbox and move bin and battery over ("fb", "new", "cx", or empty) [no bin needed]'
     # swap_put_in_box = "Put the old bot in the box [done]"
     swap_add_labels = 'Put labels on the new bot [done]'
     swap_ask_refurb = "Is the swapped bot a refurb? [yes]"
@@ -70,7 +69,7 @@ class Steps:
     hold_add_context = "Add any context about the case [done]"
     hold_unuse_parts = "Unuse any parts, but don't close out parts! [done]"
     hold_put_on_shelf = "Put everything together, and put on the shelf with the traveler [done]"
-    hold_done = "Good to close case now!"
+    hold_done = "Good to close case now! [close case]"
 
     # FINISH
     ask_bit_mobility_done = "Pass mobility and attempted BiT [done]"
@@ -104,8 +103,15 @@ class Steps:
     ask_complete_case_CSS = "Finish the case on CSS {{case ID}} [done]"
     ask_put_bot_on_shelf = "Put the robot and traveler{s} on the shelf [done]"
     ask_put_bot_on_shelf_mopping = "Put the robot and traveler{s} on the shelf, and put the tank[s] on top [done]"
-    # finish_case = 'All done! [close case]'
-    finish_case = "All done! Good to close case now"
+    finish_case = 'All done! [close case]'
 
     charging = 'Bot is charging [done]'
     updating = 'Bot is updating firmware [done]'
+
+
+# Additional explanations as tooltips for each step
+# TODO: this isn't implemented yet
+tooltips = {
+    # Steps.swap_move_bin: 'Unbox the swap, move the battery over, and either'
+
+}

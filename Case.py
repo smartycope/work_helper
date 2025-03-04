@@ -10,6 +10,7 @@ from textual import on
 from textual.containers import *
 from textual.reactive import reactive
 from textual.widgets import *
+from textual.message import Message
 
 from AcronymMenu import AcronymMenu
 from CommandsMenu import CommandsMenu
@@ -40,6 +41,8 @@ class Case(VerticalGroup):
         before_swap_order, before_swap_update_css, before_wait_parts_closed,
         before_swap_order_S9, before_swap_order_M6)
     from step_algorithm import execute_step as _execute_step
+
+    class CloseCaseMessage(Message): pass
 
     # BINDINGS = ()
     # The step that gets switched to when switched to that phase (the first step of each phase)
@@ -122,6 +125,9 @@ class Case(VerticalGroup):
 
         self._step_after_manual_serial = None
 
+        self._pre_charging_phase = None
+        self._pre_charging_step = None
+
         # This gets run on mount of the color selector
         # self.set_color(color)
 
@@ -151,6 +157,7 @@ class Case(VerticalGroup):
         self._tab.styles.background = to_color
         # Easier to just set it here rather than try to figure out how to reference them all via stylesheet
         self._tab.styles.color = 'black'
+        self._update_label()
         # self.text_area.text += '\n set color called!'
 
     def compose(self):
@@ -216,6 +223,8 @@ class Case(VerticalGroup):
         if self.phase == Phase.CONFIRM:
             self.step = self.first_steps[Phase.CONFIRM]# if not self.serial else Steps.check_repeat
         if self.phase == Phase.CHARGING:
+            self._pre_charging_phase = old
+            self._pre_charging_step = self.step
             self.step = self.first_steps[self.phase]
         elif self.phase == Phase.SWAP:
             # If the first+ swap is DOA
@@ -234,10 +243,10 @@ class Case(VerticalGroup):
 
     @on(Select.Changed, "#phase-select")
     def on_phase_changed(self, event: Select.Changed) -> None:
-        if self._case_picked_up:
-            self.phase = Phase(event.value)
-        else:
-            self.sidebar.phase_selector.value = Phase.CONFIRM.value
+        # if self._case_picked_up:
+        self.phase = Phase(event.value)
+        # else:
+            # self.sidebar.phase_selector.value = Phase.CONFIRM.value
         self.input.focus()
 
     def add_step(self, step, bullet='*'):
@@ -297,7 +306,14 @@ class Case(VerticalGroup):
         case.step = data.get('step', Steps.add_step)
         case._repeat = data.get('repeat', None)
         case.sidebar.time = data.get('adj', 0)
+        case.sidebar.phase_selector.disabled = case.step == Steps.pick_up_case
         case._step_after_manual_serial = data.get('_step_after_manual_serial', None)
+
+        # TODO: this *still* doesn't work, even though a similar strategy works in HelperApp.action_move_tab
+        # for the color switcher, when it has the same problem
+        # Set it to literally just something it's not currently set to, then set it back, so it will
+        # trigger an update
+        case.sidebar.phase_selector.value = Phase.HOLD.value if case.phase is not Phase.HOLD else Phase.FINISH.value
         case.sidebar.phase_selector.value = case.phase.value
 
         if case.step != Steps.pick_up_case:
@@ -338,6 +354,9 @@ class Case(VerticalGroup):
 
         with open(SAVE_CASE_PATH / (self.ref + '.json'), 'w') as f:
             json.dump(self.serialize(), f)
+
+    def close(self):
+        self.post_message(self.CloseCaseMessage())
 
     @staticmethod
     def snap_to_dock(name):
@@ -511,7 +530,24 @@ class Case(VerticalGroup):
             # "doesn't turn on" or "does not turn on"
             't turn on' in cx_states
             or
+            'runtime' in cx_states
+            or
+            'lights' in cx_states
+            or
             self._liquid_found
+        )
+
+    def require_glitch_test(self):
+        cx_states = self.customer_states.lower()
+        return (
+            self.serial.startswith(('c', 'j')) and
+            (
+                "evac" in cx_states
+                or
+                "empty" in cx_states
+                or
+                "app" in cx_states
+            )
         )
 
     def log(self, action):
@@ -519,7 +555,7 @@ class Case(VerticalGroup):
             f.write('{action},{id},{color},{serial},{timestamp}\n'.format(
                 action=action,
                 id=self.ref,
-                color=COLORS[self.color],
+                color=COLORS[self.color] if self.color != DEFAULT_COLOR else DEFAULT_COLOR,
                 # Yes, the current one. This is intentional.
                 serial=self.serial,
                 timestamp=datetime.now(),

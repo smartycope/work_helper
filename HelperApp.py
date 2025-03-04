@@ -25,8 +25,8 @@ import time
 DEBUG_STATE = '''["19002IR", "19003IR", "19004IR"]'''
 DEBUG_CASES = {
     '19002IR': {"notes": "19002IR\nParts in: Robot\nClaimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\nCustomer States: Waaaaaa\n\nRoutine Checks:\n* Contacts don't feel sunken\n* No signs of liquid damage\n* No play in blower motor\n* Cleaned robot\n! Robot does not charge on test base @ ~0W\n\nProcess:\n* Step\n* Step\n* Step\n* Done\n\nCONTEXT:\n\n", "color": "#377a11", "ref": "19002IR", "serials": ["i3"], "phase": 0, "step": "Go pick up the case on CSS {case ID} [done]", "todo": "todo!", "repeat": True, "adj": 10*60+27},
-    '19003IR': {"notes": "19003IR\nParts in: Robot\nClaimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\nCustomer States: Waaaaaa\n\nRoutine Checks:\n* Contacts don't feel sunken\n* No signs of liquid damage\n* No play in blower motor\n* Cleaned robot\n! Robot does not charge on test base @ ~0W\n\nProcess:\n* Step\n* Step\n* Step\n* Done\n\nCONTEXT:\n\n", "color": "#ef9e16", "ref": "19003IR", "serials": ["m6"], "phase": Phase.DEBUGGING.value, "step": Steps.add_step, "todo": ""},
-    '19004IR': {"notes": "19004IR\nParts in: Robot\nClaimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\nCustomer States: Waaaaaa\n\nRoutine Checks:\n* Contacts don't feel sunken\n* No signs of liquid damage\n* No play in blower motor\n* Cleaned robot\n! Robot does not charge on test base @ ~0W\n\nProcess:\n* Step\n* Step\n* Step\n* Done\n\nCONTEXT:\n\n", "color": "#d1dd0b", "ref": "19004IR", "serials": ["c9"], "phase": Phase.FINISH.value, "step": "Pass mobility and attempted BiT [done]", "todo": ""},
+    '19004IR': {"notes": "19004IR\nParts in: Robot\nClaimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\nCustomer States: Waaaaaa\n\nRoutine Checks:\n* Contacts don't feel sunken\n* No signs of liquid damage\n* No play in blower motor\n* Cleaned robot\n! Robot does not charge on test base @ ~0W\n\nProcess:\n* Step\n* Step\n* Step\n* Done\n\nCONTEXT:\n\n", "color": "#d1dd0b", "ref": "19004IR", "serials": ["m6"], "phase": Phase.FINISH.value, "step": "Pass mobility and attempted BiT [done]", "todo": ""},
+    '19003IR': {"notes": "19003IR\nParts in: Robot\nClaimed Damage: Minor scratches\nVisible Damage: Confirmed claimed damage\nCustomer States: Waaaaaa\n\nRoutine Checks:\n* Contacts don't feel sunken\n* No signs of liquid damage\n* No play in blower motor\n* Cleaned robot\n! Robot does not charge on test base @ ~0W\n\nProcess:\n* Step\n* Step\n* Step\n* Done\n\nCONTEXT:\n\n", "color": "#ef9e16", "ref": "19003IR", "serials": ["c9"], "phase": Phase.DEBUGGING.value, "step": Steps.add_step, "todo": ""},
 }
 
 if settings.INCLUDE_HOTKEYS:
@@ -71,17 +71,18 @@ class HelperApp(App):
         self.popup = Input(placeholder='Case ID (preface with "overwrite" to forcibly not load the case)', id='reference_popup')
         self.popup.visible = False
 
+        # The commented out options should still work, they're just not useful anymore
         self.menu_menu = Select(((m, m) for m in (
             'Hints',
             'Commands',
             'Acronyms',
             '----------------------',
-            'Update Sidebar',
+            # 'Update Sidebar',
             "Remove Double Lines",
-            '----------------------',
-            "Copy Cases",
-            "Paste Cases",
-            "Load Saved State",
+            # '----------------------',
+            # "Copy Cases",
+            # "Paste Cases",
+            # "Load Saved State",
         )), id='menu-select', prompt='☰')
         self.menu_menu.can_focus = False
 
@@ -123,10 +124,12 @@ class HelperApp(App):
         event.control.clear()
 
     def action_open_mobility_menu(self):
-        self.active_case.action_open_mobility_menu()
+        if self.active_case:
+            self.active_case.action_open_mobility_menu()
 
     def action_open_external_notes_menu(self):
-        self.active_case.action_open_external_notes_menu()
+        if self.active_case:
+            self.active_case.action_open_external_notes_menu()
 
     def key_escape(self):
         if self.popup.visible:
@@ -186,15 +189,17 @@ class HelperApp(App):
         self.popup.visible = True
         self.popup.focus()
 
+    @on(Case.CloseCaseMessage)
     def action_close_case(self):
-        self.action_save()
-        # Only close the case if we're in the final phase or the hold phase
-        # The extra clause here is in some weird deserializing situations
-        if self.active_case.phase in (Phase.FINISH, Phase.HOLD) and self.active_case in self.cases:
-            self.cases.remove(self.active_case)
-            self.tabs.remove_pane(self.tabs.active_pane.id)
-        self.active_case.log('close')
-        self.action_save()
+        if self.active_case:
+            self.action_save()
+            self.active_case.log('close')
+            # Only close the case if we're in the final phase or the hold phase
+            # The extra clause here is in some weird deserializing situations
+            if self.active_case.phase in (Phase.FINISH, Phase.HOLD) and self.active_case in self.cases:
+                self.cases.remove(self.active_case)
+                self.tabs.remove_pane(self.tabs.active_pane.id)
+            self.action_save()
 
     @on(TabbedContent.TabActivated)
     def action_focus_input(self):
@@ -207,14 +212,6 @@ class HelperApp(App):
             return self.tabs.active_pane.children[0]
         except (AttributeError, IndexError):
             return
-
-    def action_remove(self) -> None:
-        """Remove active tab."""
-        active_tab = tabs.active_tab
-        if active_tab is not None:
-            self.action_save()
-            self.cases.remove(self.active_case)
-            self.tabs.remove_tab(active_tab.id)
 
     def action_copy_all_cases(self):
         copy(self.serialize())
@@ -230,13 +227,14 @@ class HelperApp(App):
             pass
 
     def action_increment_tab(self, inc=1):
-        try:
-            idx = self.cases.index(self.active_case)
-            next = self.cases[(idx + inc)%len(self.cases)]
-            self.tabs.active = f'tab-pane-{next.ref}'
-        # That tab (somehow) doesn't exist. Don't hold it against it.
-        except ValueError:
-            pass
+        if self.active_case:
+            try:
+                idx = self.cases.index(self.active_case)
+                next = self.cases[(idx + inc)%len(self.cases)]
+                self.tabs.active = f'tab-pane-{next.ref}'
+            # That tab (somehow) doesn't exist. Don't hold it against it.
+            except ValueError:
+                pass
 
     def serialize(self):
         return json.dumps([case.ref for case in self.cases])
@@ -258,7 +256,6 @@ class HelperApp(App):
             self._create_case(case)
             # self.tabs.add_pane(TabPane('', case, id=f'tab-pane-{case.ref}'))
 
-    # TODO: this doesn't work yet, but it's close
     async def action_move_tab(self, amt):
         if self.active_case:
             case: Case = self.active_case
@@ -275,15 +272,14 @@ class HelperApp(App):
             active_pane = f'tab-pane-{case.ref}'
             pane = self.tabs.get_pane(active_pane)
             await self.tabs.remove_pane(active_pane)
-            # self.tabs.remove_pane(active_pane)
-            # self.tabs.add_pane(pane, before=before_pane)
-            # self.tabs.add_pane(pane)
             await self.tabs.add_pane(TabPane('', case, id=f'tab-pane-{case.ref}'), before=before_pane)
-            # case._update_label()
-            # case.set_color()
+
+            # Re-set the color, because the tab colors are set dynamically, and this is technically
+            # an entierly new tab
             to_color = case.color
-            # This doesn't do anything
+            case.sidebar.color_switcher.value = DEFAULT_COLOR
             case.sidebar.color_switcher.value = to_color
+
             # This is copied from case.set_color()
             # TODO: This works, but the color switcher box gets unset, just like the phase box does
             # on deserialization. Once I figure that out, fix it here too
@@ -291,10 +287,6 @@ class HelperApp(App):
             case._tab.styles.background = to_color
             case._tab.styles.color = 'black'
             self.tabs.active = active_pane
-
-    def action_goto_tab(self, index):
-        self.bell()
-        self.tabs.active = f'tab-{index}'
 
     def action_save(self):
         for case in self.cases:
@@ -309,26 +301,31 @@ class HelperApp(App):
         self.action_save()
         # TODO: remove this try/except statement, I think it's uneccisary, I just don't trust my own code
         try:
-            timestamp = time.strftime("%m%d%Y-%H%M%S")
+            timestamp = time.strftime("%m-%d-%Y.%H:%M:%S")
             backup_path = SAVE_CASE_PATH.parent / f"{SAVE_CASE_PATH.name}_backup_{timestamp}"
 
             shutil.copytree(SAVE_CASE_PATH, backup_path)
         except: pass
 
     def action_open_board(self):
-        open_board(self.active_case.ref)
+        if self.active_case:
+            open_board(self.active_case.ref)
 
     def action_open_board_dynamic(self):
-        open_board_dynamic(self.active_case.ref)
+        if self.active_case:
+            open_board_dynamic(self.active_case.ref)
 
     def action_open_ship_product(self):
-        open_ship_product(self.active_case.ref)
+        if self.active_case:
+            open_ship_product(self.active_case.ref)
 
     def action_open_return_product(self):
-        open_return_product(self.active_case.ref)
+        if self.active_case:
+            open_return_product(self.active_case.ref)
 
     def action_query_case(self):
-        query_case(self.active_case.ref)
+        if self.active_case:
+            query_case(self.active_case.ref)
 
     def panic(self, err):
         """ An error has occurred, and we need to save and clean up as best we can

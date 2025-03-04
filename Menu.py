@@ -7,7 +7,7 @@ from clipboard import copy
 import textwrap
 
 
-class Menu(VerticalGroup):
+class Menu(VerticalGroup, can_focus=True):
     require_case = True
 
     def __init__(self, case=None, **kwargs):
@@ -30,6 +30,7 @@ class Menu(VerticalGroup):
 
     def action_open(self):
         self.visible = True
+        self.focus()
 
     def action_close(self):
         self.visible = False
