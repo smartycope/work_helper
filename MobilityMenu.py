@@ -76,15 +76,11 @@ class MobilityMenu(Menu):
                     case _: self.num_lines.value = '1'
 
         # The Select boxes
-        elif element in (
-            'param_bin',
-            'param_tank',
-            'param_pad',
-            'base1',
-            'base2',
-            'where',
-        ):
-            getattr(self, element).action_show_overlay()
+        elif element in ('param_bin', 'param_tank', 'param_pad', 'base1', 'base2', 'where'):
+            try:
+                getattr(self, element).action_show_overlay()
+            except: # (AttributeError, NoMatches):
+                return
 
         # The text areas
         elif element in ('params', 'notes', 'todo'):

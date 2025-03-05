@@ -302,7 +302,9 @@ class Case(VerticalGroup):
                 case.serials = []
         # case.sidebar.update()
         case.sidebar.todo.text = data.get('todo', '')
-        case.phase = Phase(data.get('phase', Phase.DEBUGGING))
+        defualt_phase = Phase.DEBUGGING
+        phase = data.get('phase', defualt_phase)
+        case.phase = Phase(phase) if phase is not None else defualt_phase
         case.step = data.get('step', Steps.add_step)
         case._repeat = data.get('repeat', None)
         case.sidebar.time = data.get('adj', 0)

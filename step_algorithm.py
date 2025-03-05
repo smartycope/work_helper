@@ -671,8 +671,8 @@ def execute_step(self, resp):
             # self.phase = Phase.DEBUGGING
         # else:
 
-        self.phase = self._pre_charging_phase
-        self.step = self._pre_charging_step
+        self.phase = self._pre_charging_phase or Phase.CONFIRM
+        self.step = self._pre_charging_step or Steps.pick_up_case
 
     elif self.phase == Phase.UPDATING:
         self.phase = Phase.DEBUGGING

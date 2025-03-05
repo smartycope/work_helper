@@ -356,3 +356,6 @@ class HelperApp(App):
                     print('-'*50)
                     print()
                 except: pass
+
+        # We should be able to safely raise the error *after* we've printed everything
+        # raise err

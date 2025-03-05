@@ -1,3 +1,23 @@
+
+
+URGENT BUG: validate the Case.deserialized phase, with a default
+
+
+
+HIGH: the order (after being reordered) isn't saved, apparently? more testing needed
+
+ACRONYM: batt full -> btfull
+HOTKEYS: end (and maybe click) at 827 × 503 at the end of the alt+q shortcut
+MINOR: if one sn is i5g... and the other is not, use the one that is not as the official sn
+URGENT MINOR: have the first step in the hold phase add as notes!
+HINT: if the aurora white led flashes, it means the bot needs updated firmware
+URGENT EXT: modify the "rusty bin screw" ext to dynamically say "clog" if M6, and also to modify the title
+MINOR: 90% is the bad battery cutoff: if a battery test is performed with <90% health, make the bullet ! and add "order new battery" to the todo box
+
+
+not a todo: "b" assumes "Torino" instead of "Bombay"? not really a big deal, but interesting.
+
+
 URGENT: don't ask if the bot was cleaned if bot is non-modular
 URGENT: printing cases on error isn't working
 URGENT: in parts in step, "alb, l" does not work -- test please
@@ -25,7 +45,7 @@ MINOR HIGH: if there's a box (there's not a dock), add "and box" to the step "la
 MINOR HIGH: regex for ext notes for alex Albany warning: check if "alex" is in the 2nd line of the notes (and not "non")
 MINOR: abstract adding notes to the TODO box into a method
 MINOR: add optical failures to all dct exceptions, instead of just as the default
-MINOR: combine step "clean dock" and "clean base" -- this will actually take a rewrite to enable dynamic steps
+MINOR: combine step "clean dock" and "clean base"
 MINOR: if ctrl+g is pressed while input box is already focused, jump to focusing on the text_area
 MINOR: if the current bot (current serial) is non-modular, and bit is entered with no params, add "can't , as bot is non-modular" by default
 MINOR: add icons appropriate icons to the phase select box items
@@ -301,6 +321,7 @@ LOW: See if bot charges on customer dock BEFORE battery test (if both applicable
 LOW: If a bot needs a battery test, ask about it immediately before cleaning
 LOW: change/check the shade of blue
 LOW: add detailed installation instructions on the README
+LOW: clean up the flowchart more
 
 TEST: dct exceptions
 TEST: adding text manually
@@ -309,11 +330,9 @@ TEST: adding 5 cases all at once
 TEST: tests for combos vs non-combos
 TEST: tests for seralizing/deserializing
 
+EPIC: handling duplicate cases
 EPIC: autocorrect, somehow?
-EPIC: make a simple version of the side bar stuff, but instead of a python script, make it a JS script and host it on a GitHub page so it's easier to access and update
-EPIC: add bindings to the MM for all the switches, and then underline the appropriate letters in each. Like alt pneumonics
 EPIC: color the notes
-EPIC: clean up flowchart, and then write a script to convert it to a more user friendly version
 EPIC: add settings menu, with the following settings:
 do double check (also maybe add a button that can turn this on manually later)
 parts are being run (determines if we should ask if the parts have been closed out yet or not)

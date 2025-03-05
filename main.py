@@ -22,9 +22,10 @@ if __name__ == "__main__":
     try:
         app.run()
     except Exception as err:
+        app.action_save()
         app.panic(err)
+        # raise err
         # if args.debug:
-        raise err
     finally:
         app.action_save()
         # keyboard.remove_all_hotkeys()
