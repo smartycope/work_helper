@@ -63,10 +63,12 @@ class ExternalNotesMenu(Menu):
                 if type(self.case) is not str and self.case:
                     yield Button('Copy notes, then this', id='copy-external-notes-and-notes')#, action='copy')
             if type(self.case) is not str and self.case:
-                yield Static('Customer States:')
+                # with HorizontalGroup(id='cx-states-dock'):
+                yield Static('[underline]Customer States:[/]')
                 yield self.cx_states
-                yield Static('Cusomter Dock:')
+                yield Static('[underline]Customer Dock:[/]')
                 yield self.cx_dock
+
         self.set_default_selections()
 
     def select(self, name):

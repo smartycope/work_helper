@@ -15,4 +15,6 @@ As for running, I'm trying to get web versions up and running (using the astonis
 
 Or you can run locally. `requirements.txt` *should* be up to date, install with `python -m pip install -r requirements.txt`, then simply run `python main.py` (or whichever entrypoint). Use the `-d` flag for debug mode.
 
+If you think this is cool, check out my other projects, or my [website](https://smartycope.org).
+
 Basically, if you don't know what this is already, don't use it, you're in the wrong place.

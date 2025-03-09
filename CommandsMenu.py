@@ -32,6 +32,7 @@ All commands are case insensitive
 `diag` -> Diagnosis:
 `upfw` -> Update firmware
 `nozzle` -> Cleaned out drip nozzles
+`tag` -> Pad tag is detectable
 """))
 # `ch|charge \[watts] (dock) (bot)` -> \[bot(Robot)] charges on \[dock (dock)] @ ~\[watts]W
         yield Button('Close', action='close')

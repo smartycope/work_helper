@@ -8,7 +8,6 @@ SAVE_NOTES_PATH = Documents / 'Case_Notes'
 SAVE_STATE_PATH = Documents / 'helper_state.json'
 INTERNAL_LOG_PATH = Documents / 'helper_log_internal.txt'
 
-# TODO:
 for path in (SAVE_CASE_PATH, SAVE_CASE_PATH):
     path.mkdir(parents=True, exist_ok=True)
 
@@ -29,22 +28,27 @@ DEFAULT_COLOR = '#9f9f9f'
 
 EXISTING_CASES = {path.name.split('.')[0]: path for path in SAVE_CASE_PATH.iterdir()}
 
+# Don't touch this, this gets set at the beginning of the program
 DEBUG = None
 
 # The phrase that puts you into debug mode
 SECRET_PASSWORD = 'Cope is a genius'
+# Password for SerialParser. Yes, this is horribly insecure. I'm aware.
 PASSWORD = 'iHeartiRobot'
 
+# To avoid additional dependencies. My "Cope" package is horribly unstable
 def invert_dict(d:dict) -> dict:
     """ Returns the dict given, but with the keys as values and the values as keys. """
     return dict(zip(d.values(), d.keys()))
 
+# Yes, this is mispelled. I know. I don't feel like fixing it.
 def capitolize(s:str) -> str:
     try:
         return s[0].upper() + s[1:]
     except IndexError:
         return s
 
+# Same here
 def uncapitolize(s:str) -> str:
     try:
         # Don't uncapitolize it if it's an acronym, or yourself. Names are out of luck
@@ -55,6 +59,7 @@ def uncapitolize(s:str) -> str:
     except IndexError:
         return s
 
+# Thank you ChatGPT
 def darken_color(hex_color, factor=0.7):
     """Darken a hex color by multiplying each channel by the given factor."""
     hex_color = hex_color.lstrip("#")  # Remove '#' if present

@@ -1,13 +1,11 @@
 import argparse
 import atexit
-import keyboard
 
 from textual.containers import *
 from textual.widgets import *
 
 from HelperApp import HelperApp
 from globals import DEBUG
-# import hotkeys
 
 
 parser = argparse.ArgumentParser()
@@ -25,7 +23,6 @@ if __name__ == "__main__":
         app.action_save()
         app.panic(err)
         # raise err
-        # if args.debug:
     finally:
         app.action_save()
         # keyboard.remove_all_hotkeys()

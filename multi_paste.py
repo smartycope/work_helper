@@ -48,7 +48,7 @@ if os.name == 'nt':
         # we can delete from there
         id = monotonic()
 
-        params = dict(callback=_increment_paste, args=(id,), suppress=False, trigger_on_release=False, timeout=.2)
+        params = dict(callback=_increment_paste, args=(id,), suppress=False, trigger_on_release=False, timeout=.1)
         try:
             __HOTKEY_HOOKS[id] = (
                 keyboard.add_hotkey('ctrl+v', **params),

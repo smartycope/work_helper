@@ -154,7 +154,6 @@ class Case(VerticalGroup):
         to_color = event.value
         self.color = to_color
         self.sidebar.styles.background = to_color
-        self._tab.styles.background = to_color
         # Easier to just set it here rather than try to figure out how to reference them all via stylesheet
         self._tab.styles.color = 'black'
         self._update_label()
@@ -577,13 +576,21 @@ class Case(VerticalGroup):
 
     @property
     def tab_label(self):
+        # To start, set the background color of the tab
+        if self.phase in (Phase.CHARGING, Phase.UPDATING):
+            self._tab.styles.background = darken_color(self.color, .6)
+        else:
+            self._tab.styles.background = self.color
+
         s = ''
+
 
         # Phase Icon
         s += f'[on {darken_color(self.color, .6)}]'
         # To distinguish cases that are on my bench charging, from once that aren't
         if self.phase == Phase.CHARGING:
             if self.text_area.text.count('\n') > 3:
+                # I'd prefer a medium battery emoji, but it's not available
                 s += "🔋"
             else:
                 s += "🪫"
@@ -650,6 +657,23 @@ class Case(VerticalGroup):
     @notes.setter
     def set_notes(self, to):
         self.text_area.text = to
+
+    @property
+    def m6_color(self):
+        """
+            M6||0|| is white
+            M6||0|| is white (M611020B230621N208362 is also white)
+            M6||2|| is black
+            M6||3|| is black & graphite
+        """
+        if not self.serial or not self.serial.startswith('m6'):
+            return None
+        elif self.serial[4] == '0':
+            return 'white'
+        elif self.serial[4] == '2':
+            return 'black'
+        elif self.serial[4] == '3':
+            return 'black & graphite'
 
     @property
     def serial(self):

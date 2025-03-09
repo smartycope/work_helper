@@ -1,3 +1,5 @@
+""" To be run seperately from the main program. """
+
 from hotkeys import *
 
 keyboard.add_hotkey('ctrl+alt+k', order_part)

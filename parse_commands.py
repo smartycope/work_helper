@@ -66,6 +66,10 @@ ACRONYMS = {
     'chd': 'charged',
     'chs': 'charges',
     'cho': 'charges on',
+    'fbp': 'false bump',
+    'fbps': 'false bumps',
+    'mfbp': 'multiple false bumps',
+    'mfbps': 'multiple false bumps',
     'cm': 'Confirmed with Michelle',
     'ar': 'Aurora refill debug steps',
     'fr': 'factory reset',
@@ -74,7 +78,7 @@ ACRONYMS = {
     'hfr': 'hard factory reset',
     'lowvac': 'Low current vacuum test <1500.',
     'comm': "Dock comms failure.",
-    'batt full': "Battery current test failed (full battery).",
+    'btfull': "Battery current test failed (full battery).",
     'opt': "optical bin failure[s] <100 out of range.",
     'opt150': "optical bin failure[s] <150 out of range.",
     'opt100': "optical bin failure[s] <100 out of range.",
@@ -174,7 +178,8 @@ def parse_command(self, input:str):
                 step = 'Update firmware'
             case 'nozzle':
                 step = 'Cleaned out drip nozzles'
-            # COMMAND: ch doc is wrong - also ch just sucks, I need a new way to do it ("new Torino" has a space in it)
+            case 'tag':
+                step = 'Pad tag is detectable'
 
             case _:
                 raise

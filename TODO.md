@@ -1,47 +1,52 @@
+Freaking do next TODOs:
+    URGENT EXT: modify the "rusty bin screw" ext to dynamically say "clog" if M6, and also to modify the title
+    HIGH NEXT: bump up priority for double clicking on todo box deletes the clicked on line. Would be very helpful
 
+Step algorithm TODOs:
+    URGENT: don't ask if the bot was cleaned if bot is non-modular, or M6
+    HIGH: move asking for additional damage to be immediately before asking for the dock
+    HIGH: don't ask if contacts are sunken if S9
+    HIGH: if a battery test is needed, ask for it immediately before cleaning, instead of after
+    HIGH: don't ask if blower play if r (or e) series
 
-URGENT BUG: validate the Case.deserialized phase, with a default
+Mobility menu TODOs:
+    HIGH: in the MM, when the dock type box is changed, if the cx has a dock, and it's not what it just got changed to, auto-change the "test/cx/new" dock param box to "test", UNLESS it was previously "new" and 'swap dock' (or equivalent) is in the notes (reuse the same condition as in the other todo)
+    HIGH: in MM, if the "test/cx/new" dock param box is switched TO "cx", and there's a dock in the case, change the dock type param box to what the cx dock is
+    HIGH: if bot didn't come in with a pad, assume new pad instead of cx pad
+    HIGH: in MM, if lapis bin in parameters, and auto-evac is set to pass (True), then add "(didn't)" after auto evac after it
+    HIGH: on opening the MM, focus on the first "where" select box
+    MINOR: the "refill" MM disable should be and'd with if the current dock can refill or not (a C7 with an Albany shouldn't have it be enabled)
+    MEDIUM: guess the mm cx bin param box each time reset based on regexing notes to find "move bin to new bot" and the like
+    MEDIUM: add pad wash and pad dry to the MM, if the dock is a boulder
+    MEDIUM: add a "clear" or "reset" all button to MM
+    LOW: in MM, if "test dry pad" is selected, and only if it is, disable the tank param box
+    LOW: in the MM, disable the cx box if the dock box is set to "no dock"
 
+I don't want to do but probably should TODOs:
+    URGENT: use ctrl+backspace instead of cltr+a, backspace to clear the filter box in open_board_dynamic()
+    URGENT: printing cases on error isn't working
+    MINOR BUG: allow ", l" to be a valid parts in, meaning no dock, lapis bin. test.
+    URGENT: in parts in step, "alb, l" does not work -- test please
+    URGENT: instead of logging on certain steps, log when it's opened, when it was closed, and the phase it was in when it was closed (hold vs accident vs finished)
+    URGENT: add if repeat and adjustment to the log
+    URGENT: figure out how to remove the delay in multi_paste()!
+    DCT: if it's an R series and >=880, then specify that it's USB in the top side corner
+    DCT EXP: for combo models, you may have to cover the vacuum with your hand during the vacuum test
+    HINTS: add a sub-branch for evac problems: if it's evacing, and bin *actually* isn't getting cleared, then:
+    HINT: battery auth problems: it's the robot, not the battery
+    HINT: if the aurora white led flashes, it means the bot needs updated firmware
 
-
-HIGH: the order (after being reordered) isn't saved, apparently? more testing needed
-
-ACRONYM: batt full -> btfull
-HOTKEYS: end (and maybe click) at 827 × 503 at the end of the alt+q shortcut
+MINOR: prioritize other colors before yellow
+MINOR: if the battery test step (I think in the method, maybe) just adds the input as notes instead, capitalize it
+MINOR: change "am" to be an acronym instead of a command
+MINOR: make the disabled background of the phase select box darker (via tcss!)
+MINOR: in ext menu, if there's no dock, add "No Dock"
+MINOR: change the color of the texts in the ext menu for cx dock and cx states to be something slightly darker. Or bolded. Just to distinguish it a little
 MINOR: if one sn is i5g... and the other is not, use the one that is not as the official sn
-URGENT MINOR: have the first step in the hold phase add as notes!
-HINT: if the aurora white led flashes, it means the bot needs updated firmware
-URGENT EXT: modify the "rusty bin screw" ext to dynamically say "clog" if M6, and also to modify the title
 MINOR: 90% is the bad battery cutoff: if a battery test is performed with <90% health, make the bullet ! and add "order new battery" to the todo box
-
-
-not a todo: "b" assumes "Torino" instead of "Bombay"? not really a big deal, but interesting.
-
-
-URGENT: don't ask if the bot was cleaned if bot is non-modular
-URGENT: printing cases on error isn't working
-URGENT: in parts in step, "alb, l" does not work -- test please
-URGENT: if repeat, in finish phase, it entirely skips "wait for parts" and "finish case on CSS" steps
-URGENT: add if repeat and adjustment to the log
-URGENT: instead of logging on certain steps, log when it's opened, when it was closed, and the phase it was in when it was closed (hold vs accident vs finished)
-
-URGENT: add more comments and clean things up more
-HIGH: if entering swap phase, and "swap robot" or equivelent not in notes, auto add it (like ensure process)
-URGENT: move asking if the case is a repeat to be before confirm IDs (immediately after pick up case)
-URGENT: in all the try except statements, if there's an error caught and there *shouldn't* be, log it in the interal log file (I'm thinking specifically of the one if it can't save)
-URGENT ish: if M6, don't ask if it's been cleaned
-URGENT: log what error multi_paste is giving so I can fix it already
-
-EXT: remove "factory reset and lapis bin"
-HINTS: add a sub-branch for evac problems: if it's evacing, and bin *actually* isn't getting cleared, then:
-DCT: if it's an R series and >=880, then specify that it's USB in the top side corner
-DCT EXP: for combo models, you may have to cover the vacuum with your hand during the vacuum test
-HIGH: don't ask if blower play if r (or e) series
-
-HIGH: move asking for additional damage to be immediately before asking for the dock
-
+MINOR LOW: disallow moving focus from input box if Step == pick up case on css
+MINOR LOW: if m6, and not a refurb, don't ask if dry pad has been done
 MINOR: make the "R" in the tab label stand out more somehow
-MINOR HIGH: if there's a box (there's not a dock), add "and box" to the step "labels off and grab the traveler" (as a formatter)
 MINOR HIGH: regex for ext notes for alex Albany warning: check if "alex" is in the 2nd line of the notes (and not "non")
 MINOR: abstract adding notes to the TODO box into a method
 MINOR: add optical failures to all dct exceptions, instead of just as the default
@@ -51,32 +56,20 @@ MINOR: if the current bot (current serial) is non-modular, and bit is entered wi
 MINOR: add icons appropriate icons to the phase select box items
 MINOR: in the swap robot insert SN regex, only match if the line on the whole is less than super long
 MINOR: if "pass mobility with lapis bin" (or the step before it, actually) have non-empty inputs, switch back to debugging phase
-MINOR: add m6 color step formatting in the M6 swap order step:
-M610020 is white (M611020B230621N208362 is also white)
-M610220 is black
-M610320 is black & graphite
 MINOR: decrease the width of the dock box 1 (the cx/new Select box), and have it stay to the right
 MINOR: urgent submit event should trigger mobility submit like the other boxes
 MINOR: if there's any mention of turn.+on in cx states, then offer a battery test
-MINOR: the "refill" MM disable should be and'd with if the current dock can refill or not (a C7 with an Albany shouldn't have it be enabled)
 MINOR: don't add a newline to lapis bin warning if there's no other notes
 MINOR: if "cleaned bot" step has a non-default resp, make the bullet a !
 MINOR: readd ! as the default if non-empty resp for step "how do the customers base charging contacts look"
 MINOR: add external notes regex to find if "charging contacts on ... - cleaned" (in routine checks), and if found, recommend cleaning dock charging contacts
 MINOR: if there's more serial numbers than there were before, and that number is >1, default the mobility menu dock box to "new ..." instead of "cx ..."
-MINOR LOW: the colors of the CopyText buttons are arbitrary: make the text color the color of the case
-MINOR LOW: if mobility menu is open, change the tab icon to something relevant
 
+HIGH: if entering swap phase, and "swap robot" or equivelent not in notes, auto add it (like ensure process)
 HIGH: ask to test the battery after asking for the charging wattage on the cx dock
-HIGH: either change the comms acronym, or only trigger it if it's used with bit
-HIGH: add print statements to all/most/some of the hotkeys (can't hurt)
 HIGH: switch "put on labels" to be immediately before "confirm ids" instead of after
 HIGH: if sunken contacts, assume "recommend cleaning dock contacts" in EXT menu
-HIGH: when coming out of charging phase, go back to the step it was in previously, as well as the phase it was in previously.
-HIGH: in MM, add a shortcut to "done" the mobility test
-HIGH: in MM, add bindings for the Select boxes as well
 HIGH: in battery test, allow an input ("low"?) to put in "Battery too low to test" instead
-HIGH: allow debug mode to manually set attributes like repeat
 HIGH: move "check claimed damage" step to be immediately after "update css failure box" step
 HIGH: ask for serial number in swap phase before ask to put on labels (have labels be last)
 HIGH: if M6, ask if there's a pad, and if there is, add it to parts in
@@ -85,9 +78,6 @@ HIGH: attempt better guessing of floor (if can_mop, assume floor. If r or e seri
 HIGH: attempt better guessing of "new" dock box. If "swap dock" (or similar) in the notes, then guess new instead of cx/test
 HIGH NEXT: add a setting to optionally go straight to charging phase from pickup case step
 HIGH: in multi_paste, add a 2nd parameter of what to copy by default if it can't multi copy properly, then set them all
-HIGH: in the MM, when the dock type box is changed, if the cx has a dock, and it's not what it just got changed to, auto-change the "test/cx/new" dock param box to "test", UNLESS it was previously "new" and 'swap dock' (or equivalent) is in the notes (reuse the same condition as in the other todo)
-HIGH: in MM, if the "test/cx/new" dock param box is switched TO "cx", and there's a dock in the case, change the dock type param box to what the cx dock is
-HIGH: if bot didn't come in with a pad, assume new pad instead of cx pad
 HIGH: add "add new case" and "close case" to the menu menu
 HIGH: make saving each step a setting
 HIGH: change "order a new dock" -> "order a new dock, if it's needed"
@@ -95,19 +85,10 @@ HIGH: make a setting to save every n minutes! You can do that with set_interval(
 HIGH: on (before) "good to close case now" step in hold phase should save the case
 HIGH: the ctrl+b LONG delay needs to read the color of a specific pixel
 HIGH: check the claimed damage should be after the check the customer states
-HIGH: drag, or some way to reorder tabs
 HIGH: squish together a bunch of the end steps, and also move back logging as far back as possible
 HIGH: add a step, in confirm, but after "update css box" step, if repeat, to go see what the previous repeat was for
 HIGH: when adding a date to the repeat email, note both the date the case was started, and when it was finished
-HIGH: add another color (maaaybe 2)
-HIGH: if a battery test is needed, ask for it immediately before cleaning, instead of after
-HIGH: There's a bug in the "pad won't deploy" hint:
- │  ├── Test pad/Test bin                                                                │  ▎firmware version. Actuator arm
-▊   │  ├── If it fails with both a test pad and a test bin,                                 │  ▎current and speed tests, if FW >=
-▊ Pr│  └──  remoand chirp sensors are blown out, it's a swap
-HIGH: if there's an error (but not if closed nicely), automatically create a backup copy of the case notes folder
-HIGH: in MM, if lapis bin in parameters, and auto-evac is set to pass (True), then add "(didn't)" after auto evac after it
-HIGH: on opening the MM, focus on the first "where" select box
+
 HIGH: if theres not a bag in the dock when asked (and do the same for the pad when I get around to it), then set a variable and auto-add it once I get to debug phase to order/freebee a bag/pad
 HIGH: do this order: claimed damage -> pickup & update failure box
 HIGH: when opening a case, it should auto-set the step to "unbox" step, and the phase to "swap" -- also, auto-parse the "context" and add it to the todo box
@@ -137,7 +118,6 @@ HIGH: if it's the 2nd swap, skip some of the steps in the swap phase (like send 
 HIGH: if is_factory_lapis and the robot was swapped (there's more than one serial), then in finish phase ask if the bot's been removed from the app
 HIGH: ctrl+end shortcut / fix all the shortcuts
 HIGH: add backup states, and be able to load them
-HIGH: focus on input box on MM close
 HIGH: give external notes menu open/close/toggle - or just make a Menu parent class
 HIGH: when checking dock values, search the string instead of using == (alex-albany should still match Albany)
 HIGH: in step " Found signs of liquid corrosion on the top board", if input is a single character, just assume motherboard
@@ -166,23 +146,22 @@ HIGH: in checking the user dock charging contacts, add the ability to include no
 HIGH: when doing a mobility test, if the dock specified is a base, not a dock, ask to confirm the bin does not have ad evac port, and if it should
 HIGH: add ctrl+A to *all* input boxes
 
+MEDIUM: allow debug mode to manually set attributes like repeat
+MEDIUM: move asking if the case is a repeat to be before confirm IDs (immediately after pick up case)
+MEDIUM: consider combining "put labels on everything" and "confirm ids" steps
 MEDIUM: save the previous notes as well, so if "back" entered, it undos what was just done in the last step. Consider having the event triggered by manual editing the notes to None the prev_notes, so it doesn't do that if the user put stuff in
 MEDIUM: organize acronyms better
 MEDIUM: if "remove provisioning" already detected in the notes, don't ask to remove it in finish phase
 MEDIUM: in "add any context about the case" step, if the resp is *not* empty, add it to the case just like add_step would. Only progress if it's empty.
-MEDIUM: guess the mm cx bin param box each time reset based on regexing notes to find "move bin to new bot" and the like
 MEDIUM: make RobotInfo allow multiple serials, and handle the serial property as well
-MEDIUM: add pad wash and pad dry to the MM, if the dock is a boulder
 MEDIUM: if an acronym is expanded at the beginning of a sentence, it doesn't get capitolized. fix that somehow
 MEDIUM: if use "back" to go back to the add serial number step, it keeps adding serial numbers
 MEDIUM: try disallowing num_lines can_focus
-MEDIUM: add a "clear" or "reset" all button to MM
 MEDIUM: if M6, in confirm, ask if there's a pad, and if there is, add it to the parts in
 MEDIUM: in ext notes, if both "j7 and a swap" and "wake from shipping mode", then combine them together nicely
 MEDIUM: if the name of one of the phases is entered exactly into the input box, switch to that phase (except swap, which adds "swap robot" and *then* switches)
 MEDIUM: In routine checks, if the dock tank screw is entirely rusted, have the immediate next step be "order a new bin" (accepting na), and then add " - replaced" to the notes
 MEDIUM: don't ask to clean an M6
-MEDIUM: have MM auto-disable evac boxes based on selected dock
 MEDIUM: add a history of previous steps, so multiple "back"s works
 MEDIUM: Pickup throws an error
 MEDIUM: if a S9 is a swap due to liquid, don't say to just order a new chassis. Order a whole new bot.
@@ -238,7 +217,12 @@ MEDIUM: have a variable that indicates a rusted bin screw, for the external note
 MEDIUM: if serial numbers are different, automatically go to a new step that offers (and allows) you to close the case immediately
 MEDIUM: if battery tests are needed, also measure contacts, even if they don't feel sunken, but allow na
 
-LOW: in MM, if "test dry pad" is selected, and only if it is, disable the tank param box
+LOW: add print statements to all/most/some of the hotkeys (can't hurt)
+LOW: the order (after being reordered) isn't saved, apparently? more testing needed
+LOW: somehow disallow focusing of anything outside of a menu when it's open
+LOW: figure out some way to have it "restart" itself (fully)
+LOW: add some way of regexing serials from notes
+LOW: in step "robot charges on test base ...", if S9/M6, specify the actual dock by name
 LOW: make "back" work with multiple steps (add an undo stack)
 LOW: if double click a line in the TODO sidebar box, it deletes the whole line
 LOW: add a setting to make colors optional
@@ -249,14 +233,11 @@ LOW: if "pass" is in the bit output step (when expanded
 LOW: make a keyboard shortcuts menu
 LOW: some way to remove serial numbers/swaps
 LOW: also set the tooltip of the input box to be what's in it, cause why not
-LOW: in the MM, disable the cx box if the dock box is set to "no dock"
-LOW: strip MM notes
 LOW: if a repeat, add a 2nd ref CopyText
 LOW: move external notes to the menu menu, instead of as a binding, it doesn't need a shortcut anymore
 LOW: add after_ and before_ method lookups for phases just like I have for steps (to automate adding headers like Process: and CONTEXT: and Routine Checks:)
 LOW: if the serial numbers are different lengths, add to the text area, in addition to what's already there: "did you forget to scan both serial numbers one after another?"
 LOW: remove all useless comments and clean up code
-LOW: add a setting to default to either the floor or the top bench (or the bottom bench) in the MM
 LOW: figure out how to remove the ^p shortcut on the right side of the footer
 LOW: for the step "sidebrush is on and screws are tight" make the "sidebrush is on" part be a formatted portion dependant on if it's not an M6
 LOW: don't ask to put the bin pack for M6 -- might not be relevant by time I get to this
@@ -264,7 +245,6 @@ LOW: when measuring contacts, if the measurement is close (say, within .15 mm), 
 LOW: a different background/main color for the hold emoji would be nice (blue is already for swap)
 LOW: add another measure to log, which is how long each case is actually open for
 LOW: figure out how to darken the last space of the tabs
-LOW: fix dock display in MM when no dock indicated
 LOW: in the step "take tags off bin and dock", move the "and dock" into a conditional formatted step string if there is a dock
 LOW: add mobility test step to debugging phase
 LOW: make a new class, something like AttentionText, which blinks until you click on it, then it stops
@@ -309,6 +289,7 @@ LOW: only c9's can refill
 LOW: add a warning or something if characters exceed 4000
 LOW: make all characters after 4000 be tinged red in notes
 LOW: Adding proper versioning is a good idea
+LOW: the colors of the CopyText buttons are arbitrary: make the text color the color of the case
 LOW: make a simple script I can give to everyone else that just confirms the IDs, and prints all the relevant information for that model (the sidebar stuff)
 LOW: in the mobility menu, have the outline reflect whether the ultimate result is a pass or fail (with red/green)
 LOW: add "add new case" to the menu menu
@@ -323,6 +304,7 @@ LOW: change/check the shade of blue
 LOW: add detailed installation instructions on the README
 LOW: clean up the flowchart more
 
+TEST: ALL THE TESTS
 TEST: dct exceptions
 TEST: adding text manually
 TEST: for changing color
@@ -331,11 +313,13 @@ TEST: tests for combos vs non-combos
 TEST: tests for seralizing/deserializing
 
 EPIC: handling duplicate cases
+EPIC: in all the try except statements, if there's an error caught and there *shouldn't* be, log it in the interal log file (I'm thinking specifically of the one if it can't save)
 EPIC: autocorrect, somehow?
 EPIC: color the notes
 EPIC: add settings menu, with the following settings:
-do double check (also maybe add a button that can turn this on manually later)
-parts are being run (determines if we should ask if the parts have been closed out yet or not)
+EPIC: reintegrate double check better
+
+SETTING: parts are being run (determines if we should ask if the parts have been closed out yet or not)
 
 UX: readd TODO label in sidebar (or equivalent)
 UX: add a disclaimer in the ext notes menu stating that this is not definitive, and usually needs editng, and you should always double check it, etc.
@@ -355,12 +339,12 @@ WEB: if web version, don't include any of the hotkey bindings
 WEB: if web version, change the bindings to work (ctrl+n, ctrl+w, for starters)
 WEB: remove the date display thing I was using for versioning, and add *real* versioning.
 
-BUG: "I510020C240713N701134" is non-modular, but doesn't detect that it is. Was a refurb, though
-
+UNRELATED:
 Look up:
 "the others" by Jeremy robinson
 "schrodinger's killer app"
 blog: "cheatle optimized" (phontetic)
 
-
 Ask about how adjustments work for repeats that go on hold
+
+"b" assumes "Torino" instead of "Bombay"?? interesting.

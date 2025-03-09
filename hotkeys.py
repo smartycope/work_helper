@@ -3,7 +3,6 @@ main drop down menu, everything else is nice, deterministic key presses, mostly 
 These are only meant to be used by me.
 """
 
-from re import S
 from time import sleep, monotonic
 import keyboard, mouse, clipboard
 import pyautogui
@@ -118,17 +117,15 @@ def open_board_dynamic(case:str=None, timeout_sec=10, guess_from_clipboard=False
 
 
 
-
 def open_ship_product(case:str=None):
-    x, y = mouse.get_position()
+    # x, y = mouse.get_position()
     sleep(SHORT)
     mouse.move(150, 200)
     sleep(.1)
     mouse.move(150, 400)
     sleep(SHORT)
     mouse.click(button='left')
-    sleep(SHORT)
-    mouse.move(x, y)
+    # sleep(SHORT)
     sleep(LONG)
     if case:
         keyboard.write(case)
@@ -136,16 +133,19 @@ def open_ship_product(case:str=None):
         press_seq('ctrl+v')
     press_seq(*('tab',)*11, 'enter')
 
+    # mouse.move(x, y)
+    mouse.move(827, 503)
+
 def open_return_product(case:str=None):
-    x, y = mouse.get_position()
+    # x, y = mouse.get_position()
     sleep(SHORT)
     mouse.move(150, 200)
     sleep(.1)
     mouse.move(150, 370)
     sleep(SHORT)
     mouse.click(button='left')
-    sleep(SHORT)
-    mouse.move(x, y)
+    # sleep(SHORT)
+    # mouse.move(x, y)
     sleep(LONG)
     keyboard.press_and_release('shift+tab')
     sleep(SHORT)
@@ -155,6 +155,8 @@ def open_return_product(case:str=None):
         press_seq('ctrl+v')
         sleep(SHORT)
         keyboard.press_and_release('enter')
+    mouse.move(1192, 836)
+
 
 # TODO: the position of the query box is unreliable
 def query_case(case=None):

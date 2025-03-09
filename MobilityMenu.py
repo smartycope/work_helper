@@ -38,9 +38,7 @@ class MobilityMenu(Menu):
         Binding('n', 'activate("notes")', show=False),
         # Binding('', 'activate("todo")', show=False),
 
-        # TODO: Neither of these work
-        Binding('esc', 'close', show=False),
-        Binding('ctrl+enter', 'done', show=True),
+        Binding('enter', 'done', show=False),
     )
 
     switches = (

@@ -11,5 +11,6 @@ class AcronymMenu(Menu):
 
         for acr, expanded in ACRONYMS.items():
             s += f'{acr} -> {expanded.replace("[", "\\[")}\n'
+
         yield ScrollableContainer(Static(s))
         yield Button('Close', action='close')

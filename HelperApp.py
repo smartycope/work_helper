@@ -196,7 +196,8 @@ class HelperApp(App):
             self.active_case.log('close')
             # Only close the case if we're in the final phase or the hold phase
             # The extra clause here is in some weird deserializing situations
-            if self.active_case.phase in (Phase.FINISH, Phase.HOLD) and self.active_case in self.cases:
+            # if self.active_case.phase in (Phase.FINISH, Phase.HOLD) and self.active_case in self.cases:
+            if (self.active_case.phase in (Phase.FINISH, Phase.HOLD) or not settings.RESTRICT_CLOSING_SHORTCUT) and self.active_case in self.cases:
                 self.cases.remove(self.active_case)
                 self.tabs.remove_pane(self.tabs.active_pane.id)
             self.action_save()
@@ -270,9 +271,15 @@ class HelperApp(App):
 
             # Remove the current pane, and add it back into the correct place
             active_pane = f'tab-pane-{case.ref}'
-            pane = self.tabs.get_pane(active_pane)
+            # pane = self.tabs.get_pane(active_pane)
             await self.tabs.remove_pane(active_pane)
-            await self.tabs.add_pane(TabPane('', case, id=f'tab-pane-{case.ref}'), before=before_pane)
+            # case = pane.children[0]
+            # await self.tabs.add_pane(TabPane('', case, id=f'tab-pane-{case.ref}'), before=before_pane)
+            pane = TabPane('', case, id=f'tab-pane-{case.ref}')
+            await self.tabs.add_pane(pane, before=before_pane)
+
+            # Bugfix, unsure why it's needed
+            case.mobility_menu.setup()
 
             # Re-set the color, because the tab colors are set dynamically, and this is technically
             # an entierly new tab
