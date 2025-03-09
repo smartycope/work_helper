@@ -28,7 +28,7 @@ class Steps:
     ask_rollers = "How do the extractors look [fine]"
     ask_s9_lid_pins = "Are the lid pins sunken [no]"
     ask_cleaned = 'Robot cleaned ["na" if not, notes or empty if so]'
-    battery_test = "Battery test (don't forget the traveller) [current, <health>]"
+    battery_test = "Battery test (don't forget the traveler) [current, <health>]"
     ask_user_base_contacts = "How do the charging contacts on the customer base look [fine]"
     ask_charge_customer_dock = "What's the charging wattage on the customer's dock [wattage or notes]"
     ask_charge_test_dock = "What's the charging wattage on a test base [wattage or notes]"
@@ -55,7 +55,7 @@ class Steps:
     swap_order_dock = 'Order a new dock [done] ("out" if out of stock)'
     swap_order = 'Reload case and order swap {{original serial}} ("out" if out of stock)'
     swap_order_S9 = 'Order a new chassis (not a whole bot!) {{original serial}} ("out" if out of stock) [done]'
-    swap_order_M6 = 'Order the correctly colored swap {{original serial}} ("out" if out of stock) [done]'
+    swap_order_M6 = 'Order the correctly colored swap ({s}) {{original serial}} ("out" if out of stock) [done]'
     swap_move_bin = 'Unbox and move bin and battery over ("fb", "new", "cx", or empty) [no bin needed]'
     # swap_put_in_box = "Put the old bot in the box [done]"
     swap_add_labels = 'Put labels on the new bot [done]'
@@ -77,7 +77,7 @@ class Steps:
     ask_m6_dry_mobility = "Pass mobility with a dry pad [done]"
     ask_removed_provisioning = "Remove provisioning [done]"
     # generate_external_notes = "Move notes over and add external notes and a repair action {{notes}} [done]"
-    generate_external_notes = "Fill in CSS {{notes}} [done]"
+    generate_external_notes = "Fill in CSS {s}{{notes}} [done]"
     # ask_copy_notes_1 = "Copy notes over to CSS and add a repair action {{notes}} [done]"
     ask_final_cleaned = "Cleaned the robot [done]"
     ask_base_cleaned = "Cleaned the base and cord tied up [done]"
@@ -95,13 +95,14 @@ class Steps:
     double_check_confirmed = 'Wait for the case to be double checked [looks good]'
     ask_shipping_mode = "Placed into shipping mode [done]"
     ask_close_parts = "Close out all parts and get out of case [done]"
-    ask_tags_off = "All tags are off and grab the traveler [done]"
+    ask_tags_off = "All tags are off and grab the traveler {s}[done]"
     ask_put_bin_back = "Put the bin back [done]"
     ask_copy_notes_2 = "Copy notes over to CSS {{notes}} [done]" # no extra space here!
     ask_submit_adj = "Send adjustment {{address, subject, adjustment}}"
     wait_parts_closed = 'Wait for parts to get closed out {{case ID}} [done]'
     ask_complete_case_CSS = "Finish the case on CSS {{case ID}} [done]"
     ask_put_bot_on_shelf = "Put the robot and traveler{s} on the shelf [done]"
+    penultimate_step = 'Wait for parts, finish on CSS, then put on shelf {{case ID}} [done]'
     ask_put_bot_on_shelf_mopping = "Put the robot and traveler{s} on the shelf, and put the tank[s] on top [done]"
     finish_case = 'All done! [close case]'
 

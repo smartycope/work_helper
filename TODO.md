@@ -3,9 +3,8 @@ Freaking do next TODOs:
     HIGH NEXT: bump up priority for double clicking on todo box deletes the clicked on line. Would be very helpful
 
 Step algorithm TODOs:
-    URGENT: don't ask if the bot was cleaned if bot is non-modular, or M6
+    HIGH: don't ask if contacts are sunken if S9, m6, or non-modular
     HIGH: move asking for additional damage to be immediately before asking for the dock
-    HIGH: don't ask if contacts are sunken if S9
     HIGH: if a battery test is needed, ask for it immediately before cleaning, instead of after
     HIGH: don't ask if blower play if r (or e) series
 

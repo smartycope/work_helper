@@ -243,7 +243,7 @@ def execute_step(self, resp):
                 if self.serial.lower().startswith('s'):
                     self.step = Steps.ask_s9_lid_pins
                 else:
-                    self.step = Steps.ask_cleaned
+                    next_step = 'clean'
 
             case Steps.ask_quiet_audio:
                 if resp.lower() != 'na':
@@ -263,16 +263,13 @@ def execute_step(self, resp):
                     self.phase = Phase.SWAP
                 else:
                     self.add_step('Lid pins don\'t appear sunken')
-                self.step = Steps.ask_cleaned
+                next_step = 'clean'
 
             case Steps.ask_cleaned:
                 if resp.lower() != 'na':
                     self.add_step('Cleaned robot' + ((' - ' + resp) if resp else ''))
 
-                if self.can_vacuum:
-                    self.step = Steps.ask_rollers
-                else:
-                    next_step = 'dock contacts/charging'
+                next_step = 'post cleaning'
 
             case Steps.ask_rollers:
                 if resp.lower() != 'na':
@@ -489,7 +486,7 @@ def execute_step(self, resp):
             case Steps.ask_removed_provisioning:
                 if 'removed provisioning' not in self.text_area.text.lower():
                     self.add_step('Removed provisioning')
-                self.step = Steps.generate_external_notes
+                next_step = 'finish css'
 
             case Steps.generate_external_notes:
                 self.step = Steps.ask_close_parts
@@ -544,7 +541,7 @@ def execute_step(self, resp):
                 next_step = 'tags off/double check'
 
             case Steps.double_check_confirmed:
-                self.step = Steps.ask_tags_off
+                next_step = 'tags off'
 
             case Steps.ask_tags_off:
                 # If the notes haven't changed since we last updated CSS, we don't need to update CSS again
@@ -563,9 +560,12 @@ def execute_step(self, resp):
                 next_step = 'put on shelf'
 
             case Steps.ask_submit_adj:
-                next_step = 'put on shelf'
+                next_step = 'final bit'
 
             case Steps.ask_put_bot_on_shelf | Steps.ask_put_bot_on_shelf_mopping:
+                self.step = Steps.finish_case
+
+            case Steps.penultimate_step:
                 self.step = Steps.finish_case
 
             case Steps.finish_case:
@@ -626,9 +626,6 @@ def execute_step(self, resp):
                 self._is_current_swap_refurb = not bool(resp)
                 if not self._is_current_swap_refurb:
                     self.add_step('BiT: skipping, as the swapped bot is a non-refurb')
-                self.step = Steps.swap_add_labels
-
-            case Steps.swap_add_labels:
                 self.step = Steps.swap_input_new_serial
 
             case Steps.swap_input_new_serial:
@@ -644,6 +641,9 @@ def execute_step(self, resp):
                     self.step = Steps.swap_note_serial
 
             case Steps.swap_note_serial:
+                self.step = Steps.swap_add_labels
+
+            case Steps.swap_add_labels:
                 self.phase = Phase.DEBUGGING
 
             case _:
@@ -652,6 +652,8 @@ def execute_step(self, resp):
     elif self.phase == Phase.HOLD:
         match self.step:
             case Steps.hold_add_context:
+                if resp and resp != 'na':
+                    self.add_step(resp)
                 self.step = Steps.hold_copy_notes_to_CSS
 
             case Steps.hold_copy_notes_to_CSS:
@@ -672,7 +674,7 @@ def execute_step(self, resp):
         # else:
 
         self.phase = self._pre_charging_phase or Phase.CONFIRM
-        self.step = self._pre_charging_step or Steps.pick_up_case
+        self.step = self._pre_charging_step or self.first_steps[Phase.CONFIRM]
 
     elif self.phase == Phase.UPDATING:
         self.phase = Phase.DEBUGGING
@@ -693,37 +695,12 @@ def execute_step(self, resp):
             self.step_formatter = ' and box'
         self.step = Steps.ask_put_bot_on_shelf_mopping if self.can_mop else Steps.ask_put_bot_on_shelf
 
-    if next_step == 'dock contacts/charging':
-        if self.dock:
-            self.step = Steps.ask_user_base_contacts
-        else:
-            next_step = 'battery_test/charging'
-
-    if next_step == 'battery_test/charging':
-        if self.require_battery_test():
-            self.step = Steps.battery_test
-        elif self._swap_after_battery_test:
-            self.phase = Phase.SWAP
-        else:
-            next_step = 'charging'
-
-    if next_step == 'order swap':
-        if self.serial.startswith('s9'):
-            self.step = Steps.swap_order_S9
-        elif self.serial.startswith('m6'):
-            self.step = Steps.swap_order_M6
-        else:
-            self.step = Steps.swap_order
-
-    if next_step == 'charging':
-        self.step = Steps.ask_charge_customer_dock if self.dock else Steps.ask_charge_test_dock
-
     if next_step == 'liquid check dock or bin':
         self.step = Steps.liquid_check_dock if self.dock else Steps.liquid_check_bin
 
     if next_step == 'liquid damage':
         if not self.is_modular:
-            self.step = Steps.ask_cleaned
+            next_step = 'clean'
         else:
             if self.can_mop:
                 next_step = 'ask blower play'
@@ -748,7 +725,46 @@ def execute_step(self, resp):
         elif self.serial.lower().startswith('s'):
             self.step = Steps.ask_s9_lid_pins
         else:
+            next_step = 'clean'
+
+    if next_step == 'clean':
+        # if M6, or non-modular, don't ask to clean it
+        if not self.can_vacuum or not self.is_modular:
+            next_step = 'post cleaning'
+        else:
             self.step = Steps.ask_cleaned
+
+    if next_step == 'post cleaning':
+        if self.can_vacuum:
+            self.step = Steps.ask_rollers
+        else:
+            next_step = 'dock contacts/charging'
+
+    if next_step == 'dock contacts/charging':
+        if self.dock:
+            self.step = Steps.ask_user_base_contacts
+        else:
+            next_step = 'battery_test/charging'
+
+    if next_step == 'battery_test/charging':
+        if self.require_battery_test():
+            self.step = Steps.battery_test
+        elif self._swap_after_battery_test:
+            self.phase = Phase.SWAP
+        else:
+            next_step = 'charging'
+
+    if next_step == 'order swap':
+        if self.serial.startswith('s9'):
+            self.step = Steps.swap_order_S9
+        elif self.serial.startswith('m6'):
+            self.step_formatter = self.m6_color
+            self.step = Steps.swap_order_M6
+        else:
+            self.step = Steps.swap_order
+
+    if next_step == 'charging':
+        self.step = Steps.ask_charge_customer_dock if self.dock else Steps.ask_charge_test_dock
 
     if next_step == 'empty bin':
         if self.can_vacuum:
@@ -769,16 +785,39 @@ def execute_step(self, resp):
             next_step = 'tags off/double check'
 
     if next_step == 'tags off/double check':
-        self.step = Steps.double_check_confirmed if settings.DO_DOUBLE_CHECK else Steps.ask_tags_off
+        if settings.DO_DOUBLE_CHECK:
+            self.step = Steps.double_check_confirmed
+        else:
+            next_step = 'tags off'
+
+    if next_step == 'tags off':
+        # if there's a box (there's not a dock), add "and box"
+        if not self.dock:
+            self.step_formatter = 'and box '
+        self.step = Steps.ask_tags_off
 
     if next_step == 'finish track':
-        self.step = Steps.ask_submit_adj if self.repeat else Steps.wait_parts_closed
+        if self.repeat:
+            self.step = Steps.ask_submit_adj
+        else:
+            next_step = 'final bit'
+
+    if next_step == 'final bit':
+        if settings.SPLIT_FINAL_STEPS:
+            self.step = Steps.wait_parts_closed
+        else:
+            self.step = Steps.penultimate_step
 
     if next_step == 'remove from app':
         if re.search(r'(?i)\bapp\b', self.text_area.text):
             self.step = Steps.ask_removed_provisioning
         else:
-            self.step = Steps.generate_external_notes
+            next_step = 'finish css'
+
+    if next_step == 'finish css':
+        if self.repeat:
+            self.step_formatter = 'and finish the repeat notes '
+        self.step = Steps.generate_external_notes
 
     self.text_area.scroll_to(None, 1000, animate=False)
 
