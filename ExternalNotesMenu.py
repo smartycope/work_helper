@@ -20,7 +20,7 @@ class ExternalNotesMenu(Menu):
         ("Recommend cleaning charging contacts", "Over time, debris can accumulate on the charging contacts of both the robot and dock, which may prevent charging and potentially cause damage. To help maintain optimal performance, we recommend cleaning these contacts regularly"),
         ("Recommend cleaning filter", "Recommend regular cleaning of the bin filter"),
         ("Long runtime", "The number of times the Roomba goes over an area can be set in the app under Product Settings > Cleaning Preferences > Cleaning Passes"),
-        ("Charges normally caveat", "Robot charges normally on stardard test equipment"),
+        ("Charges normally caveat", "Robot charges normally on standard test equipment"),
         ("Use correct bags", "Recommend using only OEM replacement bags"),
         ("Place dock away from obstacles", "Recommend placing dock at least 1.5 feet away from obstacles on either side, and at least 4 feet away from stairs and any obstacles in front of the dock"),
         # auto-change this to exclude Bona if robot is a C10 (C10's can't use Bona)

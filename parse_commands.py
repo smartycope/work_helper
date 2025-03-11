@@ -115,12 +115,18 @@ def parse_command(self, input:str):
                 step = 'Swap robot'
             case 'sd':
                 step = 'Swap dock'
-            case 'bit':
+            case 'bit' | 'bit:':
                 step = 'BiT:'
 
                 if args and args[0].lower() == 'skip':
                     args.pop(0)
                     step += ' skipping, non-refurb swap'
+                    self.phase = Phase.FINISH
+
+                elif args and args[0].lower() == 'k2':
+                    args.pop(0)
+                    step += ' skipping, robot is non-modular'
+                    self.phase = Phase.FINISH
 
                 if not args:
                     step += ' Pass'

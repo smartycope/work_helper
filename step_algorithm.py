@@ -341,9 +341,9 @@ def execute_step(self, resp):
                         if watts < 1:
                             self.add_step(f"Robot does not charge on {dock} @ ~{watts:.1f}W", bullet='!')
                         elif watts < 10:
-                            self.add_step(f"Robot charges on {dock} @ ~{watts:.1f}W (battery is full)")
+                            self.add_step(f"Robot charges and boots on {dock} @ ~{watts:.1f}W (battery is full)")
                         else:
-                            self.add_step(f"Robot charges on {dock} @ ~{watts:.0f}W")
+                            self.add_step(f"Robot charges and boots on {dock} @ ~{watts:.0f}W")
 
                 next_step = 'quiet audio'
 
@@ -673,7 +673,7 @@ def execute_step(self, resp):
         # else:
 
         self.phase = self._pre_charging_phase or Phase.CONFIRM
-        self.step = self._pre_charging_step or self.first_steps[Phase.CONFIRM]
+        self.step = self._pre_charging_step or Steps.confirm_id
 
     elif self.phase == Phase.UPDATING:
         self.phase = Phase.DEBUGGING
@@ -910,3 +910,6 @@ def before_ask_submit_adj(self):
         f'Adjustment: {self.ref}',
         f"{self.ref}: {(str(hours) + ' hours ') if hours else ''}{minutes} minutes (finished on {current_date})"
     )
+
+def before_penultimate_step(self):
+    clipboard.copy(self.ref)

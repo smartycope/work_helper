@@ -1,3 +1,31 @@
+
+REFACTOR: instead of stripping and adding a newline everywhere, abstract it into a method
+URGENT: manual save isn't duplicating the saves folder anymore?
+MEDIUM: add some way (via menu menu, probably) to add a 2nd case id to the case. If a case does have 2 ids, the hotkey bindings should do nothing. The only other difference should be that a 2nd copy button is in the sidebar.
+BUG: test dry pad + spray success != "spray (doesn't)"
+MINOR: the R679 series has "dock" instead of "home" (for the notes)
+ACRONYM: caster wheel (check correct spelling)
+EXT: Occasionally, the evac port in the bin can get folded inwards. Pushing the green rubber flap out again will restore the robot's ability to evac.
+URGENT MINOR NEXT: add a setting for evac bags being out of stock, and have it add (out of stock) when no evac bag is indicated. Also, we're out of stock, and there wasn't an evac bag in parts in, instead of asking "does the dock have a bag" ask "remove bag from dock"
+
+ACRONYM: Sprayer off current of
+MINOR BUG: cx states step doesn't accept acronyms
+
+
+HIGH: parts in, damage, cx states, all those don't seem to add to the text_area.text *properly* (stripping, then readding a newline)
+HIGH: deserializing a case with multiple sns doesn't seem to set the sidebar buttons correctly - testing needed
+LOW: on open the hints menu, fold all hints
+HIGH: if sunken contact, then assume dirty contact ext note
+URGENT: have the first few steps of finish phase jump back to debugging phase if resp
+HIGH: the sidebar can steal focus? since when? Stop that.
+DCT: the E series may be serial or the green card with the other side. If there's no serial port, it's the green card.
+MEDIUM: if resp == 'fb' in step "how do extractors look", insert custom text ('gave freebee extractors' or something) - same for 'od'
+EPIC: add an optional header, and have it include statistics like number of cases done today, current speed, etc
+DCT: E series has reversed home/spot (spot is next)
+EXT: E series does not use plastic piece
+
+
+
 Freaking do next TODOs:
     URGENT EXT: modify the "rusty bin screw" ext to dynamically say "clog" if M6, and also to modify the title
     HIGH NEXT: bump up priority for double clicking on todo box deletes the clicked on line. Would be very helpful
@@ -7,6 +35,8 @@ Step algorithm TODOs:
     HIGH: move asking for additional damage to be immediately before asking for the dock
     HIGH: if a battery test is needed, ask for it immediately before cleaning, instead of after
     HIGH: don't ask if blower play if r (or e) series
+    ALG: combine cleaned robot/cleaned dock steps
+    ALG: instead of having penultimate step go to final_step, just have it be the final step and close on enter (but keep it for split final steps)
 
 Mobility menu TODOs:
     HIGH: in the MM, when the dock type box is changed, if the cx has a dock, and it's not what it just got changed to, auto-change the "test/cx/new" dock param box to "test", UNLESS it was previously "new" and 'swap dock' (or equivalent) is in the notes (reuse the same condition as in the other todo)
@@ -347,3 +377,5 @@ blog: "cheatle optimized" (phontetic)
 Ask about how adjustments work for repeats that go on hold
 
 "b" assumes "Torino" instead of "Bombay"?? interesting.
+
+This is cool: https://spectrum.ieee.org/irobot-announces-create-2-an-updated-hackable-roomba

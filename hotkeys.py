@@ -12,7 +12,8 @@ SHORT = .05
 START_DELAY = .2
 
 # 388 × 205 is an empty space on the CSS window
-EMPTY_SPACE = 388, 205
+# EMPTY_SPACE = 388, 205
+EMPTY_SPACE = 50, 831
 
 def press_seq(*seq, delay=SHORT):
     for key in seq:
@@ -94,7 +95,7 @@ def open_board_dynamic(case:str=None, timeout_sec=10, guess_from_clipboard=False
     sleep(SHORT)
     mouse.click(button='left')
     sleep(SHORT)
-    # TODO: change this
+
     if end_mouse_loc is None:
         mouse.move(x, y)
     else:
@@ -110,11 +111,11 @@ def open_board_dynamic(case:str=None, timeout_sec=10, guess_from_clipboard=False
     if case:
         print('filtering case')
         # press_seq(*('tab',)*(5 if started_in_board else 3), 'ctrl+a', 'backspace')
-        press_seq(*('tab',)*5, 'ctrl+a', 'backspace')
+        #press_seq(*('tab',)*5, 'ctrl+backspace')
+        press_seq('shift+tab', 'ctrl+backspace')
         keyboard.write(case)
     else:
         print('no case provided or inferred, done')
-
 
 
 def open_ship_product(case:str=None):
@@ -178,6 +179,7 @@ def search_for_swap():
     # try alt+f
     sleep(START_DELAY)
     press_seq('ctrl+a', 'backspace', 'tab', 'tab', 'down', 'down', 'enter', 'tab', 'space', 'tab', 'tab', 'enter')
+    mouse.move(125, 407)
 
 def add_case(case=None):
     """ starting from the description box,
