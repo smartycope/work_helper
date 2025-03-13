@@ -46,8 +46,8 @@ class HelperApp(App):
         Binding('ctrl+e', 'open_external_notes_menu', 'External notes', priority=True, system=True),
         Binding('ctrl+t', 'open_mobility_menu', 'Mobility Test', priority=True, system=True),
         # TODO
-        Binding('ctrl+k', 'move_tab(1)', 'Move Tab Left', priority=True, system=True),
-        Binding('ctrl+d', 'move_tab(-1)', 'Move Tab Right', priority=True, system=True),
+        Binding('ctrl+k', 'move_tab(1)', 'Move Tab Left', priority=True, system=True, show=False),
+        Binding('ctrl+d', 'move_tab(-1)', 'Move Tab Right', priority=True, system=True, show=False),
 
         Binding("ctrl+n", "new_case", "New Case", show=False, system=True, priority=True),
         Binding("ctrl+w", "close_case", "Close Case", show=False, system=True, priority=True),
@@ -57,6 +57,9 @@ class HelperApp(App):
 
         Binding('ctrl+j', 'increment_tab', 'Next Tab', show=False, priority=True, system=True),
         Binding('ctrl+f', 'increment_tab(-1)', 'Previous Tab', show=False, priority=True, system=True),
+
+        Binding('ctrl+l', 'toggle_lapis_qr', 'Lapis QR', show=True, priority=True, system=True),
+
     ] + HOTKEY_BINDINGS
     CSS_PATH = "stylesheet.tcss"
     COMMAND_PALETTE_DISPLAY = False
@@ -76,8 +79,9 @@ class HelperApp(App):
             'Hints',
             'Commands',
             'Acronyms',
+            'Lapis QR',
             '----------------------',
-            # 'Update Sidebar',
+            'Update Sidebar',
             "Remove Double Lines",
             # '----------------------',
             # "Copy Cases",
@@ -208,7 +212,7 @@ class HelperApp(App):
             self.active_case.input.focus()
 
     @property
-    def active_case(self):
+    def active_case(self) -> Case:
         try:
             return self.tabs.active_pane.children[0]
         except (AttributeError, IndexError):
@@ -294,6 +298,10 @@ class HelperApp(App):
             case._tab.styles.background = to_color
             case._tab.styles.color = 'black'
             self.tabs.active = active_pane
+
+    def action_toggle_lapis_qr(self):
+        if self.active_case:
+            self.active_case.lapis_qr_menu.action_toggle()
 
     def action_save(self):
         for case in self.cases:

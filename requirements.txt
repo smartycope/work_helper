@@ -5,3 +5,4 @@ mouse
 clipboard
 pyautogui
 pillow
+qrcode

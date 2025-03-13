@@ -212,6 +212,9 @@ class RobotInfo:
         camera = ['Albany', 'Zhuhai', 'Bombay']
         ir = ['Albany', 'Tianjin', 'Torino']
 
+        if not self.serial:
+            return
+
         if self.serial.startswith('m6'):
             return ['San Marino']
         elif self.serial.startswith('s9'):

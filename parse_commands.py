@@ -128,7 +128,7 @@ def parse_command(self, input:str):
                     step += ' skipping, robot is non-modular'
                     self.phase = Phase.FINISH
 
-                if not args:
+                elif not args:
                     step += ' Pass'
             case 'bbk':
                 notes = args.pop(0) if args else 'pass'

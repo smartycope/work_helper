@@ -1,4 +1,4 @@
-from GraphController import States, DynamicStateMachine
+from DynamicStateMachine import States, DynamicStateMachine
 
 class Steps(States):
     """ NOTE: within each phase these all need to be unique """
@@ -114,46 +114,46 @@ S = Steps
 
 class StepsController(DynamicStateMachine):
     def __init__(self, case=None):
-        super().__init__(
-            Steps,
-            Steps.pick_up_case,
-            transitions = (
-                S.pick_up_case          >> S.confirm_id,
-                S.confirm_id            >> self.confirm_ids,
-                S.turn_down_screwdriver >> S.ask_labels,
-                S.ask_labels            >> S.check_repeat,
-                S.check_repeat          >> S.check_claimed_damage,
-                S.check_claimed_damage  >> S.ask_dock,
-                S.ask_dock              >> S.ask_damage,
-                S.ask_damage            >> self.ask_bag,
-                S.ask_came_with_bag     >> self.ask_pad,
-                S.ask_came_with_pad     >> S.customer_states,
-                S.customer_states       >> S.update_css_failure,
-            )
-        )
+        super().__init__()
         self.case = case
 
     def confirm_ids(self, resp):
         if resp:
             return S.confirm_id
         else:
-            return self.screwdriver__labels
+            return self.decide_screwdriver
 
-    def screwdriver__labels(self, resp):
+    def decide_screwdriver(self, resp):
         # return S.ask_labels if case.serial.startswith('m6') else S.turn_down_screwdriver
         if self.case.serial.startswith('m6'):
             return S.ask_labels
         else:
             return S.turn_down_screwdriver
 
-    def ask_bag(self, resp):
+    def decide_ask_bag(self, resp):
         if self.case.is_dock:
             return S.ask_came_with_bag, 'if theres a dock'
         else:
-            return self.ask_pad, 'if no dock'
+            return self.decide_ask_pad, 'if no dock'
 
-    def ask_pad(self, resp):
+    def decide_ask_pad(self, resp):
         if self.case.is_combo:
             return S.ask_came_with_pad, 'if combo'
         else:
             return S.customer_states, 'otherwise'
+
+    states = Steps
+    initial = Steps.pick_up_case,
+    transitions = (
+        S.pick_up_case          >> S.confirm_id,
+        S.confirm_id            >> confirm_ids,
+        S.turn_down_screwdriver >> S.ask_labels,
+        S.ask_labels            >> S.check_repeat,
+        S.check_repeat          >> S.check_claimed_damage,
+        S.check_claimed_damage  >> S.ask_dock,
+        S.ask_dock              >> S.ask_damage,
+        S.ask_damage            >> decide_ask_bag,
+        S.ask_came_with_bag     >> decide_ask_pad,
+        S.ask_came_with_pad     >> S.customer_states,
+        S.customer_states       >> S.update_css_failure,
+    )

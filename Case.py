@@ -20,6 +20,7 @@ from ExternalNotesMenu import ExternalNotesMenu
 from globals import (COLORS, DEFAULT_COLOR, EXISTING_CASES, LOG_PATH, SAVE_CASE_PATH, SAVE_NOTES_PATH,
                      capitolize, darken_color, invert_dict)
 from HintsMenu import HintsMenu
+from LapisQrMenu import LapisQrMenu
 from info import DOCKS
 from MobilityMenu import MobilityMenu
 from Phase import Phase
@@ -107,6 +108,7 @@ class Case(VerticalGroup):
         self.mobility_menu = MobilityMenu(self)
         self.external_notes_menu = ExternalNotesMenu(self)
         self.hints_menu = HintsMenu(self)
+        self.lapis_qr_menu = LapisQrMenu()
         self.cmd_menu = CommandsMenu()
         self.acronym_menu = AcronymMenu()
 
@@ -145,6 +147,7 @@ class Case(VerticalGroup):
             case "Remove Double Lines":
                 self.text_area.text = self.text_area.text.replace('\n\n', '\n')
             case 'Hints': self.hints_menu.action_toggle()
+            case 'Lapis QR': self.lapis_qr_menu.action_toggle()
             case 'Commands': self.cmd_menu.action_toggle()
             case 'Acronyms': self.acronym_menu.action_toggle()
             case 'Update Sidebar': self.sidebar.update()
@@ -165,6 +168,7 @@ class Case(VerticalGroup):
         yield self.mobility_menu
         yield self.external_notes_menu
         yield self.hints_menu
+        yield self.lapis_qr_menu
         yield self.cmd_menu
         yield self.acronym_menu
         yield self.input
@@ -496,6 +500,9 @@ class Case(VerticalGroup):
 
         camera = ['Albany', 'Zhuhai', 'Bombay']
         ir = ['Albany', 'Tianjin', 'Torino']
+
+        if not self.serial:
+            return
 
         if self.serial.startswith('m6'):
             return ['San Marino']

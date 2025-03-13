@@ -5,6 +5,8 @@ import dis, ast
 import graphviz
 
 # TODO: make this it's own project, with a repo and a package. It's too good to stay here
+# TODO: allow standalone functions as transition functions (in the works)
+# TODO: allow states to be defined in other ways (such as a dict)
 
 class State:
     """ A state in our state machine. It holds a name, a value, and a transition, and can be connected
@@ -27,7 +29,7 @@ class State:
         """ If the right hand side is a State, then it's a simple transition, and self.transition
         gets set to a lambda that returns the given state.
         If it's a method then it will be called to determine the next state.
-        NOTE: `other` must be a method of the GraphController subclass! It cannot be a standalone function.
+        NOTE: `other` must be a method of the DynamicStateMachine subclass! It cannot be a standalone function.
         (at least for now)
         """
         if isinstance(other, State):
@@ -102,34 +104,24 @@ class DynamicStateMachine:
         - Infinite virtual loops (a cycle of all virtual States) will result in a max recursion error. This is not checked for explicitly
     """
 
-    def __init__(self,
-        states:type[States],
-        initial:State,
-        transitions:Iterable[tuple[State, Callable]],
-        start_immediately=True,
-        trigger_initial_side_effects=True
-    ):
-        """
-        `initial`:
-                The initial state of the state machine
-        `states`:
-                The States subclass that defines the states as class variables
-        `transitions`:
-            A list of transitions. Each transition is defined by using the >> operator on two states or a
-            state and a method. The method must be a method of this class's subclass, and not a standalone
-            function.
-        """
-        self.initial = initial
-        """ The initial state of the state machine """
-        self.states = states
-        """ The States subclass that defines the states as class variables"""
+    states:type[States] = None
+    """ The initial state of the state machine """
+    initial:State = None
+    """ The States subclass that defines the states as class variables """
+    transitions:Iterable[tuple[State, Callable]] = None
+    """ A list of transitions. Each transition is defined by using the >> operator on two states or a
+        state and a method. The method must be a method of this class's subclass, and not a standalone
+        function.
+    """
+
+    def __init__(self, start_immediately=True, trigger_initial_side_effects=True):
         self._trigger_initial_side_effects = trigger_initial_side_effects
         """ If True, then the initial state's before_<state> method will be called on instantiation. """
 
         self._state = None
 
         # Convert the transitions into a dict for faster lookup, ease of internal use, and ensuring uniqueness
-        self._transitions:dict[State, Callable] = {s: t for s, t in transitions}
+        self._transitions:dict[State, Callable] = {s: t for s, t in self.transitions}
 
         if start_immediately:
             self.start()
@@ -153,6 +145,15 @@ class DynamicStateMachine:
         it will be called with the state machine instance as the first argument. Otherwise, it will be
         called as is. Also, it will only attempt to call the function with the parameters it accepts.
         """
+        # TODO: This isn't the best way to detect this
+        try:
+            if hasattr(self, func.__name__):
+                args = (self,) + args
+        except:
+            raise TypeError('func must be a function')
+
+        # TODO: This maaay fail if positional args are passed in as keyword args. Needs more testing, or better yet,
+        # just steal how python-statemachines does it
         sig = inspect.signature(func)
         # Cut args down until it fits the signature
         args = args[:len(sig.parameters)]
@@ -186,6 +187,12 @@ class DynamicStateMachine:
             self._state = None
             self.on_end()
             return
+
+        if type(new) is tuple:
+            # TODO add texts to these
+            assert len(new) == 2
+            assert type(new[1]) is str
+            new = new[0]
 
         assert isinstance(new, State), f'Invalid state given. Must be a State instance, but got {type(new)}'
         assert new in self.states._states_list, 'Invalid state given. Must be a member of self.states.'
@@ -255,6 +262,7 @@ class DynamicStateMachine:
         return [((i, '') if type(i) is not tuple else i) for i in rtn]
 
     # This almost works, but not quite. It wasn't as good of an option as I was hoping
+    # Then again, it may work, but what I was testing it with didn't
     @staticmethod
     def get_returns_ast(func):
         class ReturnVisitor(ast.NodeVisitor):
@@ -318,36 +326,97 @@ class DynamicStateMachine:
         return visitor.returns
 
     def construct_graphvis(self,
+                           include_start=True,
                            use_names=True,
-                           state_kwargs=dict(shape='box'),
-                           transition_kwargs=dict(shape='circle'),
-                           end_kwargs=dict(shape='triangle'),
+                           disconnect_virtual=False,
+                           split_ends=True,
+                           graph_attrs={},
+                           state_attrs=dict(shape='box'),
+                           transition_attrs=dict(shape='diamond'),
+                           virtual_attrs=dict(shape='box'),
+                           start_attrs=dict(shape='box'),
+                           end_attrs=dict(shape='triangle'),
                            _backend:Literal['dis', 'ast']='dis',
         ) -> graphviz.Digraph:
-        # optionally be disconnect virtual states
-        dot = graphviz.Digraph(comment='State Machine')
+        """ Construct a graphviz representation of the current statemachine.
+            NOTE: depending on the complexity of the machine, this method may take a while.
 
-        def add_function_outputs(trans):
+            if not include_start, it won't add the "start" entrance node
+            if use_names is True, it uses the variable names of the states instead of the values of the states
+            if disconnect_virtual is True, it disconnects edges from virtual states and duplicates the nodes at each end
+            The state, transition, virtual, and end attrs are dicts passed as kwargs to the graphviz.Digraph.node() function when creating the
+            corresponding nodes.
+            if split_ends is False, it combines all the "end" nodes into one
+            The _backend parameter decides what backend to use to determine the returns of the transition methods. 'dis'
+            uses dis.Bytecode to compile the functions, then parse the bytecode for return calls. 'ast' uses the Python
+            ast parser to find return statements that way. Currently, only the dis backend is reliable (surprisingly)
+        """
+        # optionally be disconnect virtual states
+        if 'comment' not in graph_attrs:
+            graph_attrs['comment'] = type(self).__name__
+        dot = graphviz.Digraph(**graph_attrs)
+        handled_transitions = []
+        # To ensure all the end nodes have unique names
+        end_counter = 0
+        counters = {}
+        # Putting this here for efficiency's sake
+        state_names = [i.name for i in self.states._states_list]
+
+        def create_destination_state_node(state):
+            nonlocal counters
+            goto = state.name
+            if state.virtual and disconnect_virtual:
+                # we need to keep track to ensure uniqueness
+                if state.name not in counters:
+                    counters[state.name] = 0
+                goto = state.name + str(counters[state.name])
+                counters[state.name] += 1
+                dot.node(goto, state.name, **virtual_attrs)
+            return goto
+
+        def add_function_outputs(trans:Callable):
+            nonlocal end_counter, handled_transitions
+
+            if trans in handled_transitions:
+                return
+            else:
+                handled_transitions.append(trans)
+
             if _backend == 'dis':
                 items = DynamicStateMachine.get_returns_dis(trans)
             elif _backend == 'ast':
                 items = DynamicStateMachine.get_returns_ast(trans).items()
-
-            print(items)
+            else:
+                raise ValueError(f"_backend value must be either 'dis' or 'ast'. Got {_backend}")
 
             for ret, comment in items:
+                ret: str
+                comment: str
+
+                # Goes to the end
                 if ret is None:
-                    dot.node('End', 'End', **end_kwargs)
-                    dot.edge(trans.__name__, 'End', comment)
-                elif ret in [i.name for i in self.states._states_list]:
+                    dot.node(f'End{end_counter}', 'End', **end_attrs)
+                    dot.edge(trans.__name__, f'End{end_counter}', comment)
+                    end_counter += 1
+
+                # Goes to another state
+                elif ret in state_names:
                     state = self.states._states[ret]
-                    dot.edge(trans.__name__, state.name if use_names else state.value, comment)
-                # It's a function
+                    goto = create_destination_state_node(state)
+                    dot.edge(trans.__name__, goto, comment)
+
+                # Goes to another transition function to decide where to go next
+                # TODO: in order to support standalone functions, this if statement will have to be changed
                 elif hasattr(self, ret):
+                    # TODO: if use_names == False, convert all the _ in the transition functions to spaces
                     dot.edge(trans.__name__, ret, comment)
                     add_function_outputs(getattr(self, ret))
+
                 else:
-                    raise ValueError(f'return value is not a state nor a method in self. Got {ret!r}')
+                    raise ValueError(f'return value is not a state, None, nor a transition function. Got {ret!r}')
+
+        dot.node('Start', 'Start', **start_attrs)
+        dot.edge('Start', self.initial.name)
 
         # Add states as nodes
         for state, transition in self._transitions.items():
@@ -355,15 +424,16 @@ class DynamicStateMachine:
             transition: Callable
 
             # No idea why it's state.value.value here, instead of state.value
-            label = state.name if use_names else state.value.value
+            label = state.name if use_names else state.value
 
-            # dot.node(state.name, label, shape='circle')
-            dot.node(state.name, label, **state_kwargs)
+            dot.node(state.name, label, **(virtual_attrs if state.virtual else state_attrs))
             if state._simple:
-                dot.edge(state.name, state._simple.name)
+                goto = create_destination_state_node(state._simple)
+                dot.edge(state.name, goto)
+
             # If it's not simple, then it's a function
             else:
-                dot.node(transition.__name__, transition.__name__, **transition_kwargs)
+                dot.node(transition.__name__, transition.__name__, **transition_attrs)
                 dot.edge(state.name, transition.__name__)
 
                 add_function_outputs(transition)
@@ -382,21 +452,6 @@ class ExampleStates(States):
     c = 'this is c'
 
 class ExampleMachine(DynamicStateMachine):
-    def __init__(self):
-        super().__init__(
-            states=ExampleStates,
-            initial=ExampleStates.a,
-            transitions=(
-                # Can be either simple transitions, like so
-                ExampleStates.a >> ExampleStates.b,
-                # ...or transition methods that determine the next state
-                ExampleStates.b >> self.do_the_thing,
-                ExampleStates.pre_c >> ExampleStates.c,
-                # Transition methods can return a state, another transition method, or None
-                ExampleStates.c >> self.decide_if_done,
-            )
-        )
-
     def do_the_thing(self, decider=True):
         # Transition methods can have side effects
         print('Deciding...')
@@ -416,6 +471,7 @@ class ExampleMachine(DynamicStateMachine):
         else:
             print('Decided we\'re not done')
             return ExampleStates.a, 'no keep going!'
+        return self.do_the_thing
 
     def before_a(self):
         print('Now in state a...', end=' ')
@@ -445,6 +501,18 @@ class ExampleMachine(DynamicStateMachine):
 
     def on_end(self):
         print('Finished!')
+
+    states = ExampleStates
+    initial = ExampleStates.a
+    transitions = (
+        # Can be either simple transitions, like so
+        ExampleStates.a >> ExampleStates.b,
+        # ...or transition methods that determine the next state
+        ExampleStates.b >> do_the_thing,
+        ExampleStates.pre_c >> ExampleStates.c,
+        # Transition methods can return a state, another transition method, or None
+        ExampleStates.c >> decide_if_done,
+    )
 
 
 if __name__ == "__main__":

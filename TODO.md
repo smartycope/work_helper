@@ -1,3 +1,26 @@
+HIGH: when coming off of hold (opened the case), it asks to pick up the case. That shouldn't be the case. I'm thinking it should go to it's own step, which is "gather parts from the shelf", which... doesn't have a phase?, and then goes right into the debugging phase
+ACRONYM: ff -> freebee filter
+
+LOW: upper() case IDs
+
+
+MINOR HIGH: re-enable "update sidebar" in the menu menu
+HIGH: add a global binding that toggles a menu that shows the lapis QR code (https://link.irobot.com/acc4816)
+ACRONYM: if the acronynm starts with a capital letter, make the result start with a capitol letter
+MINOR: instead of all menus able to have focus, make it a subclass thing (i.e. MM has can_focus=True, but not Menu)
+MINOR: in the ext menu, make the text wrap a little bit wider. Say, 10 characters more
+MINOR: if the tab is switched, and a menu is open, move focus to it, instead of the input box (the the menu can have focus)
+URGENT EXT: "If any extra consumable items are missing, please reach out to iRobot support"
+EPIC: add a menu that lets you modify the ext json (once it's externalized) and add/modify them -- also, store it outside of the source code, so it won't get wiped with an update
+MINOR: change "check claimed damage" to "check the OtherRemarks"
+
+HOTKEY: link together all the final parts into one:
+do alt+i, then wait for a mouse click. Then wait SHORT, then do alt+r. then wait for a click, wait SHORT, then alt+q. Then wait for a click, then down+enter 3 times. Then done. At all points, abort if esc is pressed.
+
+HIGH BUG: for this case, the sidebar didn't update properly:
+{"notes": "23356IR\nParts in: I357420N240616N700028, Albany, cord\nDamage: Minor scratches\nCustomer States: Spins\n\nRoutine Checks:\n* Robot is non-modular\n* Contacts don't feel sunken\n* Extractors look fine\n* Charging contacts on the customer's Albany look fine\n\nProcess:\n* Cleaned dock charging contacts\n\n* Mobility test - floor, no dock, cx bin\n** Fail: navigate\n** Result: Fail - multiple false bumps\n* Swap robot -> I810020C200612N306221 (refurb)\n* Being weird\n* Factory reset\n\n* Mobility test - floor, cx Albany, new bin\n** Pass: undock, dock, navigate, auto evac\n** Result: Fail - sidebrush acting funny\n* Loosened the sidebrush a little\n* Sidebrush doesn't spin at all now\n* Replaced sidebrush module\n\n* Mobility test - floor, cx Albany, new bin\n** Pass: undock, navigate\n** Result: Pass - sidebrush spins good now\n* BiT: Pass\n", "color": "#377a11", "ref": "23356IR", "serials": ["i357420n240616n700028", "i810020c200612n306221"], "phase": 8, "step": "Pass mobility with a Lapis bin [done]", "todo": "sidebrush was probably just too tight", "repeat": false, "adj": 0.0, "_step_after_manual_serial": "Go pick up the case on CSS {case ID} [done]"}
+
+
 
 REFACTOR: instead of stripping and adding a newline everywhere, abstract it into a method
 URGENT: manual save isn't duplicating the saves folder anymore?
@@ -37,6 +60,12 @@ Step algorithm TODOs:
     HIGH: don't ask if blower play if r (or e) series
     ALG: combine cleaned robot/cleaned dock steps
     ALG: instead of having penultimate step go to final_step, just have it be the final step and close on enter (but keep it for split final steps)
+    ALG: remove update css failure box step? It needs to be not there, and I don't know where else to put it. Maybe move it into confirm phase
+    ALG: don't ask if there's liquid residue in the cx dock if it's a base and not a dock
+    ALG: ask if blower play if e series, just not r series
+    ALG: allow a response in the S9 swap step to jump to the regular swap step, if the whole bot *does* need to be replaced
+    ALG: move "is swap bot a refurb" step to be before "unbox" step and after the "order swap" step
+    ALG: don't ask if the S9 chassis swap is a refurb
 
 Mobility menu TODOs:
     HIGH: in the MM, when the dock type box is changed, if the cx has a dock, and it's not what it just got changed to, auto-change the "test/cx/new" dock param box to "test", UNLESS it was previously "new" and 'swap dock' (or equivalent) is in the notes (reuse the same condition as in the other todo)

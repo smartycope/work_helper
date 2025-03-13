@@ -1,6 +1,6 @@
 # I'm bad at CSS, so I'm just throwing everything in here for now.
 Screen {
-    layers: below hintButton ext mobility hints cmd acronym menu version ref;
+    layers: below hintButton ext mobility hints lapis cmd acronym menu version ref;
     # layers: below hintButton menus ref;
     # layers: ref mobility ext hintButton below hints;
 }
@@ -31,6 +31,13 @@ MobilityMenu{
 
 HintsMenu{
     layer: hints;
+    content-align: center middle;
+}
+
+LapisQrMenu{
+    layer: lapis;
+    height: 30;
+    width: 50;
     content-align: center middle;
 }
 
