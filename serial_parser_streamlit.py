@@ -3,7 +3,7 @@ import streamlit as st
 from RobotInfo import RobotInfo
 # from ExternalNotesMenu import ExternalNotesMenu
 # from HintsMenu import HintsMenu
-from globals import PASSWORD, SERIAL_PARSER_ICON
+from globals import SERIAL_PARSER_ICON
 
 st.set_page_config(layout='wide', page_title='Serial Parser', page_icon=SERIAL_PARSER_ICON)
 
@@ -27,7 +27,7 @@ if "authenticated" not in st.session_state:
 # Password authentication
 if not st.session_state["authenticated"]:
     given_password = st.text_input("Enter password", key="password_input", type="password")
-    if given_password == PASSWORD:
+    if given_password == st.secrets['PASSWORD']:
         st.session_state["authenticated"] = True
         st.rerun()
     elif given_password:

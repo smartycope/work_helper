@@ -576,3 +576,4 @@ FodyWeavers.xsd
 *.csv
 
 ganglion.toml
+secrets.toml
