@@ -1,7 +1,6 @@
 
 """ A minimal version of the main app that just parses the serial numbers """
 
-import os
 import traceback
 from textual.app import App
 

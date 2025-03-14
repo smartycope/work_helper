@@ -1,3 +1,16 @@
+REFACTOR: move files into folders (streamlit stuff into a folder, hotkeys into a folder, etc)
+
+MEDIUM: figure out some way to keep the order of the shown bindings consistent
+HOTKEY: slightly increase the delay for the alt+r shortcut for the menu to load
+MINOR: if robot is non-modular, and we're multi_paste() ing the email stuff, auto-add "sensor malfunctions" to the subject. Otherwise, don't assume.
+ACRONYM: iss -> issue; prob -> problem; and plurals
+HOTKEY: have alt+v end at 1223 × 199
+ACRONYM: s -> swap (careful it doesn't interfere with the s command)
+URGENT FIRST PRIORITY: not saving when closed cleanly, and also not saving when manual saving
+
+URGENT MINOR: add a property like the others that is "needs_recommend_clean_contacts" or something, which is manually set by sunken or dirty contact routine checks, and also checks the notes, and OR's it all together
+
+
 HIGH: when coming off of hold (opened the case), it asks to pick up the case. That shouldn't be the case. I'm thinking it should go to it's own step, which is "gather parts from the shelf", which... doesn't have a phase?, and then goes right into the debugging phase
 ACRONYM: ff -> freebee filter
 
@@ -54,6 +67,7 @@ Freaking do next TODOs:
     HIGH NEXT: bump up priority for double clicking on todo box deletes the clicked on line. Would be very helpful
 
 Step algorithm TODOs:
+    ALG: scrap other todo's, and just combine "put labels on everything" and "confirm ids" steps
     HIGH: don't ask if contacts are sunken if S9, m6, or non-modular
     HIGH: move asking for additional damage to be immediately before asking for the dock
     HIGH: if a battery test is needed, ask for it immediately before cleaning, instead of after
@@ -79,6 +93,8 @@ Mobility menu TODOs:
     MEDIUM: add a "clear" or "reset" all button to MM
     LOW: in MM, if "test dry pad" is selected, and only if it is, disable the tank param box
     LOW: in the MM, disable the cx box if the dock box is set to "no dock"
+    MM: only enable num_lines box if deploy pad succeeds
+    MM: update switches on change of parameters
 
 I don't want to do but probably should TODOs:
     URGENT: use ctrl+backspace instead of cltr+a, backspace to clear the filter box in open_board_dynamic()

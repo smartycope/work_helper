@@ -36,6 +36,10 @@ SECRET_PASSWORD = 'Cope is a genius'
 # Password for SerialParser. Yes, this is horribly insecure. I'm aware.
 PASSWORD = 'iHeartiRobot'
 
+# SERIAL_PARSER_ICON = ':bookmark_tabs:'
+SERIAL_PARSER_ICON = '📑'
+PARSE_BBK_ICON = '📖'
+
 # To avoid additional dependencies. My "Cope" package is horribly unstable
 def invert_dict(d:dict) -> dict:
     """ Returns the dict given, but with the keys as values and the values as keys. """
