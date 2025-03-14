@@ -67,29 +67,29 @@ class RobotInfo:
         # TODO:
         # self.sidebar.update()
 
-    def get_DCT(self) -> str:
+    def get_DCT(self, streamlit=False) -> str:
         if self.serial.startswith('i') and not self.is_modular:
-            return '[on red]Red card[/] from the top'
+            return '[on red]Red card[/] from the top' if not streamlit else ':red-background[Red card] from the top'
         elif self.serial.startswith(('i1', 'i2', 'i3', 'i4', 'i5')):
-            return '[black on red]Red card[/]'
+            return '[black on red]Red card[/]' if not streamlit else  ':red-background[Red card]'
         elif self.serial.startswith('r') and not self.serial.startswith('r9'):
             return 'Serial'
         elif self.serial.startswith(('r', 's')):
             return 'USB'
         elif self.serial.startswith(('j8', 'q7', 'i6', 'i7', 'i8')):
-            return '[black on green]Green card[/]'
+            return '[black on green]Green card[/]' if not streamlit else  ':green-background[Green card]'
         elif self.serial.startswith('m6'):
             return 'Small debug card, use Trident driver'
         elif self.serial.startswith(('j9')):
-            return '[black on blue]Blue card[/]'
+            return '[black on blue]Blue card[/]' if not streamlit else ':blue-background[Blue card]'
         elif self.serial.startswith('c9'):
-            return '[black on green]Green card[/] through the pad'
+            return '[black on green]Green card[/] through the pad' if not streamlit else ':green-background[Green card] through the pad'
         elif self.serial.startswith('c7'):
-            return '[black on green]Green card[/] / [black on blue]Blue card[/] through the pad'
+            return '[black on green]Green card[/] / [black on blue]Blue card[/] through the pad' if not streamlit else ':green-background[Green card] / :blue-background[Blue card] through the pad'
         elif self.serial.startswith('e'):
-            return '[black on green]Green card[/], with micro USB\nplugged into the other side\non the card'
+            return '[black on green]Green card[/], with micro USB\nplugged into the other side\non the card' if not streamlit else ':green-background[Green card], with micro USB\nplugged into the other side\non the card'
         elif self.serial.startswith(('j7', 'j5', 'j6')):
-            return '[black on green]Green card[/] / [black on blue]Blue card[/]'
+            return '[black on green]Green card[/] / [black on blue]Blue card[/]' if not streamlit else ':green-background[Green card] / :blue-background[Blue card]'
         else:
             return 'Error: Model from serial number not recognized'
 
@@ -325,7 +325,7 @@ class RobotInfo:
         platform = self.get_platform()
         return f"""
 [bold]{self.get_quick_model()}[/] {('• ' + platform) if platform else ''}
-[grey35]{self.serial.upper()}[/]
+{f"[grey35]{self.serial.upper()}[/]" if len(self.serial) > 3 else ""}
 
 DCT: {self.get_DCT()}
 
@@ -339,5 +339,30 @@ DCT: {self.get_DCT()}
 {self.factory_reset.get(self.serial[0], 'Unknown')}
 
 {" Notes ":{char}^{width}}
+{self.get_notes()}
+"""
+
+    def statement_st(self):
+        """ Return a nice looking summary of all the information to display to the user using streamlit"""
+        # Looks cleaner than dashes
+        # char = '─'
+        platform = self.get_platform()
+        return f"""
+:blue[{self.get_quick_model()} {('• ' + platform) if platform else ''}]
+
+{f":gray[{self.serial.upper()}]" if len(self.serial) > 3 else ""}
+
+DCT: {self.get_DCT(streamlit=True)}
+
+### DCT Exceptions
+{self.get_DCT_exceptions()}
+
+### Shipping Mode
+{self.sleep_mode.get(self.serial[0], 'Unknown')}
+
+### Factory Reset
+{self.factory_reset.get(self.serial[0], 'Unknown')}
+
+### Notes
 {self.get_notes()}
 """
