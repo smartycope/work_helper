@@ -133,10 +133,13 @@ class RobotInfo:
 
         return rtn
 
-    def get_notes(self) -> str:
+    def get_notes(self, streamlit=False) -> str:
         notes = ''
         if self.serial.startswith('c9'):
-            notes += "[on orange_red1]Remember to remove battery before removing the CHM.[/] Also, if the DCT card doesn't work, try a hard reset\nc955 -> Albany; c975 -> Aurora"
+            if streamlit:
+                notes += ":orange-background[Remember to remove battery before removing the CHM.] Also, if the DCT card doesn't work, try a hard reset\nc955 -> Albany; c975 -> Aurora"
+            else:
+                notes += "[on orange_red1]Remember to remove battery before removing the CHM.[/] Also, if the DCT card doesn't work, try a hard reset\nc955 -> Albany; c975 -> Aurora"
 
         # TODO: remove this once get_platform() works
         if self.serial.startswith('c'):
@@ -158,12 +161,22 @@ class RobotInfo:
         if self.has_weird_i5g:
             if notes:
                 notes += '\n'
-            notes += '[on orange_red1]Possibly a factory provisioned lapis bin[/]'
+                if streamlit:
+                    notes += '\n'
+            if streamlit:
+                notes += ':orange-background[Possibly a factory provisioned lapis bin]'
+            else:
+                notes += '[on orange_red1]Possibly a factory provisioned lapis bin[/]'
 
         elif self.is_factory_lapis:
             if notes:
                 notes += '\n'
-            notes += '[on red]Factory provisioned lapis bin![/]'
+                if streamlit:
+                    notes += '\n'
+            if streamlit:
+                notes += ':red-background[Factory provisioned lapis bin!]'
+            else:
+                notes += '[on red]Factory provisioned lapis bin![/]'
 
         return notes
 
@@ -364,5 +377,5 @@ DCT: {self.get_DCT(streamlit=True)}
 {self.factory_reset.get(self.serial[0], 'Unknown')}
 
 ### Notes
-{self.get_notes()}
+{self.get_notes(True)}
 """

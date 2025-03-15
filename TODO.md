@@ -11,6 +11,8 @@ If still nothing, then
       re-add to app & provision bin
       if it *still* doesn't work, swap
 
+SP: have the lapis bin and chm warnings be st.warnings instead of just colored in the notes
+
 
 ALG: move asking if bot is a refurb step to be immediately after order swap step
 

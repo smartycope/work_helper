@@ -38,7 +38,8 @@ if user_input:
     else:
         half = len(ids) // 2
         if not info._ids_equal(ids[half:], ids[:half]):
-            st.write(f"### ⚠️ Serial numbers are different! ⚠️\n{ids[half:]}\n{ids[:half]}")
+            st.write(f"### ⚠️ Serial numbers are different! ⚠️\n{ids[half:]}\n\n{ids[:half]}")
+            info = None
         else:
             info.add_serial(ids[half:])
 
