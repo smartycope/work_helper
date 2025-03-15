@@ -1,3 +1,69 @@
+HINT: regular bot won't let a lapis bin get provisioned:
+Try provisioning
+Try again, make sure it's going to the correct bot
+Factory reset & remove from app
+Re-add and provision lapis bin again
+If still nothing, then
+      factory reset
+      remove from app
+      pull battery, let sit for several minutes
+      RDP reset while it's off
+      re-add to app & provision bin
+      if it *still* doesn't work, swap
+
+
+ALG: move asking if bot is a refurb step to be immediately after order swap step
+
+DO THIS: create a multi-page streamlit app. One page should have SerialParser, the next should have a tool that parses bbk data and gives any warnings, and the last should be my flowchart - NOTE: the bbk parser page should be able to be navigated entirely via touchscreen
+
+EPIC: a tool that reads DCT data and tells you if it *actually* passes or fails or not, based on the serial number
+HIGH BUG: in routine checks, if the lid pins are sunken, instead add "at least one of the lid pins are sunken" instead, and also, it goes to the swap phase, but then goes the the cleaned step - also, it should auto-insert Process, and then "swap chassis".
+HIGH: in the corner, add a "cases done today" stat (updates on close of a case) and a "cases/rate today" stat (updates every 5 minutes). cases done today should only be cases which were closed in the finish phase
+
+MINOR: when inserting the swap sn, check for either "swap ... robot" or "swap ... chassis"
+
+URGENT ERROR: on move tab left:
+
+C:\Users\2412055\Documents>python3.13 work_helper/main.py
+╭─────────────────────────────────────────────── Traceback (most recent call last) ───────────────────────────────────────────────╮
+│ C:\Users\2412055\Documents\work_helper\HelperApp.py:286 in action_move_tab                                                      │
+│                                                                                                                                 │
+│   283 │   │   │   await self.tabs.add_pane(pane, before=before_pane)                                                            │
+│   284 │   │   │                                                                                                                 │
+│   285 │   │   │   # Bugfix, unsure why it's needed                                                                              │
+│ ❱ 286 │   │   │   case.mobility_menu.setup()                                                                                    │
+│   287 │   │   │                                                                                                                 │
+│   288 │   │   │   # Re-set the color, because the tab colors are set dynamically, and this is                                   │
+│   289 │   │   │   # an entierly new tab                                                                                         │
+│                                                                                                                                 │
+│ ╭─────────────────────────────────────────────── locals ───────────────────────────────────────────────╮                        │
+│ │ active_pane = 'tab-pane-23346IR'                                                                     │                        │
+│ │         amt = -1                                                                                     │                        │
+│ │ before_pane = 'tab-pane-23690IR'                                                                     │                        │
+│ │        case = Case(id='case-23346IR')                                                                │                        │
+│ │         idx = 3                                                                                      │                        │
+│ │     new_idx = 2                                                                                      │                        │
+│ │        pane = TabPane(id='tab-pane-23346IR')                                                         │                        │
+│ │        self = HelperApp(title='HelperApp', classes={'-dark-mode'}, pseudo_classes={'dark', 'focus'}) │                        │
+│ ╰──────────────────────────────────────────────────────────────────────────────────────────────────────╯                        │
+│                                                                                                                                 │
+│ C:\Users\2412055\Documents\work_helper\MobilityMenu.py:210 in setup                                                             │
+│                                                                                                                                 │
+│   207 │   │   self.cx_states.update(('| cx: ' + self.case.customer_states) if self.case.custom ╭─────── locals ────────╮        │
+│   208 │   │   self.cx_dock.update('| dock: ' + self.case.dock if self.case.dock else 'No dock' │ self = MobilityMenu() │        │
+│   209 │   │   self.base1.value = 'cx' if self.case.dock else 'test'                            ╰───────────────────────╯        │
+│ ❱ 210 │   │   self.base2.set_options((i, i) for i in self.case.get_docks())                                                     │
+│   211 │   │   self.base2.value = (                                                                                              │
+│   212 │   │   │   self.case.dock                                                                                                │
+│   213 │   │   │   if self.case.dock in self.case.get_docks()                                                                    │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+TypeError: 'NoneType' object is not iterable
+
+
+
+
+
+
 REFACTOR: move files into folders (streamlit stuff into a folder, hotkeys into a folder, etc)
 
 MEDIUM: figure out some way to keep the order of the shown bindings consistent
