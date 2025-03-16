@@ -133,13 +133,12 @@ class RobotInfo:
 
         return rtn
 
-    def get_notes(self, streamlit=False) -> str:
+    def get_notes(self, warnings=True) -> str:
         notes = ''
         if self.serial.startswith('c9'):
-            if streamlit:
-                notes += ":orange-background[Remember to remove battery before removing the CHM.] Also, if the DCT card doesn't work, try a hard reset\nc955 -> Albany; c975 -> Aurora"
-            else:
-                notes += "[on orange_red1]Remember to remove battery before removing the CHM.[/] Also, if the DCT card doesn't work, try a hard reset\nc955 -> Albany; c975 -> Aurora"
+            if warnings:
+                notes += "[on orange_red1]Remember to remove battery before removing the CHM.[/]\n"
+            notes += "If the DCT card doesn't work, try a hard reset\nc955 -> Albany; c975 -> Aurora"
 
         # TODO: remove this once get_platform() works
         if self.serial.startswith('c'):
@@ -158,25 +157,15 @@ class RobotInfo:
         if self.serial.startswith(('j7', 'j9')):
             notes += "If the blue DCT card doesn't work, try a hard reset"
 
-        if self.has_weird_i5g:
+        if self.has_weird_i5g and warnings:
             if notes:
                 notes += '\n'
-                if streamlit:
-                    notes += '\n'
-            if streamlit:
-                notes += ':orange-background[Possibly a factory provisioned lapis bin]'
-            else:
-                notes += '[on orange_red1]Possibly a factory provisioned lapis bin[/]'
+            notes += '[on orange_red1]Possibly a factory provisioned lapis bin[/]'
 
-        elif self.is_factory_lapis:
+        elif self.is_factory_lapis and warnings:
             if notes:
                 notes += '\n'
-                if streamlit:
-                    notes += '\n'
-            if streamlit:
-                notes += ':red-background[Factory provisioned lapis bin!]'
-            else:
-                notes += '[on red]Factory provisioned lapis bin![/]'
+            notes += '[on red]Factory provisioned lapis bin![/]'
 
         return notes
 
@@ -324,58 +313,3 @@ class RobotInfo:
             return self.serial[1:4]
         else:
             return self.serial[:2].upper()
-
-    def statement(self):
-        """ Return a nice looking summary of all the information to display to the user """
-        # The web interface can't get the terminal size, and I'm too lazy to actually set up multiple
-        # widgets with nice looking Rules in between them, so this works
-        try:
-            width = os.get_terminal_size().columns - 2
-        except OSError:
-            width = 50
-        # Looks cleaner than dashes
-        char = '─'
-        platform = self.get_platform()
-        return f"""
-[bold]{self.get_quick_model()}[/] {('• ' + platform) if platform else ''}
-{f"[grey35]{self.serial.upper()}[/]" if len(self.serial) > 3 else ""}
-
-DCT: {self.get_DCT()}
-
-{" DCT Exceptions ":{char}^{width}}
-{self.get_DCT_exceptions()}
-
-{" Shipping Mode ":{char}^{width}}
-{self.sleep_mode.get(self.serial[0], 'Unknown')}
-
-{" Factory Reset ":{char}^{width}}
-{self.factory_reset.get(self.serial[0], 'Unknown')}
-
-{" Notes ":{char}^{width}}
-{self.get_notes()}
-"""
-
-    def statement_st(self):
-        """ Return a nice looking summary of all the information to display to the user using streamlit"""
-        # Looks cleaner than dashes
-        # char = '─'
-        platform = self.get_platform()
-        return f"""
-:blue[{self.get_quick_model()} {('• ' + platform) if platform else ''}]
-
-{f":gray[{self.serial.upper()}]" if len(self.serial) > 3 else ""}
-
-DCT: {self.get_DCT(streamlit=True)}
-
-### DCT Exceptions
-{self.get_DCT_exceptions()}
-
-### Shipping Mode
-{self.sleep_mode.get(self.serial[0], 'Unknown')}
-
-### Factory Reset
-{self.factory_reset.get(self.serial[0], 'Unknown')}
-
-### Notes
-{self.get_notes(True)}
-"""

@@ -12,26 +12,26 @@ from textual.reactive import reactive
 from textual.widgets import *
 from textual.message import Message
 
-from AcronymMenu import AcronymMenu
-from CommandsMenu import CommandsMenu
-from CustomTextArea import CustomTextArea
-from ExternalNotesMenu import ExternalNotesMenu
+from helper.menus.AcronymMenu import AcronymMenu
+from helper.menus.CommandsMenu import CommandsMenu
+from helper.CustomTextArea import CustomTextArea
+from helper.menus.ExternalNotesMenu import ExternalNotesMenu
 # from MenuMenu import MenuMenu
 from globals import (COLORS, DEFAULT_COLOR, EXISTING_CASES, LOG_PATH, SAVE_CASE_PATH, SAVE_NOTES_PATH,
                      capitolize, darken_color, invert_dict)
-from HintsMenu import HintsMenu
-from LapisQrMenu import LapisQrMenu
-from info import DOCKS
-from MobilityMenu import MobilityMenu
-from Phase import Phase
-from Sidebar import Sidebar
-import settings
-from texts import Steps
+from helper.menus.HintsMenu import HintsMenu
+from helper.menus.LapisQrMenu import LapisQrMenu
+from helper.info import DOCKS
+from helper.menus.MobilityMenu import MobilityMenu
+from helper.Phase import Phase
+from helper.Sidebar import Sidebar
+from helper.texts import Steps
+from helper import settings
 
 
 class Case(VerticalGroup):
-    from parse_commands import parse_command
-    from step_algorithm import (  # before_ask_copy_notes_1,
+    from helper.parse_commands import parse_command
+    from helper.step_algorithm import (  # before_ask_copy_notes_1,
         after_ask_complete_case_CSS, after_generate_external_notes,
         _copy_swap_serial, before_penultimate_step,
         after_pick_up_case, before_ask_complete_case_CSS,
@@ -41,7 +41,7 @@ class Case(VerticalGroup):
         before_pick_up_case, before_swap_email, before_swap_note_serial,
         before_swap_order, before_swap_update_css, before_wait_parts_closed,
         before_swap_order_S9, before_swap_order_M6)
-    from step_algorithm import execute_step as _execute_step
+    from helper.step_algorithm import execute_step as _execute_step
 
     class CloseCaseMessage(Message): pass
 

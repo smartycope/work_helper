@@ -1,15 +1,15 @@
 from clipboard import copy
 from textual.containers import *
 from textual.widgets import *
-from info import sleep_mode, factory_reset
-from Phase import Phase
+from helper.info import sleep_mode, factory_reset
+from helper.Phase import Phase
 from globals import COLORS, DEFAULT_COLOR, SIDEBAR_WIDTH, COPY_SERIAL_BUTTON_WIDTH
-from CopyText import CopyText
+from helper.CopyText import CopyText
 from time import monotonic
 from textual.reactive import reactive
 from textual import on
 
-import settings
+from helper import settings
 
 class Sidebar(VerticalGroup):
     class TodoTextArea(TextArea):

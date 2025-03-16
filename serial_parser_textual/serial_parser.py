@@ -1,5 +1,10 @@
 
-""" A minimal version of the main app that just parses the serial numbers """
+""" A minimal version of the main app that just parses the serial numbers
+
+NOTE: this is currently broken (rearranging the files broke the imports, otherwise it works)
+This will not be udpated or fixed, in favor of the streamlit version
+"""
+
 
 import traceback
 from textual.app import App
@@ -8,14 +13,46 @@ from textual import on
 from textual.containers import *
 from textual.widgets import *
 
-from ExternalNotesMenu import ExternalNotesMenu
-from HintsMenu import HintsMenu
+from work_helper.ExternalNotesMenu import ExternalNotesMenu
+from work_helper.HintsMenu import HintsMenu
 
 from globals import INTERNAL_LOG_PATH, PASSWORD
 
 STARTING_TEXT = "Enter a model number, a serial number, or 2 serial numbers back to back. If 2 serial numbers are given, it will confirm that they're the same, and warn you if they're not."
 
 from RobotInfo import RobotInfo
+
+
+def statement(self):
+    """ Return a nice looking summary of all the information to display to the user """
+    # The web interface can't get the terminal size, and I'm too lazy to actually set up multiple
+    # widgets with nice looking Rules in between them, so this works
+    try:
+        width = os.get_terminal_size().columns - 2
+    except OSError:
+        width = 50
+    # Looks cleaner than dashes
+    char = '─'
+    platform = self.get_platform()
+    return f"""
+[bold]{self.get_quick_model()}[/] {('• ' + platform) if platform else ''}
+{f"[grey35]{self.serial.upper()}[/]" if len(self.serial) > 3 else ""}
+
+DCT: {self.get_DCT()}
+
+{" DCT Exceptions ":{char}^{width}}
+{self.get_DCT_exceptions()}
+
+{" Shipping Mode ":{char}^{width}}
+{self.sleep_mode.get(self.serial[0], 'Unknown')}
+
+{" Factory Reset ":{char}^{width}}
+{self.factory_reset.get(self.serial[0], 'Unknown')}
+
+{" Notes ":{char}^{width}}
+{self.get_notes()}
+"""
+
 
 
 class SerialParser(App):

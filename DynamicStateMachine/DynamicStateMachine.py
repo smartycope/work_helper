@@ -1,12 +1,22 @@
-from abc import ABC
 import inspect
-from typing import Any, Callable, Iterable, Literal, LiteralString
+from typing import Any, Callable, Iterable, Literal
 import dis, ast
-import graphviz
+
+try:
+    # import graphviz
+    from graphviz import Digraph
+except:
+    # graphviz = None
+    Diagraph = None
 
 # TODO: make this it's own project, with a repo and a package. It's too good to stay here
 # TODO: allow standalone functions as transition functions (in the works)
 # TODO: allow states to be defined in other ways (such as a dict)
+# TODO: ALG V2: finish publishing the pip package
+# TODO: ALG V2: allow on_ methods, but just have them be identical to the after_ methods. Just cause the naming makes sense
+# TODO: ALG V2: add a method that gets run every next call, for side effects -- or maybe not, maybe just override next()? either way, mention in readme
+# TODO: mention that anything in the States subclass that starts with an underscore will not be auto-converted
+# TODO: instead of a lambda that just returns a state, and a virtual member, instead just allow it to be a State, and the n catch it before we try to call it in next()
 
 class State:
     """ A state in our state machine. It holds a name, a value, and a transition, and can be connected
@@ -64,19 +74,21 @@ class States:
     In the future, instancing States directly will be supported, but it's not yet.
     """
 
-    def __init_subclass__(cls):
-        cls._states = {}
+    def __init_subclass__(cls, /, virtual_value=None):
+        cls._states: dict[str: State] = {}
         """ A dict of all states, with the name as the key and the State instance as the value """
-        cls._states_lookup = {}
-        """ A dict of all states, with the State instance as the key and the name as the value """
+        cls._reverse_states:dict[Any:State] = {}
+        """ A dict of all states, with the value as the key and the State instance as the value """
         cls._states_list = []
         """ A list of all states, in the order they were defined """
+        cls._virtual_value = virtual_value
+        """ The value which you set a state to in order to mark it as a virtual state """
 
         for name, value in cls.__dict__.items():
             if not name.startswith('_'):
-                state = State(name, value, virtual=value is None)
+                state = State(name, value, virtual=value is virtual_value)
                 cls._states[name] = state
-                cls._states_lookup[value] = state
+                cls._reverse_states[value] = state
                 cls._states_list.append(state)
                 setattr(cls, name, state)
 
@@ -87,11 +99,14 @@ class States:
         # for name, value in cls._states.items():
         #     setattr(cls, name, State(name, value))
 
+TransitionReturn = State | None | tuple[State | None, str]
+
 class DynamicStateMachine:
     """ A state machine that has dynamic transitions between states. It requires an initial state, a
     reference to the States subclass, and a list of transitions. Transitions can be either a simple
     state transition (one state to the next), or a method that will be called to determine the next
     state.
+
     Methods in this class used as transitions must return one of the following:
         - A member of the States subclass
         - Another transition method of this class that follows the same rules
@@ -102,13 +117,20 @@ class DynamicStateMachine:
         - Methods on the right hand side must be methods of this class's subclass, and not standalone functions (this is enforced at the moment)
         - Infinite loops function, and may be intentional, and thus are not checked for
         - Infinite virtual loops (a cycle of all virtual States) will result in a max recursion error. This is not checked for explicitly
+
+    Side effects can be defined using methods named according to the following:
+        - before_<step>
+        - after_<step>
+        - on_<step>
+        - on_start
+        - on_end2
     """
 
     states:type[States] = None
     """ The initial state of the state machine """
     initial:State = None
     """ The States subclass that defines the states as class variables """
-    transitions:Iterable[tuple[State, Callable]] = None
+    transitions:Iterable[tuple[State, Callable[..., TransitionReturn]]] = None
     """ A list of transitions. Each transition is defined by using the >> operator on two states or a
         state and a method. The method must be a method of this class's subclass, and not a standalone
         function.
@@ -119,6 +141,15 @@ class DynamicStateMachine:
         """ If True, then the initial state's before_<state> method will be called on instantiation. """
 
         self._state = None
+
+        if not (isinstance(self.states, type)): #issubclass(self.states, States)) <- TODO: this should work, NO clue why it doesn't
+            raise ValueError(f'states must be a type which is a subclass of States. Got {self.states!r}, which is of type {type(self.states)}')
+
+        if not isinstance(self.initial, State):
+            raise ValueError(f'initial must be a State (a member of the states class)')
+
+        if not self.transitions:
+            raise ValueError('transitions not specified')
 
         # Convert the transitions into a dict for faster lookup, ease of internal use, and ensuring uniqueness
         self._transitions:dict[State, Callable] = {s: t for s, t in self.transitions}
@@ -175,11 +206,17 @@ class DynamicStateMachine:
     def state(self, new:State):
         self.set_state(new)
 
-    def set_state(self, new:State, *args, side_effects=True, **kwargs):
+    def set_state(self, new:State|None|Any|tuple[State|None|Any, str], *args, side_effects=True, **kwargs):
         """ Set the state. This is the setter for self.state, but can also be called directly.
         If side_effects is False, then the before/after methods will not be called.
         Any additional parameters will be passed to both the before/after methods and the transition
         methods.
+        If `new` is a State, it sets it to that state
+        If `new` is None, the state gets set to None, self.finished becomes True, and self.on_end() gets called
+        If `new` is something else, it tries to find a State in self.states that has the a value as equal to `new`, and
+            sets the state equal to that State.
+        If `new` is a 2 item tuple of the above, and then a string, in that order, then the state gets applied as above,
+            and the string is completely ignored
         """
         old = self._state
 
@@ -188,14 +225,20 @@ class DynamicStateMachine:
             self.on_end()
             return
 
-        if type(new) is tuple:
-            # TODO add texts to these
-            assert len(new) == 2
-            assert type(new[1]) is str
+        # type() here is intentional, implicit tuples are going to only ever be just tuples
+        # Don't just assume a tuple means what we think it does, since tuples are hashable, they could be used as the
+        # values of State's
+        if type(new) is tuple and len(new) == 2 and type(new[1]) is str:
             new = new[0]
 
-        assert isinstance(new, State), f'Invalid state given. Must be a State instance, but got {type(new)}'
-        assert new in self.states._states_list, 'Invalid state given. Must be a member of self.states.'
+        if not isinstance(new, State):
+            try:
+                new = self.states._reverse_states[new]
+            except KeyError:
+                raise ValueError(f'Invalid state given. Must be a State instance, but got {type(new)}: {new!r}')
+
+        if  new not in self.states._states_list:
+            raise ValueError('Invalid state given. self.states be a member of self.states.')
 
         if side_effects:
             if old is not None:
@@ -203,6 +246,9 @@ class DynamicStateMachine:
                     self._call_function_with_correct_params(method, *args, **kwargs)
 
             if (method := getattr(self, 'before_' + new.name, False)):
+                self._call_function_with_correct_params(method, *args, **kwargs)
+
+            if (method := getattr(self, 'on_' + new.name, False)):
                 self._call_function_with_correct_params(method, *args, **kwargs)
 
         self._state = new
@@ -330,33 +376,41 @@ class DynamicStateMachine:
                            use_names=True,
                            disconnect_virtual=False,
                            split_ends=True,
+                           highlighted:State|None=...,
                            graph_attrs={},
-                           state_attrs=dict(shape='box'),
-                           transition_attrs=dict(shape='diamond'),
-                           virtual_attrs=dict(shape='box'),
-                           start_attrs=dict(shape='box'),
-                           end_attrs=dict(shape='triangle'),
+                           state_attrs=dict(shape='box', style='rounded'),
+                           transition_attrs=dict(shape='oval', style='filled', fillcolor='grey80'),
+                           virtual_attrs=dict(shape='box', style='dotted'),
+                           start_attrs=dict(shape='box', fillcolor='green', style='filled'),
+                           end_attrs=dict(shape='triangle', fillcolor='red', style='filled'),
                            _backend:Literal['dis', 'ast']='dis',
-        ) -> graphviz.Digraph:
+        ) -> Digraph:
         """ Construct a graphviz representation of the current statemachine.
             NOTE: depending on the complexity of the machine, this method may take a while.
 
             if not include_start, it won't add the "start" entrance node
             if use_names is True, it uses the variable names of the states instead of the values of the states
             if disconnect_virtual is True, it disconnects edges from virtual states and duplicates the nodes at each end
-            The state, transition, virtual, and end attrs are dicts passed as kwargs to the graphviz.Digraph.node() function when creating the
-            corresponding nodes.
+            The state, transition, virtual, start, and end attrs are dicts passed as kwargs to the graphviz.Digraph.node() function when creating the
+            corresponding nodes. See https://www.graphviz.org/docs/nodes/ for options
             if split_ends is False, it combines all the "end" nodes into one
             The _backend parameter decides what backend to use to determine the returns of the transition methods. 'dis'
             uses dis.Bytecode to compile the functions, then parse the bytecode for return calls. 'ast' uses the Python
             ast parser to find return statements that way. Currently, only the dis backend is reliable (surprisingly)
+            if highlighted is not provided, it will highlight the current step. If it is provided, it will highlight the
+            provided step. If it's set to None, no step will be highlighted.
         """
+        # Allow the package to be optional
+        if not Digraph:
+            return
+
         # optionally be disconnect virtual states
         if 'comment' not in graph_attrs:
             graph_attrs['comment'] = type(self).__name__
         dot = graphviz.Digraph(**graph_attrs)
         handled_transitions = []
         # To ensure all the end nodes have unique names
+        # I realized later I could have used monotonic() for this, but it's already implemented this way
         end_counter = 0
         counters = {}
         # Putting this here for efficiency's sake
@@ -377,10 +431,11 @@ class DynamicStateMachine:
         def add_function_outputs(trans:Callable):
             nonlocal end_counter, handled_transitions
 
-            if trans in handled_transitions:
+            # For some reason just the reference doesn't work? Unsure why. This works though.
+            if trans.__name__ in handled_transitions:
                 return
             else:
-                handled_transitions.append(trans)
+                handled_transitions.append(trans.__name__)
 
             if _backend == 'dis':
                 items = DynamicStateMachine.get_returns_dis(trans)
@@ -395,7 +450,8 @@ class DynamicStateMachine:
 
                 # Goes to the end
                 if ret is None:
-                    dot.node(f'End{end_counter}', 'End', **end_attrs)
+                    if split_ends or not end_counter:
+                        dot.node(f'End{end_counter}', 'End', **end_attrs)
                     dot.edge(trans.__name__, f'End{end_counter}', comment)
                     end_counter += 1
 
@@ -408,15 +464,19 @@ class DynamicStateMachine:
                 # Goes to another transition function to decide where to go next
                 # TODO: in order to support standalone functions, this if statement will have to be changed
                 elif hasattr(self, ret):
-                    # TODO: if use_names == False, convert all the _ in the transition functions to spaces
+                    lbl = ret
+                    if not use_names:
+                        lbl = lbl.replace('_', ' ')
+                    dot.node(ret, lbl, **transition_attrs)
                     dot.edge(trans.__name__, ret, comment)
                     add_function_outputs(getattr(self, ret))
 
                 else:
                     raise ValueError(f'return value is not a state, None, nor a transition function. Got {ret!r}')
 
-        dot.node('Start', 'Start', **start_attrs)
-        dot.edge('Start', self.initial.name)
+        if include_start:
+            dot.node('Start', 'Start', **start_attrs)
+            dot.edge('Start', self.initial.name)
 
         # Add states as nodes
         for state, transition in self._transitions.items():
@@ -433,15 +493,30 @@ class DynamicStateMachine:
 
             # If it's not simple, then it's a function
             else:
-                dot.node(transition.__name__, transition.__name__, **transition_attrs)
+                lbl = transition.__name__
+                if not use_names:
+                    lbl = lbl.replace('_', ' ')
+                dot.node(transition.__name__, lbl, **transition_attrs)
                 dot.edge(state.name, transition.__name__)
 
                 add_function_outputs(transition)
+
+        if highlighted is Ellipsis:
+            dot = DynamicStateMachine.highlight_node(dot, self.state.name)
+        elif highlighted:
+            assert isinstance(highlighted, State), 'highlighted must be a State'
+            dot = DynamicStateMachine.highlight_node(dot, highlighted.name)
 
         return dot
 
     def __next__(self):
         self.next()
+
+    @staticmethod
+    def highlight_node(graph:Digraph, id:str, color='blue', style='bold', **attrs):
+        if Digraph:
+            graph.node(id, color=color, style=style, **attrs)
+            return graph
 
 
 class ExampleStates(States):
@@ -454,7 +529,6 @@ class ExampleStates(States):
 class ExampleMachine(DynamicStateMachine):
     def do_the_thing(self, decider=True):
         # Transition methods can have side effects
-        print('Deciding...')
 
         if decider:
             print('Decided on a')

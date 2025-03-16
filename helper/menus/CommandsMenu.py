@@ -1,6 +1,6 @@
 from textual.containers import *
 from textual.widgets import *
-from Menu import Menu
+from helper.menus.Menu import Menu
 
 class CommandsMenu(Menu):
     require_case = False

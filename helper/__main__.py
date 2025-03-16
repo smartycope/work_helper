@@ -4,7 +4,7 @@ import atexit
 from textual.containers import *
 from textual.widgets import *
 
-from HelperApp import HelperApp
+from helper.HelperApp import HelperApp
 from globals import DEBUG
 
 

@@ -1,9 +1,9 @@
 import re
 from numpy import mean, std
 
-from Phase import Phase
+from helper.Phase import Phase
 from globals import capitolize
-import settings
+from helper import settings
 
 ACRONYMS = {
     # sprayer off current of n.

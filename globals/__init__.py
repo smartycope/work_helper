@@ -7,6 +7,7 @@ SAVE_CASE_PATH = Documents / 'Saved_Cases'
 SAVE_NOTES_PATH = Documents / 'Case_Notes'
 SAVE_STATE_PATH = Documents / 'helper_state.json'
 INTERNAL_LOG_PATH = Documents / 'helper_log_internal.txt'
+HINTS_PATH = Path(__file__).resolve().parent.parent / 'data' / 'hints.json'
 
 for path in (SAVE_CASE_PATH, SAVE_CASE_PATH):
     path.mkdir(parents=True, exist_ok=True)
@@ -34,6 +35,7 @@ DEBUG = None
 # The phrase that puts you into debug mode
 SECRET_PASSWORD = 'Cope is a genius'
 # Password for SerialParser. Yes, this is horribly insecure. I'm aware.
+# This isn't used anymore
 PASSWORD = 'iHeartiRobot'
 
 # SERIAL_PARSER_ICON = ':bookmark_tabs:'

@@ -1,7 +1,7 @@
 from textual.containers import *
 from textual.widgets import *
-from Menu import Menu
-from parse_commands import ACRONYMS
+from helper.menus.Menu import Menu
+from helper.parse_commands import ACRONYMS
 
 class AcronymMenu(Menu):
     require_case = False

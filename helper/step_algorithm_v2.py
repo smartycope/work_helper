@@ -1,4 +1,4 @@
-from DynamicStateMachine import States, DynamicStateMachine
+from DynamicStateMachine.DynamicStateMachine import States, DynamicStateMachine
 
 class Steps(States):
     """ NOTE: within each phase these all need to be unique """
@@ -110,6 +110,8 @@ class Steps(States):
     charging = 'Bot is charging [done]'
     updating = 'Bot is updating firmware [done]'
 
+    phase_confirm = None
+
 S = Steps
 
 class StepsController(DynamicStateMachine):
@@ -143,8 +145,9 @@ class StepsController(DynamicStateMachine):
             return S.customer_states, 'otherwise'
 
     states = Steps
-    initial = Steps.pick_up_case,
+    initial = Steps.phase_confirm
     transitions = (
+        S.phase_confirm         >> S.pick_up_case,
         S.pick_up_case          >> S.confirm_id,
         S.confirm_id            >> confirm_ids,
         S.turn_down_screwdriver >> S.ask_labels,

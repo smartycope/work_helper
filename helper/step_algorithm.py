@@ -3,14 +3,13 @@ from numpy import mean, std
 import re
 from textual.containers import *
 from textual.widgets import *
-from Phase import Phase
+from helper.Phase import Phase
 from globals import SECRET_PASSWORD, capitolize, uncapitolize
-from parse_commands import parse_acronym
-from texts import Steps
-import settings
+from helper.parse_commands import parse_acronym
+from helper.texts import Steps
+from helper import settings
 import clipboard
-import settings
-from multi_paste import multi_paste
+from helper.multi_paste import multi_paste
 from datetime import datetime
 from math import ceil
 

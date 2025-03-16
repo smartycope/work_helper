@@ -7,15 +7,15 @@ from textual.app import App, ComposeResult
 from textual import on
 from textual.containers import *
 from textual.widgets import *
-from CustomTextArea import CustomTextArea
-from Phase import Phase
-from Case import Case
+from helper.CustomTextArea import CustomTextArea
+from helper.Phase import Phase
+from helper.Case import Case
 from globals import COLORS, DEFAULT_COLOR, INTERNAL_LOG_PATH, SAVE_CASE_PATH, SAVE_STATE_PATH, EXISTING_CASES
 from clipboard import copy, paste
 
-from hotkeys import open_board, open_board_dynamic, open_return_product, open_ship_product, query_case
-import settings
-from texts import Steps
+from hotkeys.hotkeys import open_board, open_board_dynamic, open_return_product, open_ship_product, query_case
+from helper import settings
+from helper.texts import Steps
 import traceback
 import shutil
 import time

@@ -1,11 +1,10 @@
 from textual.containers import *
 from textual.widgets import *
-from Menu import Menu
+from helper.menus.Menu import Menu
 import json
-from pathlib import Path
-from rich import print
+from globals import HINTS_PATH
 
-with open(Path(__file__).resolve().parent / 'hints.json', 'r') as f:
+with open(HINTS_PATH, 'r') as f:
     HINT_DATA = json.load(f)
 
 # print(HINT_DATA)

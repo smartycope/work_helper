@@ -2,14 +2,14 @@ from textual import on
 from textual.containers import *
 from textual.widgets import *
 
-from CustomInput import CustomInput
-from Menu import Menu
-from TriSwitch import TriSwitch
+from helper.CustomInput import CustomInput
+from helper.menus.Menu import Menu
+from helper.TriSwitch import TriSwitch
 
 from globals import DEBUG
-from info import EVAC_DOCKS
-from parse_commands import parse_acronym
-import settings
+from helper.info import EVAC_DOCKS
+from helper.parse_commands import parse_acronym
+from helper import settings
 
 # TODO: add "does" and "doesn't" to auto evac as appriopriate
 

@@ -1,11 +1,6 @@
 import streamlit as st
 
-from RobotInfo import RobotInfo
-# from ExternalNotesMenu import ExternalNotesMenu
-# from HintsMenu import HintsMenu
-from globals import SERIAL_PARSER_ICON
-
-# st.set_page_config(layout='wide', page_title='Serial Parser', page_icon=SERIAL_PARSER_ICON)
+from globals.RobotInfo import RobotInfo
 
 EXPLANATION = """\
 Enter a model number, a serial number, or 2 serial numbers back to back. If 2 serial numbers are given,
@@ -44,4 +39,33 @@ if user_input:
             info.add_serial(ids[half:])
 
 if info:
-    st.write(info.statement_st())
+    info: RobotInfo
+    if info.has_weird_i5g:
+        st.warning(' Possibly a factory provisioned lapis bin', icon='⚠️')
+    if info.serial.startswith('c9'):
+        st.warning("Remember to remove battery before removing the CHM", icon='⚠️')
+    if info.is_factory_lapis:
+        st.error('Factory provisioned lapis bin!', icon='⚠️')
+
+    platform = info.get_platform()
+
+    f":blue[{info.get_quick_model()} {('• ' + platform) if platform else ''}]"
+
+    if len(info.serial) > 3:
+        f":gray[{info.serial.upper()}]"
+
+    f"""
+DCT: {info.get_DCT(streamlit=True)}
+
+### DCT Exceptions
+{info.get_DCT_exceptions()}
+
+### Shipping Mode
+{info.sleep_mode.get(info.serial[0], 'Unknown')}
+
+### Factory Reset
+{info.factory_reset.get(info.serial[0], 'Unknown')}
+
+### Notes
+{info.get_notes(False)}
+"""

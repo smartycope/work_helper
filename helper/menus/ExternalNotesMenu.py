@@ -6,8 +6,8 @@ from textual import on
 from textual.events import Mount
 from clipboard import copy
 import textwrap
-from Menu import Menu
-from multi_paste import multi_paste
+from helper.menus.Menu import Menu
+from helper.multi_paste import multi_paste
 
 class ExternalNotesMenu(Menu):
     # TODO: put this in a JSON file
