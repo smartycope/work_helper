@@ -1,4 +1,6 @@
 import streamlit as st
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from work_helper.globals import PARSE_BBK_ICON, SERIAL_PARSER_ICON
 
