@@ -14,7 +14,8 @@ try:
 
     ss = st.session_state
 
-    DEBUG = os.name != 'nt'
+    # DEBUG = os.name != 'nt'
+    DEBUG = False
 
     # st.set_page_config(layout='wide', page_title='BBK Parser', page_icon=PARSE_BBK_ICON)
     BBK_LOG_DIR = Path(f"C:\\Users\\Roomba Wrangler\\Documents\\DCT\\BBK")
