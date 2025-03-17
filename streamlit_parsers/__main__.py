@@ -1,6 +1,6 @@
 import streamlit as st
 
-from globals import PARSE_BBK_ICON, SERIAL_PARSER_ICON
+from work_helper.globals import PARSE_BBK_ICON, SERIAL_PARSER_ICON
 
 st.set_page_config(layout='wide', page_title='iRobot Parsers', page_icon='🤖')
 

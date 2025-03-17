@@ -1,0 +1,489 @@
+{
+    "data": [
+        {
+            "detail": "0 0",
+            "label": "STEP_BIN_NOT_PRESENT",
+            "value": "PASSED"
+        },
+        {
+            "detail": "1 1",
+            "label": "STEP_BIN_PRESENT",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[512] 512",
+            "label": "STEP_BUMP_LEFT",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[0] 0",
+            "label": "STEP_BUMP_LEFT_NONE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[0] 0",
+            "label": "STEP_BUMP_NONE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[1024] 1024",
+            "label": "STEP_BUMP_RIGHT",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[0] 0",
+            "label": "STEP_BUMP_RIGHT_NONE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(50, None) 451.3",
+            "label": "STEP_CHARGING_CURRENT",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[[0]] [0]",
+            "label": "STEP_CLEAN_BUTTON",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[29, 37, 31, 38, 37, 36]",
+            "label": "STEP_CLIFF_CAL_VALID",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[0] 0",
+            "label": "STEP_CLIFF_NONE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[True] False",
+            "label": "STEP_DOCK_COMMS",
+            "value": "FAILED"
+        },
+        {
+            "detail": "[0] False",
+            "label": "STEP_DOCK_DETECT_NOT_PRESENT",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[1] True",
+            "label": "STEP_DOCK_DETECT_PRESENT",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[2] 139",
+            "label": "STEP_FRONT_CENTER_LEFT_CLIFF_ACTIVE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[8] 139",
+            "label": "STEP_FRONT_CENTER_RIGHT_CLIFF_ACTIVE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[1] 129",
+            "label": "STEP_FRONT_LEFT_CLIFF_ACTIVE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[16] 179",
+            "label": "STEP_FRONT_RIGHT_CLIFF_ACTIVE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(600, 4100) 1030.7",
+            "label": "STEP_LEFT_IR_OBSTRUCTED",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(0, 300) 0.1",
+            "label": "STEP_LEFT_IR_UNOBSTRUCTED",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(0, 0) 0.0",
+            "label": "STEP_LEFT_MOVING_RIGHT_WHEEL_SPEED_ZERO",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(25, 150) 71.3",
+            "label": "STEP_LEFT_WHEEL_CURRENT_MOVING_FORWARD",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(25, 150) 63.8",
+            "label": "STEP_LEFT_WHEEL_CURRENT_MOVING_REVERSE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(150, 1500) 872.6",
+            "label": "STEP_LEFT_WHEEL_CURRENT_STALLED",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(285, 327) 306.7",
+            "label": "STEP_LEFT_WHEEL_MOVING_FORWARD",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[False] False",
+            "label": "STEP_LEFT_WHEEL_MOVING_NOT_STALLED",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(-327, -285) -303.9",
+            "label": "STEP_LEFT_WHEEL_MOVING_REVERSE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[True] True",
+            "label": "STEP_LEFT_WHEEL_MOVING_STALLED",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[False] False",
+            "label": "STEP_LEFT_WHEEL_NOT_MOVING_NOT_STALLED",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(0, 0) 0.0",
+            "label": "STEP_LEFT_WHEEL_NOT_MOVING_REVERSE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[False] False",
+            "label": "STEP_LEFT_WHEEL_UNSTALLED_NOT_STALLED",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(50, 1200) 234.7",
+            "label": "STEP_MAIN_BRUSH_FORWARD_NOT_STALLED_CURRENT",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(50, 1200) 217.2",
+            "label": "STEP_MAIN_BRUSH_REVERSE_NOT_STALLED_CURRENT",
+            "value": "PASSED"
+        },
+        {
+            "detail": "23.12.4+ubuntu-HEAD-cca733b60c4+150",
+            "label": "STEP_MOBILITY_BOARD_VERSION",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(200.0, '-') 350",
+            "label": "STEP_MOUSE_X_DELTA",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(200.0, '-') 218",
+            "label": "STEP_MOUSE_Y_DELTA",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[True] True",
+            "label": "STEP_OPTICAL_BIN_HIGH_INTENSITY_BIN_READY",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(600, 10000) 713.6",
+            "label": "STEP_OPTICAL_BIN_HIGH_INTENSITY_LF_SENSOR",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(-100, 400) 35.7",
+            "label": "STEP_OPTICAL_BIN_HIGH_INTENSITY_LN_SENSOR",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(600, 10000) 615.2",
+            "label": "STEP_OPTICAL_BIN_HIGH_INTENSITY_RF_SENSOR",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(-100, 400) 43.3",
+            "label": "STEP_OPTICAL_BIN_HIGH_INTENSITY_RN_SENSOR",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[True] True",
+            "label": "STEP_OPTICAL_BIN_LOW_INTENSITY_BIN_READY",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(100, 10000) 685.4",
+            "label": "STEP_OPTICAL_BIN_LOW_INTENSITY_LF_SENSOR",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(-100, 100) -7.2",
+            "label": "STEP_OPTICAL_BIN_LOW_INTENSITY_LN_SENSOR",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(100, 10000) 585.4",
+            "label": "STEP_OPTICAL_BIN_LOW_INTENSITY_RF_SENSOR",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(-100, 100) 1.9",
+            "label": "STEP_OPTICAL_BIN_LOW_INTENSITY_RN_SENSOR",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[True] True",
+            "label": "STEP_OPTICAL_BIN_POST_CAL_INTENSITY_BIN_READY",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(20, 80) 61",
+            "label": "STEP_OPTICAL_BIN_POST_CAL_INTENSITY_CAL_LEFT_INTENSITY",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(20, 80) 61",
+            "label": "STEP_OPTICAL_BIN_POST_CAL_INTENSITY_CAL_RIGHT_INTENSITY",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(500, 10000) 593.6",
+            "label": "STEP_OPTICAL_BIN_POST_CAL_INTENSITY_LF_SENSOR",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(-100, 200) -15.7",
+            "label": "STEP_OPTICAL_BIN_POST_CAL_INTENSITY_LN_SENSOR",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(500, 10000) 467.6",
+            "label": "STEP_OPTICAL_BIN_POST_CAL_INTENSITY_RF_SENSOR",
+            "value": "FAILED"
+        },
+        {
+            "detail": "(-100, 200) -6.6",
+            "label": "STEP_OPTICAL_BIN_POST_CAL_INTENSITY_RN_SENSOR",
+            "value": "PASSED"
+        },
+        {
+            "detail": "0.2.11+ubuntu-HEAD-cca733b60c4+150",
+            "label": "STEP_POWER_BOARD_VERSION",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[128] 179",
+            "label": "STEP_REAR_LEFT_CLIFF_ACTIVE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[32] 179",
+            "label": "STEP_REAR_RIGHT_CLIFF_ACTIVE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(600, 4100) 811.1",
+            "label": "STEP_RIGHT_IR_OBSTRUCTED",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(0, 300) 7.9",
+            "label": "STEP_RIGHT_IR_UNOBSTRUCTED",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(0, 0) 0.0",
+            "label": "STEP_RIGHT_MOVING_LEFT_WHEEL_SPEED_ZERO",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(25, 150) 127.6",
+            "label": "STEP_RIGHT_WHEEL_CURRENT_MOVING_FORWARD",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(25, 150) 127.3",
+            "label": "STEP_RIGHT_WHEEL_CURRENT_MOVING_REVERSE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(150, 1500) 934.1",
+            "label": "STEP_RIGHT_WHEEL_CURRENT_STALLED",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(285, 327) 305.8",
+            "label": "STEP_RIGHT_WHEEL_MOVING_FORWARD",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[False] False",
+            "label": "STEP_RIGHT_WHEEL_MOVING_NOT_STALLED",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(-327, -285) -299.5",
+            "label": "STEP_RIGHT_WHEEL_MOVING_REVERSE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[True] True",
+            "label": "STEP_RIGHT_WHEEL_MOVING_STALLED",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[False] False",
+            "label": "STEP_RIGHT_WHEEL_NOT_MOVING_NOT_STALLED",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(0, 0) 0.0",
+            "label": "STEP_RIGHT_WHEEL_NOT_MOVING_REVERSE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[False] False",
+            "label": "STEP_RIGHT_WHEEL_UNSTALLED_NOT_STALLED",
+            "value": "PASSED"
+        },
+        {
+            "detail": "1.5.2+ubuntu-HEAD-fb86fda8957+33",
+            "label": "STEP_SAFETY_VERSION",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(20, 120) 69.8",
+            "label": "STEP_SIDE_BRUSH_FORWARD_NOT_STALLED_CURRENT",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(20, 120) 67.6",
+            "label": "STEP_SIDE_BRUSH_REVERSE_NOT_STALLED_CURRENT",
+            "value": "PASSED"
+        },
+        {
+            "detail": "(50, 1000) 218.2",
+            "label": "STEP_VACUUM_NORMAL_CURRENT",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[1] 1",
+            "label": "STEP_WHEEL_DROPS_LEFT_ACTIVE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[0] 0",
+            "label": "STEP_WHEEL_DROPS_LEFT_ACTIVE_RIGHT_INACTIVE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[0] 0",
+            "label": "STEP_WHEEL_DROPS_LEFT_INACTIVE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[0] 0",
+            "label": "STEP_WHEEL_DROPS_LEFT_INACTIVE_RIGHT_INACTIVE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[2] 2",
+            "label": "STEP_WHEEL_DROPS_RIGHT_ACTIVE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[0] 0",
+            "label": "STEP_WHEEL_DROPS_RIGHT_ACTIVE_LEFT_INACTIVE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[0] 0",
+            "label": "STEP_WHEEL_DROPS_RIGHT_INACTIVE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "[0] 0",
+            "label": "STEP_WHEEL_DROPS_RIGHT_INACTIVE_LEFT_INACTIVE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "00.00.02",
+            "label": "TEST_BIN_PRESENT",
+            "value": "PASSED"
+        },
+        {
+            "detail": "00.00.04",
+            "label": "TEST_BRUSHES",
+            "value": "PASSED"
+        },
+        {
+            "detail": "00.00.05",
+            "label": "TEST_BUMP_TRIGGER",
+            "value": "PASSED"
+        },
+        {
+            "detail": "00.00.05",
+            "label": "TEST_BUTTONS",
+            "value": "PASSED"
+        },
+        {
+            "detail": "00.00.08",
+            "label": "TEST_CHARGER_STATUS",
+            "value": "PASSED"
+        },
+        {
+            "detail": "00.00.01",
+            "label": "TEST_CLIFF_CAL_VALID",
+            "value": "PASSED"
+        },
+        {
+            "detail": "00.00.02",
+            "label": "TEST_CLIFF_TRIGGER",
+            "value": "PASSED"
+        },
+        {
+            "detail": "00.00.02",
+            "label": "TEST_DOCK_COMMS",
+            "value": "FAILED"
+        },
+        {
+            "detail": "00.00.07",
+            "label": "TEST_IR_INTENSITY",
+            "value": "PASSED"
+        },
+        {
+            "detail": "00.00.02",
+            "label": "TEST_MOUSE",
+            "value": "PASSED"
+        },
+        {
+            "detail": "00.00.01",
+            "label": "TEST_NAV_COMM",
+            "value": "PASSED"
+        },
+        {
+            "detail": "00.00.06",
+            "label": "TEST_OPTICAL_BIN",
+            "value": "FAILED"
+        },
+        {
+            "detail": "00.00.02",
+            "label": "TEST_SOFTWARE_VERSION",
+            "value": "PASSED"
+        },
+        {
+            "detail": "00.00.04",
+            "label": "TEST_VACUUM",
+            "value": "PASSED"
+        },
+        {
+            "detail": "00.00.06",
+            "label": "TEST_WHEEL",
+            "value": "PASSED"
+        },
+        {
+            "detail": "00.00.02",
+            "label": "TEST_WHEEL_DROPS",
+            "value": "PASSED"
+        }
+    ]
+}

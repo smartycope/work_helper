@@ -1,3 +1,36 @@
+URGENT: get the sidebar to stop stealing focus!
+URGENT: (add a setting to) go from pick_up_case -> charging phase
+SP: "input the model, or 1 or 2..." remove the first or
+URGENT: claimed damage -> other remarks (other todo)
+MINOR: make the dashes in the sidebar the continuous dash character instead
+MINOR ALG: consider moving "move tags off" to be mushed together with "clean the robot"? Or maybe before it? Maybe not.
+EXT: don't recommend "liquid spill" if it's either kind of lapis bin
+DCT: expand the i-series sleep mode entry to include optionally lifting one wheel to make it go faster
+
+BP: give is_value_concerning a RobotInfo, not an sn
+BP: is_value_concerning should be wrapped in a try statement, in case the value doesn't exist (i.e. R seiries doesn't have the same values that others do)
+BP: names given to is_value_concerning should be .upper()'ed
+EPIC: auto complete common phrases (as a substitute for acronyms?), like "let run for several minutes "
+ALG: if there are notes in the first step of the hold phase (if resp) then don't move to the next step until resp is empty
+ACRONYM: lt -> light touch
+EXT: change "provision" to "add" and "application" to "iRobot app"
+
+MINOR: in ensure_process(), if Routine Checks: is before it with nothing but whitespace in between, remove the Routine Checks: line
+
+BBK parser:
+This code works in streamlit:
+with Path("C:\\Users\\Roomba Wrangler\\Documents\\DCT\\BBK\\BBK-J755020Y240402N101122.txt").open() as f:
+        st.write(f.read())
+
+Add a warning to send BBK data (and ensure "export data to file" checkbox is selected) is before pressing the button to load the most recent BBK data (add a button instead of having to specify an SN)
+
+
+
+Example of a BiT file, after finishing test, but before "done with robot":
+File name: "C:\\Users\\Roomba Wrangler\\Documents\\DCT\\BiT\\BiT-{sn}" - example_bit.json
+
+
+
 HINT: regular bot won't let a lapis bin get provisioned:
 Try provisioning
 Try again, make sure it's going to the correct bot

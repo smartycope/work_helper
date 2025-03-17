@@ -6,3 +6,5 @@ clipboard
 pyautogui
 pillow
 qrcode
+DynamicStateMachine>=0.0.3
+streamlit-keyup
