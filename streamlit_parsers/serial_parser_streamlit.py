@@ -1,6 +1,6 @@
 import streamlit as st
 
-from work_helper.globals.RobotInfo import RobotInfo
+from globals.RobotInfo import RobotInfo
 
 EXPLANATION = """\
 Enter a model number, a serial number, or 2 serial numbers back to back. If 2 serial numbers are given,

@@ -9,7 +9,7 @@ try:
     from pathlib import Path
     from parse_bbk_function import is_concerning
     import pandas as pd
-    from work_helper.globals.RobotInfo import RobotInfo
+    from globals.RobotInfo import RobotInfo
     from st_keyup import st_keyup
 
     ss = st.session_state

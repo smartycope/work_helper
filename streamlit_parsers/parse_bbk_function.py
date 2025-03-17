@@ -2,7 +2,7 @@
 from collections import Counter
 from typing import Any
 import streamlit as st
-from work_helper.globals import RobotInfo
+from globals.RobotInfo import RobotInfo
 
 
 def is_concerning(info:RobotInfo, bbk:dict[str, Any]) -> bool:
