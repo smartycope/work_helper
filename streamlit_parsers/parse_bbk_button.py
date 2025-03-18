@@ -18,31 +18,45 @@ try:
     DEBUG = False
 
     # st.set_page_config(layout='wide', page_title='BBK Parser', page_icon=PARSE_BBK_ICON)
-    BBK_LOG_DIR = Path("C:\\Users\\Roomba Wrangler\\Documents\\DCT\\BBK")
+    BBK_LOG_DIR = Path(f"C:\\Users\\Roomba Wrangler\\Documents\\DCT\\BBK")
 
     st.warning('This is a beta version, it may not work yet')
     st.title('BBK Parser')
 
-    # C975020B240108N000000
-    def load_bbk(file):
-        # BBK-J755020Y240402N100000.txt
-        return file.name[4:-4], {i['label']: i['value'] for i in json.load(file)['data']}
+    # C975020B240108N003454
+    def load_bbk(sn=None):
+        if DEBUG:
+            path = Path('/home/zeke/hello/work_helper/misc/example_bbk.json')
+        else:
+            if sn:
+                path = BBK_LOG_DIR / f'BBK-{sn}.txt'
+            else:
+                # Find the most recently used file
+                path = max(BBK_LOG_DIR.glob('*.txt'), key=os.path.getmtime)
+
+        if not sn:
+            # BBK-J755020Y240402N100000.txt
+            sn = path.name[4:-4]
+
+        with path.open('r') as f:
+            raw = json.load(f)['data']
+
+        return sn, {i['label']: i['value'] for i in raw}
 
 
-    ss['file'] = st.file_uploader('Uploade BBK file', 'txt', False, help='Upload the BBK data in DCT, and then press this button, and upload the most recent file in "C:\\Users\\Roomba Wrangler\\Documents\\DCT\\BBK". Make sure the "export data to file" checkbox is selected')
-    if ss.get('file'):
+    if st.button('Press to load the most recent BBK data', help='Upload the BBK data, and then press this button, and it should work. Make sure the "export data to file" checkbox is selected'):
         try:
-            sn, values = load_bbk(ss.get('file'))
-            st.write(sn)
+            sn, values = load_bbk()
         except Exception as err: # TODO add a specific error here
             if DEBUG:
                 raise err
             else:
-                st.write(":warning: Could not locate the BBK log :warning:\n\nMake sure you're running this on a wrangler.\n\nIt gave this error:")
+                st.write(":warning: Could not locate the BBK log :warning:\nMake sure you're running this on a wrangler\nIt gave this error:")
                 st.exception(err)
         else:
             ss['info'] = RobotInfo(sn)
             ss['bbk'] = values
+
 
     if ss.get('info') and ss.get('bbk'):
         concerns = is_concerning(ss['info'], ss['bbk'])
