@@ -51,7 +51,7 @@ try:
             if DEBUG:
                 raise err
             else:
-                st.write(':warning: Could not find that BBK log')
+                st.write(":warning: Could not locate the BBK log :warning:\nMake sure you're running this on a wrangler\nIt gave this error:")
                 st.exception(err)
         else:
             ss['info'] = RobotInfo(sn)
