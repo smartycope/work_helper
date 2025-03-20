@@ -2,7 +2,6 @@
 # TODO: incorperate this into Case (but remember that is_factory_lapis and is_weird_i5g have been changed)
 # TODO: allow for multiple serials again
 # TODO: finish moving sleep_mode and factory_reset into this class
-import os
 
 
 class RobotInfo:
@@ -43,13 +42,15 @@ class RobotInfo:
         'r': 'Hold dock and spot and clean until all LEDs turn on (9xx), or it beeps (6xx & 8xx)',
     }
 
-    def __init__(self):
+    def __init__(self, sn=None):
         # We want the serial to evaluate to still false, but be a string
         # self.serial = serial or ''
 
         # The serial numbers: first is the original, last is the current swap (or the original), and
         # anythinng in the middle is a DOA swap
         self.serials = []
+        if sn:
+            self.add_serial(sn)
         # self.serials = [serial.lower()] if serial else []
 
     @property
@@ -272,7 +273,7 @@ class RobotInfo:
             return False
 
     @property
-    def is_modular(self):
+    def modular(self):
         if self.serial:
             if self.serial.startswith(('e', 'r')):
                 return True
@@ -283,6 +284,12 @@ class RobotInfo:
         else:
             # If not given all the info, assume it is
             return True
+
+    # Phasing out this one in favor of `modular`
+    @property
+    def is_modular(self):
+        return self.modular
+
 
     @property
     def m6_color(self):
@@ -313,3 +320,19 @@ class RobotInfo:
             return self.serial[1:4]
         else:
             return self.serial[:2].upper()
+
+    @property
+    def M6(self):
+        return self.serial.startwith('m6')
+
+    @property
+    def S9(self):
+        return self.serial.startwith('s9')
+
+    @property
+    def i_series(self):
+        return self.serial.startwith('i')
+
+    @property
+    def j_series(self):
+        return self.serial.startwith(('j', 'c'))
