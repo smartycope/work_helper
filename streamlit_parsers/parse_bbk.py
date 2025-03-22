@@ -41,7 +41,9 @@ try:
                 st.write(":warning: Could not locate the BBK log :warning:\n\nMake sure you're running this on a wrangler.\n\nIt gave this error:")
                 st.exception(err)
         else:
-            ss['info'] = RobotInfo(sn)
+            # ss['info'] = RobotInfo(sn)
+            ss['info'] = RobotInfo()
+            ss['info'].add_serial(sn)
             ss['bbk'] = values
 
     if ss.get('info') and ss.get('bbk'):
