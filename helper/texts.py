@@ -12,7 +12,7 @@ class Steps:
     ask_labels = "Put labels on everything [done]"
     turn_down_screwdriver = 'Turn down the power setting on the screwdriver [done]'
     check_repeat = "Is the case a repeat [no]"
-    check_claimed_damage = "Check the claimed damage"
+    check_claimed_damage = "Additional Notes [no box kit needed]"
     ask_dock = "Additional dock, and any other parts (comma seperated) [no dock]"
     ask_damage = "Additional damage [no damage]"
     ask_came_with_bag = "Is there a bag in the dock [yes]"
