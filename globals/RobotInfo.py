@@ -1,6 +1,6 @@
 
-from difflib import get_close_matches
-from helper.info import DOCKS
+# from difflib import get_close_matches
+# from helper.info import DOCKS
 
 # TODO: incorperate this into Case (but remember that is_factory_lapis and is_weird_i5g have been changed)
 # TODO: allow for multiple serials again
@@ -17,7 +17,7 @@ class RobotInfo:
         This is dumb, but it's how I did it at the beginning for some reason, and it would require a
         large rewrite to fix, so whatever. I'll get to it eventually.
     """
-    
+
     ten_sec = 'Hold home for 10 seconds. Indicators should turn off'
     lift_wheel = 'Lift one wheel and hold clean for 3 seconds. Indicators should turn off'
     sleep_mode = {
@@ -344,4 +344,3 @@ class RobotInfo:
     @property
     def dock_can_refill(self):
         return bool(self.dock) and self.dock.lower() in ('aurora', 'boulder')
-

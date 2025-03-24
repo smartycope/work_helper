@@ -1,3 +1,35 @@
+BBK Parser: still doesn't work -- but I should be able to test it at home now
+ALG: combine the 1st and 2nd steps of the swap phase into one
+ALG: allow "is there a bag in the dock" step to accept "fb" or "od" as an input, and have it auto-add that to the Process notes later (and also still put it in todo, but remove it later.) - ALso do the same thing for the ask pad step
+ACRONYM: "Air blows through the dock"
+COMMANDS: change any basic commands to acronyms
+ACRONYM: child / pet -> "Removed child/pet lock"
+
+ALGv2: add an option in construct_graphviz() to not include the transition methods at all, and instead go directly from step to step, including the edge names as it does so
+STREAMLIT: something is wrong with lapis_qr line 4: "qrcode.image.svg"
+
+URGENT: ctrl+b broke! No!! -- Replace `#press_seq('shift+tab', 'ctrl+backspace')` for `press_seq(*('tab',)*2, 'ctrl+backspace')`
+URGENT: have alt+shift+b activeate dynamic_open_board(), and read from the clipboard (for testing, at least)
+MM: if C7 (not C9), assume a full tank to start with
+ALG: ask if audio is quiet if combo as well (if j_series)
+STREAMLIT ERROR: parse_bbk.py like 44: RobotInfo takes 1 positional arg but 2 were given (complaining about giving `sn` to the RobotInfo constructor)
+URGENT MINOR BUG: update sidebar after deserializing AND it's set as a repeat
+ALG: if non-modular, only ask for the charging current if a battery test would be needed
+ALG V2: move "battery_test_needed" and "audio_test_needed" methods from case into StepsController - same for M6
+ALG: remove the checking for liquid in the bin step
+HINT: robot goes up to the dock, then veers off to the side: try blowing out the cliff sensors
+ALG: don't ask to test with a dry pad if M6 is a non-refurb
+
+BBKP: double newlines in the "could not locate BBK log" error. also, add a period
+BBKP: I don't think the auto-detecting the BBK files thing is going to work. Just try uploading a file instead
+URGENT NEXT: change "check claimed damage" to "check if a box kit is needed"
+STREAMLIT: Port the "hints" section (use exapanders)
+EXT: if "freebee filter" or "ordered filter" or "replaced filter" in the notes, auto-select "recommend cleaning filter"
+
+SP: add the lapis qr code to the streamlit app
+SP: add the flow chart to the stremalit app
+
+
 URGENT: get the sidebar to stop stealing focus!
 URGENT: (add a setting to) go from pick_up_case -> charging phase
 SP: "input the model, or 1 or 2..." remove the first or
@@ -514,7 +546,7 @@ WEB: if web version, don't include any of the hotkey bindings
 WEB: if web version, change the bindings to work (ctrl+n, ctrl+w, for starters)
 WEB: remove the date display thing I was using for versioning, and add *real* versioning.
 
-UNRELATED:
+UNRELATED RANDOM CRAP:
 Look up:
 "the others" by Jeremy robinson
 "schrodinger's killer app"

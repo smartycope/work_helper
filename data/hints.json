@@ -27,7 +27,8 @@
         "Ask michelle to RDP reset"
     ],
     "Bad dock, but dock wasn't shipped": [
-        "Provide a new dock"
+        "Provide a new dock, if in stock",
+        "Ask michelle if unsure"
     ],
     "Bot came with a non-OEM battery": [
         "Battery test, and if unrecognized, order an official battery",
