@@ -110,29 +110,31 @@ class RobotInfo:
             ● Battery charging will fail on a full battery
                 ○ Ignore if you know the battery State of Charge is high.
         """
+        rtn = '* <3 Optical bin tests, pass if <150 out of range\n'
         if not self.is_modular:
-            rtn = 'DCT won\'t work, only BBK'
+            rtn = '* DCT won\'t work, only BBK\n'
         elif self.serial.startswith(('i3', 'i4', 'i5')):
-            rtn = 'Any of the bumper tests can fail'
+            rtn += '* Any of the bumper tests can fail\n'
         elif self.serial.startswith('j9'):
-            rtn = 'If v2 (clip battery), can fail basically everything. Otherwise, second dock comms test, if FW == 24.29.x (ensure robot still evacs)'
+            rtn += '* If v2 (clip battery), nothing will work (for now)\n'
+            rtn += '* Dock comms\n'
         elif self.serial.startswith('j'):
-            rtn = 'Second dock comms test, if FW == 24.29.x (ensure robot still evacs)'
+            rtn += '* Dock comms\n'
         elif self.serial.startswith('s9'):
-            rtn = 'Low-current vacuum test, pass if the value is <1500'
+            rtn += '* Low-current vacuum test, pass if the value is <1500\n'
         elif self.serial.startswith('m'):
-            rtn = 'Pad detection test (run both wet and dry missions). If the sprayer on current is too low, charge and try again'
+            rtn += '* Pad detection test (be sure to run both wet and dry missions)\n'
+            rtn += '* If the sprayer on current is too low, charge and try again\n'
         elif self.serial.startswith('c'):
-            rtn = 'Actuator arm current and speed tests, if FW >= 23.53.6 (ensure it deploys in mobility mission). If FW >= v24.29.5, DCT is brand new. FW >= v24.29.1: dock comms can fail'
+            rtn += '* Actuator arm current and speed tests (ensure it deploys in mobility mission)\n'
+            rtn += '* Dock comms\n'
             if self.serial.startswith('c9'):
-                rtn = 'Sprayer current off, but note the firmware version. ' + rtn
-        else:
-            rtn = 'Optical bin tests (at most 2, if barely out of range)'
+                rtn += '* Sprayer current off, but note the firmware version. Pass if <10\n'
 
         if self.serial.startswith(('j7', 'j5', 'j6')):
-            rtn += '\nIf uses the blue card, BiT may not work at all'
+            rtn += '* If uses the blue card, BiT may not work at all\n'
 
-        return rtn
+        return rtn[:-1] # Remove the trailing newline
 
     def get_notes(self, warnings=True) -> str:
         notes = ''
