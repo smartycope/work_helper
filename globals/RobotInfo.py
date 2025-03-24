@@ -1,4 +1,7 @@
 
+from difflib import get_close_matches
+from helper.info import DOCKS
+
 # TODO: incorperate this into Case (but remember that is_factory_lapis and is_weird_i5g have been changed)
 # TODO: allow for multiple serials again
 # TODO: finish moving sleep_mode and factory_reset into this class
@@ -13,11 +16,8 @@ class RobotInfo:
         Internally, all serial numbers are guarenteed lowercase, and then re-uppercased to the user.
         This is dumb, but it's how I did it at the beginning for some reason, and it would require a
         large rewrite to fix, so whatever. I'll get to it eventually.
-
-        NOTE: going forward, this is the most up to date version, until I get around to merging this
-        into Case.
     """
-
+    
     ten_sec = 'Hold home for 10 seconds. Indicators should turn off'
     lift_wheel = 'Lift one wheel and hold clean for 3 seconds. Indicators should turn off'
     sleep_mode = {
@@ -43,15 +43,12 @@ class RobotInfo:
     }
 
     def __init__(self, sn=None):
-        # We want the serial to evaluate to still false, but be a string
-        # self.serial = serial or ''
-
         # The serial numbers: first is the original, last is the current swap (or the original), and
-        # anythinng in the middle is a DOA swap
+        # anything in the middle is a DOA swap
+        self.dock = ''
         self.serials = []
         if sn:
             self.add_serial(sn)
-        # self.serials = [serial.lower()] if serial else []
 
     @property
     def serial(self):
@@ -67,6 +64,9 @@ class RobotInfo:
         # The sidebar always uses the last serial to load info
         # TODO:
         # self.sidebar.update()
+
+    def is_swap(self) -> bool:
+        return len(self.serials) > 1
 
     def get_DCT(self, streamlit=False) -> str:
         if self.serial.startswith('i') and not self.is_modular:
@@ -216,7 +216,7 @@ class RobotInfo:
         ir = ['Albany', 'Tianjin', 'Torino']
 
         if not self.serial:
-            return
+            return []
 
         if self.serial.startswith('m6'):
             return ['San Marino']
@@ -323,16 +323,25 @@ class RobotInfo:
 
     @property
     def M6(self):
-        return self.serial.startwith('m6')
+        return self.serial.startswith('m6')
 
     @property
     def S9(self):
-        return self.serial.startwith('s9')
+        return self.serial.startswith('s9')
 
     @property
     def i_series(self):
-        return self.serial.startwith('i')
+        return self.serial.startswith('i')
 
     @property
     def j_series(self):
-        return self.serial.startwith(('j', 'c'))
+        return self.serial.startswith(('j', 'c'))
+
+    @property
+    def is_dock(self) -> bool:
+        return bool(self.dock) and self.dock.lower() not in ('bombay', 'san marino', 'torino')
+
+    @property
+    def dock_can_refill(self):
+        return bool(self.dock) and self.dock.lower() in ('aurora', 'boulder')
+
