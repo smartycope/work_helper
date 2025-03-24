@@ -1,0 +1,904 @@
+{
+    "data": [
+        {
+            "label": "RBB_AUX_COMMS_REPORT_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_AVERAGE_CHARGE_TIME_MIN",
+            "value": 174
+        },
+        {
+            "label": "RBB_AVERAGE_CYCLE_TIME_MIN",
+            "value": 18
+        },
+        {
+            "label": "RBB_AVERAGE_MISSION_TIME_MIN",
+            "value": 79
+        },
+        {
+            "label": "RBB_BACKUP_LIMIT_REPORT_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_BATTERY_STATS_REPORT_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_BEHAVIORS_REPORT_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_BIN_STATUS_ENABLED",
+            "value": 0
+        },
+        {
+            "label": "RBB_CAMERA_SETTINGS_REPORT_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_CLEANING_TIME_HOURS",
+            "value": 9
+        },
+        {
+            "label": "RBB_CLEANING_TIME_MINUTES",
+            "value": 23
+        },
+        {
+            "label": "RBB_CLEAR_HAZARDS_AT_START",
+            "value": 1
+        },
+        {
+            "label": "RBB_COVERAGE_100_SQFT",
+            "value": 2
+        },
+        {
+            "label": "RBB_COVERAGE_REPORT_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_COVERAGE_SQFT",
+            "value": 220
+        },
+        {
+            "label": "RBB_DOCKED_NOT_CHARGING_REPORT_SENDING_ENABLED",
+            "value": 0
+        },
+        {
+            "label": "RBB_DOCKED_TIME_HOURS",
+            "value": 558
+        },
+        {
+            "label": "RBB_DOCK_REPORT_SENDING_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_ESTIMATED_CAPACITY",
+            "value": 4614
+        },
+        {
+            "label": "RBB_HARDKNOCK_REPORT_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_HOMING_REPORT_SENDING_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_HYPOTHESES_SUMMARY_REPORT_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_IS_LOADING_MAPS",
+            "value": 0
+        },
+        {
+            "label": "RBB_LAST_CHARGE_ABORTS_1",
+            "value": "(25)"
+        },
+        {
+            "label": "RBB_LAST_CHARGE_ABORTS_2",
+            "value": "RBB_CHARGE_ABORT_NONE (0)"
+        },
+        {
+            "label": "RBB_LAST_CHARGE_ABORTS_3",
+            "value": "RBB_CHARGE_ABORT_NONE (0)"
+        },
+        {
+            "label": "RBB_LAST_CHARGING_ERRORS_1",
+            "value": "RBB_CHARGE_NONE (0)"
+        },
+        {
+            "label": "RBB_LAST_CHARGING_ERRORS_10",
+            "value": "RBB_CHARGE_NONE (0)"
+        },
+        {
+            "label": "RBB_LAST_CHARGING_ERRORS_2",
+            "value": "RBB_CHARGE_NONE (0)"
+        },
+        {
+            "label": "RBB_LAST_CHARGING_ERRORS_3",
+            "value": "RBB_CHARGE_NONE (0)"
+        },
+        {
+            "label": "RBB_LAST_CHARGING_ERRORS_4",
+            "value": "RBB_CHARGE_NONE (0)"
+        },
+        {
+            "label": "RBB_LAST_CHARGING_ERRORS_5",
+            "value": "RBB_CHARGE_NONE (0)"
+        },
+        {
+            "label": "RBB_LAST_CHARGING_ERRORS_6",
+            "value": "RBB_CHARGE_NONE (0)"
+        },
+        {
+            "label": "RBB_LAST_CHARGING_ERRORS_7",
+            "value": "RBB_CHARGE_NONE (0)"
+        },
+        {
+            "label": "RBB_LAST_CHARGING_ERRORS_8",
+            "value": "RBB_CHARGE_NONE (0)"
+        },
+        {
+            "label": "RBB_LAST_CHARGING_ERRORS_9",
+            "value": "RBB_CHARGE_NONE (0)"
+        },
+        {
+            "label": "RBB_LAST_CHARGING_ERRORS_REPORT_1",
+            "value": "(117)"
+        },
+        {
+            "label": "RBB_LAST_CHARGING_ERRORS_REPORT_2",
+            "value": "RBB_CHARGE_NONE (0)"
+        },
+        {
+            "label": "RBB_LAST_CHARGING_ERRORS_REPORT_3",
+            "value": "RBB_CHARGE_NONE (0)"
+        },
+        {
+            "label": "RBB_LAST_CHARGING_ERRORS_REPORT_4",
+            "value": "RBB_CHARGE_NONE (0)"
+        },
+        {
+            "label": "RBB_LAST_CHARGING_ERRORS_REPORT_5",
+            "value": "RBB_CHARGE_NONE (0)"
+        },
+        {
+            "label": "RBB_LAST_DOCK_TYPE",
+            "value": 1
+        },
+        {
+            "label": "RBB_LAST_MSSN_RETURN_CODE",
+            "value": 1
+        },
+        {
+            "label": "RBB_LAST_PAUSE_IDS_1",
+            "value": "navigation-board-fault (15)"
+        },
+        {
+            "label": "RBB_LAST_PAUSE_IDS_10",
+            "value": "battery-dead (46)"
+        },
+        {
+            "label": "RBB_LAST_PAUSE_IDS_2",
+            "value": "battery-dead (46)"
+        },
+        {
+            "label": "RBB_LAST_PAUSE_IDS_3",
+            "value": "battery-dead (46)"
+        },
+        {
+            "label": "RBB_LAST_PAUSE_IDS_4",
+            "value": "constant-cliff (6)"
+        },
+        {
+            "label": "RBB_LAST_PAUSE_IDS_5",
+            "value": "navigation-board-fault (15)"
+        },
+        {
+            "label": "RBB_LAST_PAUSE_IDS_6",
+            "value": "battery-dead (46)"
+        },
+        {
+            "label": "RBB_LAST_PAUSE_IDS_7",
+            "value": "battery-dead (46)"
+        },
+        {
+            "label": "RBB_LAST_PAUSE_IDS_8",
+            "value": "navigation-board-fault (15)"
+        },
+        {
+            "label": "RBB_LAST_PAUSE_IDS_9",
+            "value": "safety-comms-error (34)"
+        },
+        {
+            "label": "RBB_LAST_SAFETY_ERRORS_1",
+            "value": "SAFETY_ERROR_BRAKES (18)"
+        },
+        {
+            "label": "RBB_LAST_SAFETY_ERRORS_10",
+            "value": "SAFETY_ERROR_BRAKES (18)"
+        },
+        {
+            "label": "RBB_LAST_SAFETY_ERRORS_2",
+            "value": "SAFETY_ERROR_BRAKES (18)"
+        },
+        {
+            "label": "RBB_LAST_SAFETY_ERRORS_3",
+            "value": "SAFETY_ERROR_WHEELS_TEST_TIMEOUT (20)"
+        },
+        {
+            "label": "RBB_LAST_SAFETY_ERRORS_4",
+            "value": "SAFETY_ERROR_BRAKES (18)"
+        },
+        {
+            "label": "RBB_LAST_SAFETY_ERRORS_5",
+            "value": "SAFETY_ERROR_WHEELS_TEST_TIMEOUT (20)"
+        },
+        {
+            "label": "RBB_LAST_SAFETY_ERRORS_6",
+            "value": "SAFETY_ERROR_BRAKES (18)"
+        },
+        {
+            "label": "RBB_LAST_SAFETY_ERRORS_7",
+            "value": "SAFETY_ERROR_BRAKES (18)"
+        },
+        {
+            "label": "RBB_LAST_SAFETY_ERRORS_8",
+            "value": "SAFETY_ERROR_BRAKES (18)"
+        },
+        {
+            "label": "RBB_LAST_SAFETY_ERRORS_9",
+            "value": "SAFETY_ERROR_BRAKES (18)"
+        },
+        {
+            "label": "RBB_LAST_START_REFUSE_1",
+            "value": "ROBOT_NOT_READY_LOW_BATTERY (13)"
+        },
+        {
+            "label": "RBB_LAST_START_REFUSE_2",
+            "value": "ROBOT_NOT_READY_LOW_BATTERY (13)"
+        },
+        {
+            "label": "RBB_LAST_START_REFUSE_3",
+            "value": "ROBOT_NOT_READY_GYRO (12)"
+        },
+        {
+            "label": "RBB_LEARNED_POLICY_REPORT_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_MAP_CLEANUP",
+            "value": 1
+        },
+        {
+            "label": "RBB_MAP_CLEANUP_REPORT_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_MISSION_ID",
+            "value": "01JMJP02KGJBZR1VAJP236WKEZ"
+        },
+        {
+            "label": "RBB_MOBILITY_BOARD_REV",
+            "value": 11
+        },
+        {
+            "label": "RBB_MOB_UPGRADE_RETRY",
+            "value": 0
+        },
+        {
+            "label": "RBB_MSSN_STAT_CHARGING_MIN",
+            "value": 0
+        },
+        {
+            "label": "RBB_MSSN_STAT_CLEANING_MIN",
+            "value": 3
+        },
+        {
+            "label": "RBB_MSSN_STAT_FLAGS",
+            "value": 8320
+        },
+        {
+            "label": "RBB_MSSN_STAT_INITIATOR",
+            "value": 1
+        },
+        {
+            "label": "RBB_MSSN_STAT_PAUSED_MIN",
+            "value": 0
+        },
+        {
+            "label": "RBB_MSSN_STAT_SQFT_MOP",
+            "value": 50
+        },
+        {
+            "label": "RBB_MSSN_STAT_START_TIME",
+            "value": 1740088806
+        },
+        {
+            "label": "RBB_MSSN_STAT_STATE",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_AVAIL",
+            "value": 277
+        },
+        {
+            "label": "RBB_NUM_BACK_LEFT_CLIFFS",
+            "value": 688
+        },
+        {
+            "label": "RBB_NUM_BACK_RIGHT_CLIFFS",
+            "value": 963
+        },
+        {
+            "label": "RBB_NUM_BATTERY_AUTHENTICATION_FAILURES",
+            "value": 1
+        },
+        {
+            "label": "RBB_NUM_CAMERA_ERROR_RECOVERING",
+            "value": 4
+        },
+        {
+            "label": "RBB_NUM_CAMERA_ERROR_USB",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_CARPET_FAILS",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_CARPET_STARTS",
+            "value": 1
+        },
+        {
+            "label": "RBB_NUM_CHARGING_ERRORS_REPORT",
+            "value": 1
+        },
+        {
+            "label": "RBB_NUM_CHATTER",
+            "value": 22
+        },
+        {
+            "label": "RBB_NUM_CLEAN_CLICKS",
+            "value": 1512
+        },
+        {
+            "label": "RBB_NUM_CONSTANT_BUMP",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_CYCLES_STARTED",
+            "value": 515
+        },
+        {
+            "label": "RBB_NUM_DEBRIS",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_DOCKED_NO_CHARGE",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_DOCK_CLICKS",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_DRIVE_STALLS",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_ERRORS",
+            "value": 89
+        },
+        {
+            "label": "RBB_NUM_EVACS",
+            "value": 61
+        },
+        {
+            "label": "RBB_NUM_FAILED_CHARGES",
+            "value": 1
+        },
+        {
+            "label": "RBB_NUM_FRONT_CENTER_BUMPER_CLICKS",
+            "value": 2422
+        },
+        {
+            "label": "RBB_NUM_FRONT_LEFT_BUMPER_CLICKS",
+            "value": 2116
+        },
+        {
+            "label": "RBB_NUM_FRONT_LEFT_CLIFFS",
+            "value": 938
+        },
+        {
+            "label": "RBB_NUM_FRONT_RIGHT_BUMPER_CLICKS",
+            "value": 1706
+        },
+        {
+            "label": "RBB_NUM_FRONT_RIGHT_CLIFFS",
+            "value": 714
+        },
+        {
+            "label": "RBB_NUM_FULL_CHARGES",
+            "value": 43
+        },
+        {
+            "label": "RBB_NUM_HARD_FLOOR_FAILS",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_HARD_FLOOR_STARTS",
+            "value": 2
+        },
+        {
+            "label": "RBB_NUM_HIGH_IMPACT_BUMPER_CLICKS",
+            "value": 3236
+        },
+        {
+            "label": "RBB_NUM_KIDNAPS",
+            "value": 153
+        },
+        {
+            "label": "RBB_NUM_KNOCKOFF",
+            "value": 105
+        },
+        {
+            "label": "RBB_NUM_LEFT_BUMPER_CLICKS",
+            "value": 5459
+        },
+        {
+            "label": "RBB_NUM_MAIN_BRUSH_STALLS",
+            "value": 24
+        },
+        {
+            "label": "RBB_NUM_MISSIONS_CANCELED",
+            "value": 102
+        },
+        {
+            "label": "RBB_NUM_MISSIONS_COMPLETED",
+            "value": 9
+        },
+        {
+            "label": "RBB_NUM_MISSIONS_FAILED",
+            "value": 39
+        },
+        {
+            "label": "RBB_NUM_MISSIONS_STARTED",
+            "value": 150
+        },
+        {
+            "label": "RBB_NUM_MOBILITY_DOWNLOAD_FAILURES",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_MOBILITY_REPAIR_UPGRADES",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_MOBILITY_RESETS",
+            "value": 38
+        },
+        {
+            "label": "RBB_NUM_OPTICAL_DEBRIS",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_OS_THERMAL_PROTECTION_EVENTS",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_OUT_OF_MEMORY_DUE_TO_PMAP",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_OUT_OF_MEMORY_EVENTS",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_PANICS",
+            "value": 25
+        },
+        {
+            "label": "RBB_NUM_PIEZO_DEBRIS",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_POWER_COMMS_ERRORS",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_POWER_DOWNLOAD_FAILURES",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_POWER_REPAIR_UPGRADES",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_PROXIMITY_SLOWDOWNS",
+            "value": 5211
+        },
+        {
+            "label": "RBB_NUM_RIGHT_BUMPER_CLICKS",
+            "value": 4713
+        },
+        {
+            "label": "RBB_NUM_SAFETY_BOARD_ERRORS",
+            "value": 33
+        },
+        {
+            "label": "RBB_NUM_SAFETY_COMMS_ERRORS",
+            "value": 53
+        },
+        {
+            "label": "RBB_NUM_SAFETY_DOWNLOAD_FAILURES",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_SAFETY_REPAIR_UPGRADES",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_SIDE_LEFT_CLIFFS",
+            "value": 609
+        },
+        {
+            "label": "RBB_NUM_SIDE_RIGHT_CLIFFS",
+            "value": 535
+        },
+        {
+            "label": "RBB_NUM_SPOT_CLICKS",
+            "value": 0
+        },
+        {
+            "label": "RBB_NUM_STUCKS",
+            "value": 18
+        },
+        {
+            "label": "RBB_NUM_S_LOG_DELAY",
+            "value": 600
+        },
+        {
+            "label": "RBB_NUM_S_LOG_IDLE_INTERVAL",
+            "value": 600
+        },
+        {
+            "label": "RBB_NUM_WHEEL_DROPS",
+            "value": 1430
+        },
+        {
+            "label": "RBB_ODOA_LITE",
+            "value": 0
+        },
+        {
+            "label": "RBB_PAD_ACTUATOR_REPORT_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_PAD_DRY_START_TIME",
+            "value": 0
+        },
+        {
+            "label": "RBB_PEOPLE_FILTER",
+            "value": 1
+        },
+        {
+            "label": "RBB_PMAP_LOAD_REPORT_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_PMAP_NAVIGABILITY_REPORT_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_PMAP_SAVE_REPORT_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_PMAP_UPGRADE_GENERATION",
+            "value": 0
+        },
+        {
+            "label": "RBB_POST_MISSION_DATA_COLLECTION",
+            "value": 0
+        },
+        {
+            "label": "RBB_RAAS_ENABLED",
+            "value": 0
+        },
+        {
+            "label": "RBB_RAAS_SUBSCRIPTION",
+            "value": 0
+        },
+        {
+            "label": "RBB_ROADKILL_MODE_ENABLED",
+            "value": 0
+        },
+        {
+            "label": "RBB_ROOMSEG_REPORT_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_RUN_TIME_HOURS",
+            "value": 793
+        },
+        {
+            "label": "RBB_RUN_TIME_MINUTES",
+            "value": 56
+        },
+        {
+            "label": "RBB_SAVE_COUNTER",
+            "value": 1353
+        },
+        {
+            "label": "RBB_SENSOR_STATS_REPORT_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_TANK_LEVEL_RECAL_TIMESTAMP_MS",
+            "value": 0
+        },
+        {
+            "label": "RBB_UNDOCKING_REPORT_SENDING_ENABLED",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_ADDITIONAL_APRIL_TAG_SIZE_MM",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_BINLESS_ROBOT",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_BIN_PAUSE_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_USER_PREF_BIN_TYPE_DETECT_ARG",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_BLE_DEVLOC_ALLOWED",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_CEC_MODE_ENABLED",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_CHARGE_LR_PATTERN",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_CHILD_LOCK",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_CLEANING_MODE",
+            "value": 2
+        },
+        {
+            "label": "RBB_USER_PREF_CLEAN_BTN_OVERRIDE_MODE",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_CLEAN_CONTACTS_CHATTER_WIGGLE",
+            "value": 1
+        },
+        {
+            "label": "RBB_USER_PREF_DEFAULT_MAP_FORMAT",
+            "value": "2"
+        },
+        {
+            "label": "RBB_USER_PREF_DEFAULT_MAP_FORMAT_UPGRADED",
+            "value": "3"
+        },
+        {
+            "label": "RBB_USER_PREF_DETAILED_ERROR_MSG_ENABLED",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_DISABLE_DOCK_UPGRADE",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_DISPOSABLE_WETNESS_LEVEL",
+            "value": 2
+        },
+        {
+            "label": "RBB_USER_PREF_DOCKING_MODE",
+            "value": 1
+        },
+        {
+            "label": "RBB_USER_PREF_DONT_PLAY_BOOT_SONG",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_DRY_WET_CLEAN_MODE",
+            "value": 2
+        },
+        {
+            "label": "RBB_USER_PREF_ECO_CHARGE_ENABLED",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_EVAC_ALLOWED",
+            "value": 1
+        },
+        {
+            "label": "RBB_USER_PREF_EVAC_DOCK_ENCOUNTERED",
+            "value": 1
+        },
+        {
+            "label": "RBB_USER_PREF_FLASHLIGHT_VAL",
+            "value": 15
+        },
+        {
+            "label": "RBB_USER_PREF_FRAME_LOGGER_OVERRIDE_QUALITY",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_GENTLE_MODE",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_IMAGE_UPLOAD_ENABLED",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_LANGUAGE_STR",
+            "value": "en-US"
+        },
+        {
+            "label": "RBB_USER_PREF_LAPIS_BIN_ENABLED",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_LOG_COVERAGE_PLANS",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_MAP_BASED_SENSING_ENABLE",
+            "value": 1
+        },
+        {
+            "label": "RBB_USER_PREF_MAP_UPLOAD_ALLOWED",
+            "value": 1
+        },
+        {
+            "label": "RBB_USER_PREF_ML_SLOWDOWN_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_USER_PREF_NUM_PASSES",
+            "value": 1
+        },
+        {
+            "label": "RBB_USER_PREF_ODOA_FEATS",
+            "value": ""
+        },
+        {
+            "label": "RBB_USER_PREF_ODOA_FP_DETECTOR",
+            "value": 1
+        },
+        {
+            "label": "RBB_USER_PREF_ODOA_MODE",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_PMAP_CONTINUOUS_LEARNING",
+            "value": 1
+        },
+        {
+            "label": "RBB_USER_PREF_PMAP_LEARNING_ALLOWED",
+            "value": 1
+        },
+        {
+            "label": "RBB_USER_PREF_PREVIOUS_LANGUAGE_STR",
+            "value": ""
+        },
+        {
+            "label": "RBB_USER_PREF_QUIET_MODE_ENABLED",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_RANK_OVERLAP",
+            "value": 15
+        },
+        {
+            "label": "RBB_USER_PREF_REUSABLE_WETNESS_LEVEL",
+            "value": 1
+        },
+        {
+            "label": "RBB_USER_PREF_RL_DATA_COLLECTION_ENABLED",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_RL_DATA_COLLECTION_EXPERIMENT_ID",
+            "value": "default"
+        },
+        {
+            "label": "RBB_USER_PREF_RL_DATA_COLLECTION_TRIGGERING_REFLEXES",
+            "value": "REFLEX_WHEEL_DROP"
+        },
+        {
+            "label": "RBB_USER_PREF_RL_WHEEL_DROP_REFLEX_CONFIG_PATH",
+            "value": ""
+        },
+        {
+            "label": "RBB_USER_PREF_RL_WHEEL_DROP_REFLEX_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_USER_PREF_RL_WHEEL_DROP_REFLEX_ROLL_PITCH_THRESHOLD",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_RL_WHEEL_DROP_REFLEX_TERMINAL_STATE_CONF_DURATION_MS",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_RUN_STARTUP_TESTS",
+            "value": 1
+        },
+        {
+            "label": "RBB_USER_PREF_SEMANTIC_SEG_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_USER_PREF_SEMANTIC_SEG_MAPPING_ENABLED",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_TANK_EMPTY_ACTION",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_TELEMETRY_DEBUG",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_UNLOAD_MODELS_WHEN_IDLE",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_VO_ENABLED",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_VO_LOGGING_ENABLED",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_PREF_WIFI_DEVLOC_ALLOWED",
+            "value": 0
+        },
+        {
+            "label": "RBB_USER_SUB_ODOA_LITE",
+            "value": ""
+        },
+        {
+            "label": "RBB_USER_SUB_RAAS",
+            "value": ""
+        },
+        {
+            "label": "RBB_USE_RUG_TRAVERSAL",
+            "value": 1
+        },
+        {
+            "label": "RBB_VITAL_STATS_REPORT_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_VSLAM_MISSION_REPORT_ENABLED",
+            "value": 1
+        },
+        {
+            "label": "RBB_WATER_INGESTION_REPORT_ENABLED",
+            "value": 1
+        }
+    ]
+}
