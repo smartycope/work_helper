@@ -10,14 +10,27 @@ def is_concerning(info:RobotInfo, bbk:dict[str, Any]) -> bool:
         inspection or not
     """
     try:
-        runtime_hr = bbk['RBB_CLEANING_TIME_HOURS'] + (bbk['RBB_CLEANING_TIME_MINUTES'] / 60),
-        docked_hr = bbk['RBB_DOCKED_TIME_HOURS'],
-        total_time_hr=docked_hr + runtime_hr
-        missions_started = bbk['RBB_NUM_MISSIONS_STARTED']
-        missions_failed = bbk['RBB_NUM_MISSIONS_FAILED']
-        missions_canceled = bbk['RBB_NUM_MISSIONS_CANCELED']
-        missions_completed = bbk['RBB_NUM_MISSIONS_COMPLETED']
-        pause_ids = {f'RBB_LAST_PAUSE_IDS_{i}': bbk[f'RBB_LAST_PAUSE_IDS_{i}'] for i in range(1, 11)}
+        try:
+            runtime_hr = bbk['RBB_CLEANING_TIME_HOURS'] + (bbk['RBB_CLEANING_TIME_MINUTES'] / 60),
+            docked_hr = bbk['RBB_DOCKED_TIME_HOURS'],
+            total_time_hr=docked_hr + runtime_hr
+        except KeyError:
+            runtime_hr = docked_hr = total_time_hr = None
+
+        try:
+            missions_started = bbk['RBB_NUM_MISSIONS_STARTED']
+            missions_failed = bbk['RBB_NUM_MISSIONS_FAILED']
+            missions_canceled = bbk['RBB_NUM_MISSIONS_CANCELED']
+            missions_completed = bbk['RBB_NUM_MISSIONS_COMPLETED']
+        except KeyError:
+            missions_started = missions_failed = missions_canceled = missions_completed = None
+
+        try:
+            pause_ids = {f'RBB_LAST_PAUSE_IDS_{i}': bbk[f'RBB_LAST_PAUSE_IDS_{i}'] for i in range(1, 11)}
+        except KeyError:
+            pause_ids = {}
+
+        # TODO: panic ids here
 
         rtn = {}
 
@@ -32,27 +45,29 @@ def is_concerning(info:RobotInfo, bbk:dict[str, Any]) -> bool:
             )
 
         # Some more checks
-        if missions_failed / missions_started > .5:
-            rtn['RBB_NUM_MISSIONS_FAILED'] = True
+        if missions_failed is not None:
+            if missions_failed / missions_started > .5:
+                rtn['RBB_NUM_MISSIONS_FAILED'] = True
 
         # Check all the pause IDs
-        pauses = Counter(pause_ids.values()).most_common()
-        concern_pauses = []
-        for id, cnt in pauses:
-            id = id.lower()
-            if (
-                ('batt' not in id and cnt >= 4) or
-                ('26' in id and info.S9 and cnt > 1) or # blower stall
-                ('bumper' in id and cnt >= 4) or
-                ('68' in id and cnt >= 3) or
-                ('no bump' in id and cnt >= 3) or # R series error
-                ('charg' in id and 'current' in id and cnt >= 3)
-            ):
-                concern_pauses.append(id)
+        if len(pause_ids):
+            pauses = Counter(pause_ids.values()).most_common()
+            concern_pauses = []
+            for id, cnt in pauses:
+                id = id.lower()
+                if (
+                    ('batt' not in id and cnt >= 4) or
+                    ('26' in id and info.S9 and cnt > 1) or # blower stall
+                    ('bumper' in id and cnt >= 4) or
+                    ('68' in id and cnt >= 3) or
+                    ('no bump' in id and cnt >= 3) or # R series error
+                    ('charg' in id and 'current' in id and cnt >= 3)
+                ):
+                    concern_pauses.append(id)
 
-        for id, val in pause_ids.items():
-            if val in concern_pauses:
-                rtn[id] = True
+            for id, val in pause_ids.items():
+                if val in concern_pauses:
+                    rtn[id] = True
 
     except KeyError as err:
         st.exception(err)
